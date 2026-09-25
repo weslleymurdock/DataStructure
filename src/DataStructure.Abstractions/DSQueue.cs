@@ -1,59 +1,51 @@
-using System;
-
 namespace DataStructure.Abstractions;
 
-// ==========================================
-// 1. QUEUE (FILA) - Comportamento FIFO O(1)
-// ==========================================
+/// <summary>
+/// FIFO queue implemented with head and tail pointers.
+/// Enqueue and dequeue are O(1).
+/// </summary>
 public sealed class DSQueue<T>
 {
-    private DSNode<T>? _head; // Onde os elementos saem (Início da fila)
-    private DSNode<T>? _tail; // Onde os elementos entram (Fim da fila)
+    private DSNode<T>? _head;
+    private DSNode<T>? _tail;
 
     public int Count { get; private set; }
 
-    // Enqueue: Adiciona sempre no final da fila O(1)
     public void Enqueue(T item)
     {
-        var newNode = new DSNode<T>(item);
+        var node = new DSNode<T>(item);
 
-        if (_tail == null)
-        {
-            // Fila estava vazia
-            _head = newNode;
-            _tail = newNode;
-        }
+        if (_tail is null)
+            _head = _tail = node;
         else
         {
-            // O antigo último aponta para o novo, e o novo vira o último
-            _tail.Next = newNode;
-            _tail = newNode;
+            _tail.Next = node;
+            _tail = node;
         }
+
         Count++;
     }
 
-    // Dequeue: Remove sempre do início da fila O(1)
     public T Dequeue()
     {
-        if (_head == null)
-            throw new InvalidOperationException("A fila está vazia.");
+        if (_head is null)
+            throw new InvalidOperationException("The queue is empty.");
 
-        T value = _head.Value;
-        _head = _head.Next; // O segundo da fila passa a ser o primeiro
+        var value = _head.Value;
+        _head = _head.Next;
 
-        if (_head == null)
-            _tail = null; // A fila esvaziou totalmente
+        if (_head is null)
+            _tail = null;
 
         Count--;
         return value;
     }
 
-    // Apenas espia quem é o próximo a ser atendido, sem remover
     public T Peek()
     {
-        if (_head == null)
-            throw new InvalidOperationException("A fila está vazia.");
-        
+        if (_head is null)
+            throw new InvalidOperationException("The queue is empty.");
+
         return _head.Value;
     }
 }

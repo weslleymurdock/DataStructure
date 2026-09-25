@@ -1,94 +1,87 @@
-﻿Console.WriteLine("=== 1. ARRAY: Estações do Ano ===");
-DemonstrarArray();
+using DataStructure.Abstractions;
 
-Console.WriteLine("\n=== 2. LISTA: Carrinho de Compras ===");
-DemonstrarLista();
+Console.WriteLine("=== DATA STRUCTURES ===");
+DemonstrateArray();
+DemonstrateCollection();
+DemonstrateList();
+DemonstrateLinkedList();
+DemonstrateStack();
+DemonstrateQueue();
+DemonstrateDeque();
+DemonstratePriorityQueue();
 
-Console.WriteLine("\n=== 3. QUEUE (FILA): Sistema de Atendimento ===");
-DemonstrarQueue();
-
-Console.WriteLine("\n=== 4. DEQUE: Histórico de Navegação e VIPs ===");
-DemonstrarDeque();
-
-///<summary> Caso de Uso: Dados de tamanho conhecido e imutável que precisam de acesso super rápido.</summary>
-static void DemonstrarArray()
+static void DemonstrateArray()
 {
-    string[] estacoes = ["Primavera", "Verão", "Outono", "Inverno"] ;
-    
-    // Acesso direto via índice é instantâneo
-    Console.WriteLine($"A segunda estação é: {estacoes[1]}");
-    
-    // Arrays são ótimos para iteração rápida de dados fixos
-    foreach (var estacao in estacoes)
-    {
-        Console.WriteLine($"- {estacao}");
-    }
+    Console.WriteLine("\n[Array] Fixed-size, O(1) indexed access");
+    var months = new DSArray<string>(["January", "February", "March"]);
+    Console.WriteLine($"Item at index 1: {months[1]}");
 }
 
-static void DemonstrarLista()
+static void DemonstrateCollection()
 {
-    // Caso de Uso: Uma coleção que cresce e encolhe. O tamanho inicial não importa.
-    List<string> carrinho = new List<string>();
-    
-    carrinho.Add("Notebook");
-    carrinho.Add("Mouse");
-    carrinho.Add("Teclado");
-
-    Console.WriteLine($"Itens no carrinho: {carrinho.Count}");
-    
-    // Remoção pelo valor (dinamismo puro)
-    carrinho.Remove("Mouse"); 
-    Console.WriteLine("Mouse removido. Sobraram:");
-    
-    foreach (var item in carrinho)
-    {
-        Console.WriteLine($"- {item}");
-    }
+    Console.WriteLine("\n[Collection] Dynamic contiguous storage");
+    var collection = new DSCollection<string>();
+    collection.Add("Notebook");
+    collection.Add("Mouse");
+    collection.Add("Keyboard");
+    collection.Remove("Mouse");
+    Console.WriteLine($"Count: {collection.Count}; items: {string.Join(", ", collection)}");
 }
 
-static void DemonstrarQueue()
+static void DemonstrateList()
 {
-    // Caso de Uso: Processamento na ordem exata de chegada (FIFO).
-    Queue<string> filaAtendimento = new Queue<string>();
-    
-    filaAtendimento.Enqueue("Cliente A (Chegou às 10:00)");
-    filaAtendimento.Enqueue("Cliente B (Chegou às 10:05)");
-    filaAtendimento.Enqueue("Cliente C (Chegou às 10:10)");
-
-    Console.WriteLine($"Pessoas aguardando: {filaAtendimento.Count}");
-
-    // O primeiro a entrar DEVE ser o primeiro a ser atendido
-    while (filaAtendimento.Count > 0)
-    {
-        string proximo = filaAtendimento.Dequeue();
-        Console.WriteLine($"Atendendo: {proximo}");
-    }
+    Console.WriteLine("\n[List] Fast indexed access with dynamic size");
+    var list = new DSList<string>();
+    list.Add("A");
+    list.Add("C");
+    list.Insert(1, "B");
+    Console.WriteLine(string.Join(" -> ", list));
 }
 
-static void DemonstrarDeque()
+static void DemonstrateLinkedList()
 {
-    // Caso de Uso: Fila dupla. Vamos simular uma fila de tarefas onde tarefas normais 
-    // vão para o final, mas tarefas URGENTES furam a fila e vão para o início.
-    // No C#, o LinkedList<T> é a ferramenta padrão para agir como um Deque.
-    LinkedList<string> dequeTarefas = new LinkedList<string>();
+    Console.WriteLine("\n[Linked List] Efficient insertion/removal at known nodes/ends");
+    var list = new DSLinkedList<string>();
+    list.AddLast("B");
+    list.AddFirst("A");
+    list.AddLast("C");
+    list.Remove("B");
+    Console.WriteLine(string.Join(" -> ", list));
+}
 
-    // Inserções padrão (como numa Queue normal)
-    dequeTarefas.AddLast("Tarefa Normal 1 (Enviar métricas)");
-    dequeTarefas.AddLast("Tarefa Normal 2 (Limpar logs)");
+static void DemonstrateStack()
+{
+    Console.WriteLine("\n[Stack] LIFO");
+    var stack = new DSStack<string>();
+    stack.Push("First");
+    stack.Push("Second");
+    Console.WriteLine($"Pop: {stack.Pop()}");
+}
 
-    // Ocorre uma emergência! Precisamos inserir na frente (comportamento exclusivo do Deque/Stack)
-    dequeTarefas.AddFirst("TAREFA CRÍTICA (Reiniciar Servidor de Banco de Dados)");
+static void DemonstrateQueue()
+{
+    Console.WriteLine("\n[Queue] FIFO");
+    var queue = new DSQueue<string>();
+    queue.Enqueue("Client A");
+    queue.Enqueue("Client B");
+    Console.WriteLine($"Dequeue: {queue.Dequeue()}");
+}
 
-    // Outra emergência!
-    dequeTarefas.AddFirst("TAREFA SUPER CRÍTICA (Bloquear IP atacante)");
+static void DemonstrateDeque()
+{
+    Console.WriteLine("\n[Deque] Insert/remove at both ends");
+    var deque = new DSDeque<string>();
+    deque.AddLast("Normal");
+    deque.AddFirst("Urgent");
+    Console.WriteLine($"First: {deque.RemoveFirst()}");
+}
 
-    Console.WriteLine("Ordem de execução das tarefas no Deque:");
-    while (dequeTarefas.Count > 0)
-    {
-        // Removemos e processamos da frente
-        string tarefaAtual = dequeTarefas.First.Value;
-        dequeTarefas.RemoveFirst();
-        
-        Console.WriteLine($"[Processando] {tarefaAtual}");
-    }
+static void DemonstratePriorityQueue()
+{
+    Console.WriteLine("\n[Priority Queue] Lowest comparable value has priority");
+    var queue = new DSPriorityQueue<int>();
+    queue.Enqueue(30);
+    queue.Enqueue(10);
+    queue.Enqueue(20);
+    Console.WriteLine($"Next priority: {queue.Dequeue()}");
 }
