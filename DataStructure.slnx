@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DataStructure.Abstractions/DataStructure.Abstractions.csproj" />
+    <Project Path="src/DataStructure/DataStructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DataStructure.Tests/DataStructure.Tests.csproj" />
+  </Folder>
+</Solution>
