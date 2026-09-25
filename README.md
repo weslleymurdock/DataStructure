@@ -25,6 +25,8 @@ O repositório privilegia implementações pequenas e didáticas, para que a est
 | `DSDeque<T>` | duas extremidades | Add/Remove em ambos os lados O(1) | buffers, histórico e filas com prioridade nas extremidades |
 | `DSPriorityQueue<T>` | heap binário mínimo | Peek O(1), Enqueue/Dequeue O(log n) | tarefas que precisam ser processadas por prioridade |
 
+Cada implementação possui comentários/XML docs sobre sua organização e complexidade. Os nós são compartilhados pelas estruturas baseadas em encadeamento.
+
 ### Complexidade
 
 - **O(1)**: tempo constante; a quantidade de trabalho não cresce com `n`.
@@ -35,17 +37,16 @@ O repositório privilegia implementações pequenas e didáticas, para que a est
 
 ## Algoritmos
 
-O projeto de algoritmos mantém cada algoritmo em uma classe cujo nome identifica a técnica:
+Cada algoritmo fica em uma classe com nome correspondente à técnica:
 
 - `LinearSearch` — busca sequencial, O(n).
-- `BubbleSort` — ordenação por trocas adjacentes, O(n²) médio/pior caso.
-- `SelectionSort` — seleção do menor elemento restante, O(n²).
+- `BinarySearch` — busca binária em dados ordenados; O(log n) quando o acesso indexado é O(1).
+- `BubbleSort` — ordenação por trocas adjacentes, O(n²) médio/pior caso e O(n) no melhor caso com saída antecipada.
+- `SelectionSort` — seleção do menor elemento restante, O(n²) em todos os casos.
 
-Cada classe expõe métodos no padrão:
+Os métodos seguem o padrão `Execute<TEstruturaDeDado>`, por exemplo `ExecuteDSArray`, `ExecuteDSList`, `ExecuteDSLinkedList`, `ExecuteDSCollection`, `ExecuteDSQueue`, `ExecuteDSStack` e `ExecuteDSDeque`. `LinearSearch` também demonstra `DSPriorityQueue`; `BinarySearch` é demonstrada nas estruturas com acesso indexado.
 
-`ExecuteDSArray`, `ExecuteDSList`, `ExecuteDSLinkedList`, `ExecuteDSQueue`, `ExecuteDSStack` e `ExecuteDSDeque`.
-
-O método mede o tempo de execução com `Stopwatch`. As estruturas destrutivas (fila, pilha e deque) são restauradas ao estado lógico original depois da operação quando necessário.
+O tempo é medido com `Stopwatch`. Para estruturas cuja API principal é destrutiva (fila, pilha, deque e fila de prioridade), o exemplo preserva o estado lógico ao terminar.
 
 > A medição é didática, não um benchmark científico. JIT, GC, CPU, tamanho dos dados e estado do processo influenciam os valores. Para comparar algoritmos, observe principalmente a ordem de complexidade e use entradas equivalentes.
 
@@ -57,7 +58,7 @@ dotnet run --project src/DataStructure.AlgorithmsConsole/DataStructure.Algorithm
 dotnet test
 ```
 
-O primeiro console demonstra as estruturas. O segundo cria as estruturas, instancia os algoritmos e chama os métodos `Execute<TEstruturaDeDado>`, exibindo o tempo medido para cada combinação.
+O primeiro console demonstra as estruturas. O segundo instancia cada classe de algoritmo e chama os métodos `Execute<TEstruturaDeDado>`, exibindo o tempo medido por estrutura.
 
 ## Objetivo didático
 
