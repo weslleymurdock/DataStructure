@@ -37,94 +37,138 @@ Cada implementação possui comentários/XML docs sobre sua organização e comp
 
 ## Algoritmos
 
-Cada algoritmo fica em uma classe com nome correspondente à técnica:
+Cada algoritmo fica em uma classe com nome correspondente à técnica. Os métodos seguem o padrão `Execute<TEstruturaDeDado>` e o console executa cada implementação sobre estruturas equivalentes, medindo o tempo com `Stopwatch`.
 
-- `LinearSearch` — busca sequencial, O(n).
-- `BinarySearch` — busca binária em dados ordenados; O(log n) quando o acesso indexado é O(1).
-- `BubbleSort` — ordenação por trocas adjacentes, O(n²) médio/pior caso e O(n) no melhor caso com saída antecipada.
-- `SelectionSort` — seleção do menor elemento restante, O(n²) em todos os casos.
+### Busca
 
-Os métodos seguem o padrão `Execute<TEstruturaDeDado>`, por exemplo `ExecuteDSArray`, `ExecuteDSList`, `ExecuteDSLinkedList`, `ExecuteDSCollection`, `ExecuteDSQueue`, `ExecuteDSStack` e `ExecuteDSDeque`. `LinearSearch` também demonstra `DSPriorityQueue`; `BinarySearch` é demonstrada nas estruturas com acesso indexado.
+| Algoritmo | Pré-condição | Melhor | Médio | Pior | Melhor use case |
+|---|---|---:|---:|---:|---|
+| `LinearSearch` | nenhuma | O(1) | O(n) | O(n) | busca isolada em dados pequenos ou não ordenados |
+| `BinarySearch` | dados ordenados e acesso indexado eficiente | O(1) | O(log n) | O(log n) | muitas buscas em dados ordenados e indexáveis |
+| `JumpSearch` | dados ordenados e acesso indexado | O(1) | O(sqrt(n)) | O(sqrt(n)) | busca ordenada por blocos |
+| `InterpolationSearch` | dados ordenados, numéricos e aproximadamente uniformes | O(1) | O(log log n) | O(n) | grandes conjuntos numéricos uniformes |
 
-O tempo é medido com `Stopwatch`. Para estruturas cuja API principal é destrutiva (fila, pilha, deque e fila de prioridade), o exemplo preserva o estado lógico ao terminar.
+### Ordenação
 
-> A medição é didática, não um benchmark científico. JIT, GC, CPU, tamanho dos dados e estado do processo influenciam os valores. Para comparar algoritmos, observe principalmente a ordem de complexidade e use entradas equivalentes.
+| Algoritmo | Melhor | Médio | Pior | Espaço | Melhor use case |
+|---|---:|---:|---:|---:|---|
+| `BubbleSort` | O(n) | O(n²) | O(n²) | O(1) | aprendizado e conjuntos muito pequenos/quase ordenados |
+| `SelectionSort` | O(n²) | O(n²) | O(n²) | O(1) | aprendizado e cenários pequenos com poucas trocas |
+| `InsertionSort` | O(n) | O(n²) | O(n²) | O(1) | dados pequenos ou quase ordenados |
+| `MergeSort` | O(n log n) | O(n log n) | O(n log n) | O(n) | desempenho previsível |
+| `QuickSort` | O(n log n) | O(n log n) | O(n²) | O(log n)* | ordenação geral quando o caso médio é prioritário |
+| `HeapSort` | O(n log n) | O(n log n) | O(n log n) | O(1) | garantir O(n log n) sem memória auxiliar proporcional a n |
 
+`*` O `QuickSort` usa o último elemento como pivô; a profundidade média é O(log n), mas pode chegar a O(n) no pior caso.
 
-## Guia de algoritmos
-
-Esta seção relaciona cada algoritmo ao problema que resolve, às estruturas sobre as quais opera e ao seu custo assintótico. Big-O descreve como o custo cresce conforme `n` aumenta; não representa diretamente tempo em segundos.
-
-### Comparação
-
-| Algoritmo | Problema | Pré-condição | Melhor | Médio | Pior | Espaço | Melhor use case |
-|---|---|---|---:|---:|---:|---:|---|
-| `LinearSearch` | encontrar elemento | nenhuma | O(1) | O(n) | O(n) | O(1) | dados pequenos ou não ordenados |
-| `BinarySearch` | encontrar elemento | dados ordenados e acesso eficiente ao meio | O(1) | O(log n) | O(log n) | O(1) | muitas buscas em dados ordenados e indexáveis |
-| `BubbleSort` | ordenar | nenhuma | O(n)* | O(n²) | O(n²) | O(1) | conjuntos pequenos/quase ordenados e estudo didático |
-| `SelectionSort` | ordenar | nenhuma | O(n²) | O(n²) | O(n²) | O(1) | conjuntos pequenos e estudo de seleção/trocas |
-
-`*` O `BubbleSort` possui early exit e pode terminar em O(n) quando uma passagem não produz trocas.
-
-### Como implementar
+### Como implementar os algoritmos de busca
 
 #### LinearSearch — O(n)
 
-Percorra os elementos do primeiro ao último, compare cada valor com o alvo e retorne imediatamente ao encontrar uma correspondência. Se o fim for alcançado, o elemento não foi encontrado. Não exige dados ordenados.
+Percorra os elementos sequencialmente, compare cada valor com o alvo e retorne ao encontrar uma correspondência. Não exige ordenação.
 
-**Melhor use case:** uma busca isolada em dados pequenos ou não ordenados, quando preparar ou ordenar os dados custaria mais do que percorrê-los.
+**Use quando:** a coleção não está ordenada, a busca é pontual ou preparar os dados teria custo desnecessário.
 
 #### BinarySearch — O(log n)
 
-Exige uma sequência ordenada. Mantenha os limites `low` e `high`, examine `mid`, compare com o alvo e descarte metade do intervalo a cada iteração.
+Mantenha os limites do intervalo, examine o elemento central e descarte metade dos candidatos a cada iteração. Requer dados ordenados.
 
-**Melhor use case:** buscas repetidas em dados já ordenados e com acesso indexado O(1), como arrays e listas indexáveis.
+**Use quando:** haverá muitas buscas sobre dados ordenados com acesso ao índice em O(1).
 
-**Atenção:** em uma lista ligada, acessar `data[mid]` pode custar O(n), portanto a complexidade efetiva não é a mesma de uma estrutura com acesso aleatório O(1).
+**Atenção:** em `DSLinkedList`, acessar um índice custa O(n), portanto a implementação baseada em índices não possui o mesmo custo efetivo de arrays e listas indexadas.
+
+#### JumpSearch — O(sqrt(n))
+
+Divida a sequência ordenada em blocos de aproximadamente `sqrt(n)` elementos. Avance bloco a bloco até encontrar o intervalo que pode conter o alvo e faça uma busca linear dentro dele.
+
+**Use quando:** os dados estão ordenados e deseja-se combinar saltos com uma busca local.
+
+#### InterpolationSearch — O(log log n) médio, O(n) pior caso
+
+Estime a posição provável do alvo usando os valores mínimo e máximo, em vez de sempre escolher o meio. Funciona melhor quando os valores numéricos estão aproximadamente distribuídos de maneira uniforme.
+
+**Use quando:** os dados são numéricos, ordenados, grandes e aproximadamente uniformes.
+
+**Atenção:** dados concentrados ou irregulares podem degradar o algoritmo para O(n).
+
+### Como implementar os algoritmos de ordenação
 
 #### BubbleSort — O(n²)
 
-Compare elementos adjacentes e troque-os quando estiverem fora de ordem. Ao final de cada passagem, o maior elemento restante chega ao final da região não ordenada. Reduza essa região e encerre quando nenhuma troca ocorrer.
+Compare elementos adjacentes e troque-os quando estiverem fora de ordem. Após cada passagem, o maior elemento restante fica no final da região não ordenada. O early exit permite O(n) quando nenhuma troca é necessária.
 
-**Melhor use case:** aprendizado, demonstrações e conjuntos muito pequenos ou quase ordenados. Para grandes volumes, prefira algoritmos de ordenação O(n log n).
+**Use quando:** o objetivo é estudar ordenação por trocas ou os dados são muito pequenos/quase ordenados.
 
 #### SelectionSort — O(n²)
 
-Para cada posição da região não ordenada, procure o menor elemento restante e troque-o com o elemento daquela posição. O número de comparações continua O(n²), inclusive quando os dados já estão ordenados.
+Para cada posição, encontre o menor elemento na região restante e faça uma troca. O número de comparações permanece O(n²), mas a quantidade de trocas é limitada.
 
-**Melhor use case:** estudo da técnica de seleção e cenários pequenos em que reduzir a quantidade de trocas seja relevante.
+**Use quando:** a prioridade didática é entender seleção do mínimo ou reduzir trocas.
+
+#### InsertionSort — O(n²)
+
+Considere a primeira parte como ordenada. Retire o próximo elemento e mova os elementos maiores uma posição para a direita até encontrar sua posição correta.
+
+**Use quando:** os dados são pequenos ou chegam quase ordenados. O melhor caso é O(n).
+
+#### MergeSort — O(n log n)
+
+Divida a sequência aproximadamente ao meio até obter partes unitárias. Ordene as partes recursivamente e faça o merge das partes já ordenadas.
+
+**Use quando:** é desejado desempenho O(n log n) previsível.
+
+**Trade-off:** necessita memória auxiliar O(n).
+
+#### QuickSort — O(n log n) médio
+
+Escolha um pivô, particione os elementos entre valores menores/iguais e maiores e aplique o mesmo processo recursivamente às duas partes.
+
+**Use quando:** deseja-se uma ordenação geral eficiente e o caso médio O(n log n) é adequado.
+
+**Trade-off:** a escolha de pivô influencia o resultado. Nesta implementação, uma entrada já ordenada pode produzir O(n²).
+
+#### HeapSort — O(n log n)
+
+Construa um max-heap, troque a raiz com o último elemento da região não ordenada e restaure a propriedade do heap. Repita até ordenar toda a sequência.
+
+**Use quando:** é importante garantir O(n log n) no melhor, médio e pior caso sem memória auxiliar proporcional a n.
 
 ### Comparação por cenário
 
-| Cenário | Algoritmo | Motivo |
+| Cenário | Algoritmo(s) | Motivo |
 |---|---|---|
-| Uma busca em dados não ordenados | `LinearSearch` | não exige preparação |
-| Muitas buscas em dados ordenados e indexáveis | `BinarySearch` | elimina aproximadamente metade dos candidatos por iteração |
-| Dados pequenos e quase ordenados | `BubbleSort` | early exit pode reduzir o trabalho para O(n) |
-| Aprender comparações e trocas adjacentes | `BubbleSort` | implementação simples e visual |
-| Aprender seleção do menor elemento | `SelectionSort` | separa busca do mínimo e a troca |
-| Reduzir trocas em algoritmo introdutório | `SelectionSort` | no máximo uma troca por posição |
-| Grandes volumes em produção | algoritmos O(n log n) | os algoritmos de ordenação deste projeto são introdutórios |
+| Busca única em dados não ordenados | `LinearSearch` | não exige preparação |
+| Muitas buscas em dados ordenados e indexáveis | `BinarySearch` | reduz o espaço de busca pela metade |
+| Busca ordenada por blocos | `JumpSearch` | combina saltos com busca linear local |
+| Dados numéricos aproximadamente uniformes | `InterpolationSearch` | estima a posição provável |
+| Dados pequenos/quase ordenados | `InsertionSort` | aproveita a ordenação existente |
+| Estudo de trocas adjacentes | `BubbleSort` | simples e visual |
+| Estudo de seleção e redução de trocas | `SelectionSort` | poucas trocas, embora O(n²) |
+| Ordenação com O(n log n) previsível | `MergeSort` ou `HeapSort` | não dependem de um caso médio |
+| Ordenação geral com bom caso médio | `QuickSort` | O(n log n) médio |
+| Ordenação sem memória auxiliar proporcional a n | `HeapSort` | espaço auxiliar O(1) |
 
 ### Algoritmo × estrutura de dados
 
-- `DSArray<T>`: acesso por índice O(1), adequado para `BinarySearch`.
-- `DSList<T>`: acesso por índice O(1), também adequado para `BinarySearch`.
-- `DSLinkedList<T>`: acesso por índice O(n); uma busca binária baseada em índices perde a vantagem prática do acesso aleatório.
-- `DSQueue<T>`: FIFO; adequada quando a ordem de chegada deve ser preservada.
-- `DSStack<T>`: LIFO; adequada para processamento reverso, parsing e exploração em profundidade.
-- `DSDeque<T>`: permite operações nas duas extremidades.
-- `DSPriorityQueue<T>`: determina o próximo elemento pela prioridade, adequada para escalonamento e processamento prioritário.
+- `DSArray<T>` e `DSList<T>`: acesso por índice O(1), adequados para buscas indexadas e ordenações in-place.
+- `DSCollection<T>`: acesso por índice O(1), adequado para algoritmos indexados.
+- `DSLinkedList<T>`: acesso por índice O(n); buscas por índice perdem parte da vantagem teórica.
+- `DSQueue<T>`, `DSStack<T>` e `DSDeque<T>`: as demonstrações materializam os valores, executam a ordenação e restauram a estrutura.
+- `DSPriorityQueue<T>`: é orientada à prioridade, não a uma sequência indexável; por isso não é usada nas novas buscas/ordenações indexadas.
 
-Assim, a complexidade do algoritmo e a complexidade das operações da estrutura devem ser consideradas juntas.
+Assim, a complexidade do algoritmo deve ser analisada junto com o custo das operações da estrutura.
 
 ### Complexidade em termos simples
 
 - **O(1)** — custo constante.
-- **O(log n)** — custo logarítmico; o espaço de busca é reduzido sucessivamente.
-- **O(n)** — custo linear; normalmente é necessário visitar os elementos.
-- **O(n log n)** — comum em algoritmos eficientes de ordenação e divisão/conquista.
-- **O(n²)** — custo quadrático; cresce rapidamente quando `n` aumenta.
+- **O(log n)** — reduz o espaço de busca em fatores sucessivos.
+- **O(log log n)** — cresce ainda mais lentamente que O(log n), mas depende de uma distribuição favorável.
+- **O(sqrt(n))** — cresce com a raiz quadrada de n.
+- **O(n)** — custo linear; normalmente visita os elementos.
+- **O(n log n)** — classe comum de ordenações eficientes.
+- **O(n²)** — custo quadrático; cresce rapidamente com n.
+
+
 ## Executando
 
 ```bash
