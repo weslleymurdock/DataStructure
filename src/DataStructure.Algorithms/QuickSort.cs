@@ -15,7 +15,7 @@ public sealed class QuickSort
 
  private static AlgorithmResult<int> Sort(int n,Func<int,int>get,Action<int,int>set){var s=System.Diagnostics.Stopwatch.StartNew();var a=Enumerable.Range(0,n).Select(get).ToArray();Quick(a,0,a.Length-1);for(var i=0;i<n;i++)set(i,a[i]);return new(n,s.Elapsed);}
  private static AlgorithmResult<int> SortCopy(int[]a){var s=System.Diagnostics.Stopwatch.StartNew();Quick(a,0,a.Length-1);return new(a.Length,s.Elapsed);}
- private static void Quick(int[]a,int lo,int hi){if(lo>=hi)return;var p=a[hi];var i=lo;for(var j=lo;j<hi;j++)if(a[j]<=p)(a[i++],a[j])=(a[j],a[i]);(a[i],a[hi])=(a[hi],a[i]);Quick(a,lo,i-1);Quick(a,i+1,hi);}
+ private static void Quick(int[]a,int lo,int hi){if(lo>=hi)return;var p=a[hi];var i=lo;for(var j=lo;j<hi;j++)if(a[j]<=p){(a[i],a[j])=(a[j],a[i]);i++;}(a[i],a[hi])=(a[hi],a[i]);Quick(a,lo,i-1);Quick(a,i+1,hi);}
  private static AlgorithmResult<int> SortQueue(DSQueue<int>d){var a=new List<int>();while(d.Count>0)a.Add(d.Dequeue());var r=SortCopy(a.ToArray());foreach(var x in a.Order())d.Enqueue(x);return r;}
  private static AlgorithmResult<int> SortStack(DSStack<int>d){var a=new List<int>();while(d.Count>0)a.Add(d.Pop());var r=SortCopy(a.ToArray());foreach(var x in a.OrderDescending())d.Push(x);return r;}
  private static AlgorithmResult<int> SortDeque(DSDeque<int>d){var a=new List<int>();while(d.Count>0)a.Add(d.RemoveFirst());var r=SortCopy(a.ToArray());foreach(var x in a.Order())d.AddLast(x);return r;}
