@@ -50,6 +50,81 @@ O tempo é medido com `Stopwatch`. Para estruturas cuja API principal é destrut
 
 > A medição é didática, não um benchmark científico. JIT, GC, CPU, tamanho dos dados e estado do processo influenciam os valores. Para comparar algoritmos, observe principalmente a ordem de complexidade e use entradas equivalentes.
 
+
+## Guia de algoritmos
+
+Esta seção relaciona cada algoritmo ao problema que resolve, às estruturas sobre as quais opera e ao seu custo assintótico. Big-O descreve como o custo cresce conforme `n` aumenta; não representa diretamente tempo em segundos.
+
+### Comparação
+
+| Algoritmo | Problema | Pré-condição | Melhor | Médio | Pior | Espaço | Melhor use case |
+|---|---|---|---:|---:|---:|---:|---|
+| `LinearSearch` | encontrar elemento | nenhuma | O(1) | O(n) | O(n) | O(1) | dados pequenos ou não ordenados |
+| `BinarySearch` | encontrar elemento | dados ordenados e acesso eficiente ao meio | O(1) | O(log n) | O(log n) | O(1) | muitas buscas em dados ordenados e indexáveis |
+| `BubbleSort` | ordenar | nenhuma | O(n)* | O(n²) | O(n²) | O(1) | conjuntos pequenos/quase ordenados e estudo didático |
+| `SelectionSort` | ordenar | nenhuma | O(n²) | O(n²) | O(n²) | O(1) | conjuntos pequenos e estudo de seleção/trocas |
+
+`*` O `BubbleSort` possui early exit e pode terminar em O(n) quando uma passagem não produz trocas.
+
+### Como implementar
+
+#### LinearSearch — O(n)
+
+Percorra os elementos do primeiro ao último, compare cada valor com o alvo e retorne imediatamente ao encontrar uma correspondência. Se o fim for alcançado, o elemento não foi encontrado. Não exige dados ordenados.
+
+**Melhor use case:** uma busca isolada em dados pequenos ou não ordenados, quando preparar ou ordenar os dados custaria mais do que percorrê-los.
+
+#### BinarySearch — O(log n)
+
+Exige uma sequência ordenada. Mantenha os limites `low` e `high`, examine `mid`, compare com o alvo e descarte metade do intervalo a cada iteração.
+
+**Melhor use case:** buscas repetidas em dados já ordenados e com acesso indexado O(1), como arrays e listas indexáveis.
+
+**Atenção:** em uma lista ligada, acessar `data[mid]` pode custar O(n), portanto a complexidade efetiva não é a mesma de uma estrutura com acesso aleatório O(1).
+
+#### BubbleSort — O(n²)
+
+Compare elementos adjacentes e troque-os quando estiverem fora de ordem. Ao final de cada passagem, o maior elemento restante chega ao final da região não ordenada. Reduza essa região e encerre quando nenhuma troca ocorrer.
+
+**Melhor use case:** aprendizado, demonstrações e conjuntos muito pequenos ou quase ordenados. Para grandes volumes, prefira algoritmos de ordenação O(n log n).
+
+#### SelectionSort — O(n²)
+
+Para cada posição da região não ordenada, procure o menor elemento restante e troque-o com o elemento daquela posição. O número de comparações continua O(n²), inclusive quando os dados já estão ordenados.
+
+**Melhor use case:** estudo da técnica de seleção e cenários pequenos em que reduzir a quantidade de trocas seja relevante.
+
+### Comparação por cenário
+
+| Cenário | Algoritmo | Motivo |
+|---|---|---|
+| Uma busca em dados não ordenados | `LinearSearch` | não exige preparação |
+| Muitas buscas em dados ordenados e indexáveis | `BinarySearch` | elimina aproximadamente metade dos candidatos por iteração |
+| Dados pequenos e quase ordenados | `BubbleSort` | early exit pode reduzir o trabalho para O(n) |
+| Aprender comparações e trocas adjacentes | `BubbleSort` | implementação simples e visual |
+| Aprender seleção do menor elemento | `SelectionSort` | separa busca do mínimo e a troca |
+| Reduzir trocas em algoritmo introdutório | `SelectionSort` | no máximo uma troca por posição |
+| Grandes volumes em produção | algoritmos O(n log n) | os algoritmos de ordenação deste projeto são introdutórios |
+
+### Algoritmo × estrutura de dados
+
+- `DSArray<T>`: acesso por índice O(1), adequado para `BinarySearch`.
+- `DSList<T>`: acesso por índice O(1), também adequado para `BinarySearch`.
+- `DSLinkedList<T>`: acesso por índice O(n); uma busca binária baseada em índices perde a vantagem prática do acesso aleatório.
+- `DSQueue<T>`: FIFO; adequada quando a ordem de chegada deve ser preservada.
+- `DSStack<T>`: LIFO; adequada para processamento reverso, parsing e exploração em profundidade.
+- `DSDeque<T>`: permite operações nas duas extremidades.
+- `DSPriorityQueue<T>`: determina o próximo elemento pela prioridade, adequada para escalonamento e processamento prioritário.
+
+Assim, a complexidade do algoritmo e a complexidade das operações da estrutura devem ser consideradas juntas.
+
+### Complexidade em termos simples
+
+- **O(1)** — custo constante.
+- **O(log n)** — custo logarítmico; o espaço de busca é reduzido sucessivamente.
+- **O(n)** — custo linear; normalmente é necessário visitar os elementos.
+- **O(n log n)** — comum em algoritmos eficientes de ordenação e divisão/conquista.
+- **O(n²)** — custo quadrático; cresce rapidamente quando `n` aumenta.
 ## Executando
 
 ```bash
