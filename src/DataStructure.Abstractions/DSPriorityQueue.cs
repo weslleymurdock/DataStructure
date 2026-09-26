@@ -6,7 +6,7 @@ namespace DataStructure.Abstractions;
 /// </summary>
 public sealed class DSPriorityQueue<T> where T : IComparable<T>
 {
-    private readonly DSList<T> _heap = new();
+    private readonly DSList<T> _heap = [];
 
     public int Count => _heap.Count;
 
@@ -30,7 +30,7 @@ public sealed class DSPriorityQueue<T> where T : IComparable<T>
             throw new InvalidOperationException("The priority queue is empty.");
 
         var result = _heap[0];
-        var last = _heap[_heap.Count - 1];
+        var last = _heap[^1];
         _heap.RemoveAt(_heap.Count - 1);
 
         if (_heap.Count > 0)
