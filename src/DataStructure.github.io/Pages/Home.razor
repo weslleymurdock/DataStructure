@@ -46,27 +46,7 @@
             </MudItem>
         }
     }
-</MudGrid>
-<MudTable Items="@DataStructures" Hover="true" Breakpoint="Breakpoint.Sm">
-    <ColGroup>
-        <col />
-        <col style="width:100px;" />
-        <col style="width:300px;" />
-    </ColGroup>
-    <HeaderContent>
-        <MudTh>Name</MudTh>
-        <MudTh>Page</MudTh>
-        <MudTh></MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Page">@context.Page</MudTd>
-        <MudTd DataLabel="Algorythms">
-                     
-        </MudTd>
-    </RowTemplate>
-     
-</MudTable>
+</MudGrid> 
 
 @code
 {
