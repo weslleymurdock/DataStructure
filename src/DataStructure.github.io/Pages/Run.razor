@@ -339,11 +339,19 @@
             ? AlgorithmRaceService.SortAlgorithms
             : AlgorithmRaceService.SearchAlgorithms;
 
-    private bool _canAddCustom =>
-        !_customComparisons.Any() ||
-        _customComparisons.All(comparison =>
-            comparison.Algorithm.Equals(_customAlgorithm, StringComparison.Ordinal) ||
-            comparison.Structure.Equals(_customStructure, StringComparison.Ordinal));
+    private bool _canAddCustom
+    {
+        get
+        {
+            if (!_customComparisons.Any())
+                return true;
+
+            var first = _customComparisons[0];
+
+            return first.Algorithm.Equals(_customAlgorithm, StringComparison.Ordinal) ||
+                   first.Structure.Equals(_customStructure, StringComparison.Ordinal);
+        }
+    }
 
     protected override void OnParametersSet()
     {
@@ -447,12 +455,7 @@
 
         _running = true;
         _panels = RaceService.CreatePanels(
-            _panels.Select(panel =>
-                (
-                    panel.Algorithm,
-                    StructureCatalog.All.First(item =>
-                        item.Name.Equals(panel.Structure, StringComparison.Ordinal)).Key
-                )));
+            _panels.Select(panel => (panel.Algorithm, panel.StructureKey)));
 
         _cancellation = new CancellationTokenSource();
 
