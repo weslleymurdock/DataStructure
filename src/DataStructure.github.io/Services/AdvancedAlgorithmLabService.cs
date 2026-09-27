@@ -55,9 +55,7 @@ public sealed class AdvancedAlgorithmLabService
                 "Compara as chaves até encontrar 26."
             ],
             result.Value ? "Chave 26 encontrada." : "Chave 26 não encontrada.",
-            result.Elapsed,
-            CreateTraversalTree(),
-            result.Value);
+            result.Elapsed);
     }
 
     private static AdvancedLabResult RunBreadthFirst()
@@ -86,8 +84,8 @@ public sealed class AdvancedAlgorithmLabService
             result.Value.Select((value, index) => $"{index + 1}. visita {value}").ToArray(),
             $"Ordem: {string.Join(" → ", result.Value)}",
             result.Elapsed,
-            CreateWeightedTree(),
-            [1, 2, 5, 3, 6, 7, 8, 4]);
+            CreateTraversalTree(),
+            result.Value);
     }
 
     private static AdvancedLabResult RunDijkstra()
@@ -105,7 +103,7 @@ public sealed class AdvancedAlgorithmLabService
             string.Join(" | ", result.Value.OrderBy(item => item.Key).Select(item => $"{item.Key}={FormatDistance(item.Value)}")),
             result.Elapsed,
             CreateWeightedTree(),
-            result.Value);
+            [1, 2, 5, 3, 6, 7, 8, 4]);
     }
 
     private static AdvancedLabResult RunAStar()
@@ -135,7 +133,9 @@ public sealed class AdvancedAlgorithmLabService
             "Prioriza somente a distância estimada até o objetivo 8.",
             result.Value.Select((value, index) => $"{index + 1}. {value}").ToArray(),
             $"Caminho encontrado: {string.Join(" → ", result.Value)}",
-            result.Elapsed);
+            result.Elapsed,
+            CreateWeightedTree(),
+            result.Value);
     }
 
     private static AdvancedLabResult RunSimilarity()
@@ -179,12 +179,11 @@ public sealed class AdvancedAlgorithmLabService
             new(2,
             [
                 new(4, [new(7, [new(8, [])])]),
-                new(5, [new(7, [new(8, [])])])
+                new(5, [])
             ]),
             new(3,
             [
-                new(5, [new(6, [new(8, [])])]),
-                new(6, [new(8, [])])
+                new(6, [])
             ])
         ]);
 
