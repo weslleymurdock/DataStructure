@@ -1,6 +1,8 @@
 @page "/run/advanced"
 
 @using DataStructure.github.io.Services
+@using Microsoft.AspNetCore.Components
+@implements IDisposable
 @inject AdvancedAlgorithmLabService Lab
 
 <PageTitle>Laboratório de buscas avançadas</PageTitle>
@@ -54,6 +56,24 @@
                     <MudAlert Severity="Severity.Success" Variant="Variant.Outlined">
                         <strong>Resultado:</strong> @_result.Result
                     </MudAlert>
+
+                    @if (_result.Tree is not null)
+                    {
+                        <MudText Typo="Typo.h6">Tree viewer</MudText>
+                        <MudText Typo="Typo.body2" Class="mb-2">
+                            A árvore representa a estrutura de navegação usada na demonstração.
+                            O nó destacado é o <strong>current item</strong> que está sendo processado.
+                        </MudText>
+                        <AlgorithmTreeViewer T="int"
+                                             Root="_result.Tree"
+                                             CurrentItem="_currentItem" />
+                        @if (_currentItem is not null)
+                        {
+                            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                                Current item: <strong>@_currentItem</strong>
+                            </MudAlert>
+                        }
+                    }
 
                     <MudText Typo="Typo.h6">Execução</MudText>
                     <MudList T="string" Dense="true">
@@ -118,13 +138,54 @@ flowchart LR
 @code {
     private string _algorithm = "HashSearch";
     private AdvancedLabResult? _result;
+    private int? _currentItem;
+    private CancellationTokenSource? _animationCancellation;
 
     private void ChangeAlgorithm(string value)
     {
+        StopAnimation();
         _algorithm = value;
         _result = null;
+        _currentItem = null;
     }
 
-    private void Run()
-        => _result = Lab.Run(_algorithm);
+    private async Task Run()
+    {
+        StopAnimation();
+
+        _result = Lab.Run(_algorithm);
+        _currentItem = null;
+        await InvokeAsync(StateHasChanged);
+
+        if (_result.CurrentItems is not { Count: > 0 } items)
+            return;
+
+        _animationCancellation = new CancellationTokenSource();
+
+        try
+        {
+            foreach (var item in items)
+            {
+                _currentItem = item;
+                await InvokeAsync(StateHasChanged);
+                await Task.Delay(650, _animationCancellation.Token);
+            }
+
+            _currentItem = null;
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (OperationCanceledException)
+        {
+        }
+    }
+
+    private void StopAnimation()
+    {
+        _animationCancellation?.Cancel();
+        _animationCancellation?.Dispose();
+        _animationCancellation = null;
+    }
+
+    public void Dispose()
+        => StopAnimation();
 }
