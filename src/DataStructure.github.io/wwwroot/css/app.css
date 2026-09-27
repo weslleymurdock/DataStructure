@@ -153,7 +153,20 @@ code {
     box-sizing: border-box;
 }
 
-mermaid-embed {
+.mermaid-diagram {
+    display: block;
+    width: min(92%, 1400px);
+    min-height: 680px;
+    margin: 0 auto;
+}
+.mermaid-diagram svg {
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 auto;
+    transform: scale(1.08);
+    transform-origin: center center;
+}
     display: block;
     width: min(92%, 1400px);
     min-height: 680px;
@@ -168,7 +181,20 @@ mermaid-embed {
         padding: 0.5rem;
     }
 
-    mermaid-embed {
+    .mermaid-diagram {
+    display: block;
+    width: min(92%, 1400px);
+    min-height: 680px;
+    margin: 0 auto;
+}
+.mermaid-diagram svg {
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 auto;
+    transform: scale(1.08);
+    transform-origin: center center;
+}
         width: 100%;
         min-height: 520px;
         transform: scale(1.02);
