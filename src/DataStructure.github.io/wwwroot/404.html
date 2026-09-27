@@ -8,7 +8,7 @@
         const path = window.location.pathname;
         const relative = path.startsWith(base) ? path.slice(base.length) : path.slice(1);
         window.location.replace(
-            base + "?p=/" + relative + window.location.search
+            base + "?p=" + encodeURIComponent("/" + relative) + window.location.search
         );
     </script>
 </head>
