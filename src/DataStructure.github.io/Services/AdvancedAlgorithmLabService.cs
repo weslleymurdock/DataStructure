@@ -3,12 +3,18 @@ using DataStructure.Algorithms;
 
 namespace DataStructure.github.io.Services;
 
+public sealed record AlgorithmTreeNode<T>(
+    T Value,
+    IReadOnlyList<AlgorithmTreeNode<T>> Children);
+
 public sealed record AdvancedLabResult(
     string Algorithm,
     string Description,
     IReadOnlyList<string> Steps,
     string Result,
-    TimeSpan Elapsed);
+    TimeSpan Elapsed,
+    AlgorithmTreeNode<int>? Tree = null,
+    IReadOnlyList<int>? CurrentItems = null);
 
 public sealed class AdvancedAlgorithmLabService
 {
@@ -49,7 +55,9 @@ public sealed class AdvancedAlgorithmLabService
                 "Compara as chaves até encontrar 26."
             ],
             result.Value ? "Chave 26 encontrada." : "Chave 26 não encontrada.",
-            result.Elapsed);
+            result.Elapsed,
+            CreateTraversalTree(),
+            result.Value);
     }
 
     private static AdvancedLabResult RunBreadthFirst()
@@ -62,7 +70,9 @@ public sealed class AdvancedAlgorithmLabService
             "Percorre o grafo a partir do vértice 1 por níveis.",
             result.Value.Select((value, index) => $"{index + 1}. visita {value}").ToArray(),
             $"Ordem: {string.Join(" → ", result.Value)}",
-            result.Elapsed);
+            result.Elapsed,
+            CreateTraversalTree(),
+            result.Value);
     }
 
     private static AdvancedLabResult RunDepthFirst()
@@ -75,7 +85,9 @@ public sealed class AdvancedAlgorithmLabService
             "Explora cada ramo do grafo a partir do vértice 1 antes de retornar.",
             result.Value.Select((value, index) => $"{index + 1}. visita {value}").ToArray(),
             $"Ordem: {string.Join(" → ", result.Value)}",
-            result.Elapsed);
+            result.Elapsed,
+            CreateWeightedTree(),
+            [1, 2, 5, 3, 6, 7, 8, 4]);
     }
 
     private static AdvancedLabResult RunDijkstra()
@@ -91,7 +103,9 @@ public sealed class AdvancedAlgorithmLabService
                 .Select(item => $"{item.Key}: {FormatDistance(item.Value)}")
                 .ToArray(),
             string.Join(" | ", result.Value.OrderBy(item => item.Key).Select(item => $"{item.Key}={FormatDistance(item.Value)}")),
-            result.Elapsed);
+            result.Elapsed,
+            CreateWeightedTree(),
+            result.Value);
     }
 
     private static AdvancedLabResult RunAStar()
@@ -105,7 +119,9 @@ public sealed class AdvancedAlgorithmLabService
             "Procura um caminho de 1 até 8 usando distância euclidiana como heurística.",
             result.Value.Select((value, index) => $"{index + 1}. {value}").ToArray(),
             $"Caminho: {string.Join(" → ", result.Value)}",
-            result.Elapsed);
+            result.Elapsed,
+            CreateWeightedTree(),
+            result.Value);
     }
 
     private static AdvancedLabResult RunGreedy()
@@ -141,6 +157,36 @@ public sealed class AdvancedAlgorithmLabService
             $"Mais semelhante: {result[0].Value}",
             TimeSpan.Zero);
     }
+
+    private static AlgorithmTreeNode<int> CreateTraversalTree()
+        => new(1,
+        [
+            new(2,
+            [
+                new(4, []),
+                new(5, [new(8, [])])
+            ]),
+            new(3,
+            [
+                new(6, [new(8, [])]),
+                new(7, [])
+            ])
+        ]);
+
+    private static AlgorithmTreeNode<int> CreateWeightedTree()
+        => new(1,
+        [
+            new(2,
+            [
+                new(4, [new(7, [new(8, [])])]),
+                new(5, [new(7, [new(8, [])])])
+            ]),
+            new(3,
+            [
+                new(5, [new(6, [new(8, [])])]),
+                new(6, [new(8, [])])
+            ])
+        ]);
 
     private static DSGraph<int> CreateGraph()
     {
