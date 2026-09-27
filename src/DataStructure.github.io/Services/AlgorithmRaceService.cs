@@ -67,7 +67,7 @@ public sealed class AlgorithmRaceService
 
         var tasks = panels.Select(async panel =>
         {
-            var values = [.. panel.Values];
+            int[] values = [.. panel.Values];
 
             async Task Step(int current = -1)
             {
@@ -120,7 +120,7 @@ public sealed class AlgorithmRaceService
 
         var tasks = panels.Select(async panel =>
         {
-            var values = [.. panel.Values];
+            int[] values = [.. panel.Values];
 
             async Task Step(int index, bool comparison = true)
             {
@@ -442,7 +442,7 @@ public sealed class AlgorithmRaceService
 
     private static int[] GetInitialValues(string structure)
     {
-        var values = [.. InitialValues];
+        int[] values = [.. InitialValues];
 
         if (structure == "stack")
             Array.Reverse(values);

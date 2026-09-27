@@ -91,15 +91,15 @@
 
                             @if (panel.Completed)
                             {
-                                <MudChip Color="Color.Success" Size="Size.Small">#@panel.CompletionOrder</MudChip>
+                                <MudChip T="string" Color="Color.Success" Size="Size.Small">#@panel.CompletionOrder</MudChip>
                             }
                             else if (_running)
                             {
-                                <MudChip Color="Color.Warning" Size="Size.Small">running</MudChip>
+                                <MudChip T="string" Color="Color.Warning" Size="Size.Small">running</MudChip>
                             }
                             else
                             {
-                                <MudChip Color="Color.Default" Size="Size.Small">ready</MudChip>
+                                <MudChip T="string" Color="Color.Default" Size="Size.Small">ready</MudChip>
                             }
                         </MudStack>
 

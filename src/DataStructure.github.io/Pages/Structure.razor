@@ -31,7 +31,7 @@
                 <MudPaper Elevation="2" Class="pa-4">
                     <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
                         <MudText Typo="Typo.h5">Implementação</MudText>
-                        <MudChip Color="Color.Primary" Variant="Variant.Outlined">@Guide.Key</MudChip>
+                        <MudChip T="string" Color="Color.Primary" Variant="Variant.Outlined">@Guide.Key</MudChip>
                     </MudStack>
 
                     <pre class="source-code"><code>@Guide.Source</code></pre>
@@ -71,7 +71,7 @@
                     <MudTd DataLabel="Assinatura"><code>@context.Signature</code></MudTd>
                     <MudTd DataLabel="Funcionamento">@context.Explanation</MudTd>
                     <MudTd DataLabel="Custo">
-                        <MudChip Size="Size.Small" Color="Color.Info">@context.Complexity</MudChip>
+                        <MudChip T="string" Size="Size.Small" Color="Color.Info">@context.Complexity</MudChip>
                     </MudTd>
                 </RowTemplate>
             </MudTable>
