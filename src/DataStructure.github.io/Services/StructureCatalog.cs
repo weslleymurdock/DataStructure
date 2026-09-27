@@ -19,6 +19,8 @@ public sealed record StructureGuide(
                 "Mantém o maior elemento na raiz, permitindo consultas imediatas ao máximo e remoções em tempo logarítmico.",
             "hashtable" =>
                 "Mapeia cada chave para um bucket usando seu hash code, resolvendo colisões por encadeamento.",
+            "weightedgraph" =>
+                "Mantém listas de adjacência com pesos não negativos para algoritmos de caminhos mínimos.",
             _ => UseCase
         };
 
@@ -129,6 +131,15 @@ public sealed record StructureGuide(
     E1 -. ""collision chain"" .-> E2
     R[""load factor > 0.75""] --> X[""resize buckets""]
     X --> Y[""rehash all entries""]",
+            "weightedgraph" => @"flowchart LR
+    A[""A""] -->|2| B[""B""]
+    A -->|5| C[""C""]
+    B -->|3| D[""D""]
+    C -->|1| D
+    E[""_adjacency: weighted lists""] -.-> A
+    E -.-> B
+    E -.-> C
+    E -.-> D",
             "graph" => @"flowchart LR
     A[""A""] --> B[""B""]
     A --> C[""C""]
@@ -680,6 +691,26 @@ public sealed record StructureGuide(
     D -- ""yes"" --> B
     D -- ""no"" --> E[""finish""]",
                 _ => Mermaid
+            },
+            "weightedgraph" => method.Name switch
+            {
+                "AddVertex" => @"flowchart TD
+    A[""AddVertex(vertex)""] --> B{""vertex exists?""}
+    B -- ""no"" --> C[""create empty edge list""]
+    B -- ""yes"" --> D[""keep existing vertex""]",
+                "AddEdge" => @"flowchart TD
+    A[""from, to, weight""] --> B[""validate weight >= 0""]
+    B --> C[""ensure vertices""]
+    C --> D{""edge to destination exists?""}
+    D -- ""yes"" --> E[""replace weight""]
+    D -- ""no"" --> F[""append weighted edge""]",
+                "Neighbors" => @"flowchart TD
+    A[""vertex""] --> B[""find adjacency list""]
+    B --> C[""return destination + weight pairs""]",
+                "Vertices" => @"flowchart LR
+    A[""_adjacency.Keys""] --> B[""vertices""]",
+                _ => @"flowchart LR
+    A[""weighted graph operation""] --> B[""adjacency lists""]"
             },
             "graph" => method.Name switch
             {
