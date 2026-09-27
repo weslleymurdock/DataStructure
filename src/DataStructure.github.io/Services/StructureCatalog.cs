@@ -393,7 +393,7 @@ public sealed record StructureGuide(
     E --> G[""Count-- / return""]
     F --> G",
                 "Peek" => @"flowchart TD
-    A[""head""] --> B[""return head.Value""],
+    A[""head""] --> B[""return head.Value""]",
                 _ => Mermaid
             },
             "stack" => method.Name switch
@@ -406,7 +406,7 @@ public sealed record StructureGuide(
                 "Pop" => @"flowchart TD
     A[""top""] --> B[""save value""]
     B --> C[""top = top.Next""]
-    C --> D[""Count-- / return""],
+    C --> D[""Count-- / return""]",
                 "Peek" => @"flowchart TD
     A[""top""] --> B[""return top.Value""]",
                 _ => Mermaid
@@ -542,7 +542,7 @@ public sealed record StructureGuide(
     F --> H{""child null?""}
     G --> H
     H -- ""no"" --> D
-    H -- ""yes"" --> I[""insert node / Count++""]
+    H -- ""yes"" --> I[""insert node / Count++""]"
                 ,
                 "Contains" => @"flowchart TD
     A[""current = Root""] --> B{""current null?""}
@@ -569,7 +569,7 @@ public sealed record StructureGuide(
     C --> D[""yield value""]",
                 _ => Mermaid
             },
-            "heap" => method.Name switch
+            "heap" => method.Name switch 
             {
                 "Add" => @"flowchart TD
     A[""append at end""] --> B[""index = last""]
@@ -591,7 +591,7 @@ public sealed record StructureGuide(
     H --> F
     G -- ""no"" --> D",
                 "AsArray" => @"flowchart LR
-    A[""_items""] --> B[""IReadOnlyList<T> view""]
+    A[""_items""] --> B[""IReadOnlyList<T> view""]"
             }
             ,
             "maxheap" => method.Name switch
@@ -616,7 +616,7 @@ public sealed record StructureGuide(
     H --> F
     G -- ""no"" --> D",
                 "AsArray" => @"flowchart LR
-    A[""_items""] --> B[""IReadOnlyList<T> view""],
+    A[""_items""] --> B[""IReadOnlyList<T> view""]",
                 _ => Mermaid
             },
             "graph" => method.Name switch
