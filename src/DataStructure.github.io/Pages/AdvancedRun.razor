@@ -115,8 +115,8 @@
                 Dijkstra, A* e Busca Gulosa usam o mesmo conjunto de vértices com pesos.
             </MudText>
 
-            <div class="mermaid-container">
-                <div class="mermaid-diagram">
+            <FlowViewer>
+
 flowchart LR
     A["1"] --> B["2"]
     A --> C["3"]
@@ -130,8 +130,7 @@ flowchart LR
     C2["3"] -->|1| E2
     E2 -->|2| G2["7"]
     G2 -->|1| H2["8"]
-</div>
-            </div>
+</FlowViewer>
         </MudPaper>
     </MudStack>
 </MudContainer>
