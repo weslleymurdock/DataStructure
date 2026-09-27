@@ -146,12 +146,33 @@ code {
     overflow: auto;
     border-radius: 12px;
     background: #f8f9fb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    box-sizing: border-box;
 }
 
 mermaid-embed {
     display: block;
-    width: 100%;
-    min-height: 720px;
+    width: min(92%, 1400px);
+    min-height: 680px;
+    transform: scale(1.08);
+    transform-origin: center center;
+    flex: 0 0 auto;
+}
+
+@media (max-width: 768px) {
+    .mermaid-container {
+        min-height: 560px;
+        padding: 0.5rem;
+    }
+
+    mermaid-embed {
+        width: 100%;
+        min-height: 520px;
+        transform: scale(1.02);
+    }
 }
 
 .topic-card {
