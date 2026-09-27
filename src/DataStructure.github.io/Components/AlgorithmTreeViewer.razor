@@ -1,0 +1,24 @@
+@typeparam T
+
+<div class="algorithm-tree-viewer">
+    <div class="algorithm-tree-scroll">
+        @if (Root is not null)
+        {
+            <div class="algorithm-tree-root">
+                <AlgorithmTreeNode Node="Root" CurrentItem="CurrentItem" />
+            </div>
+        }
+        else
+        {
+            <div class="algorithm-tree-empty">Nenhuma árvore disponível para esta execução.</div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public AlgorithmTreeNode<T>? Root { get; set; }
+
+    [Parameter]
+    public T? CurrentItem { get; set; }
+}
