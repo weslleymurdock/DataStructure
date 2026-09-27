@@ -18,7 +18,7 @@ public sealed class DSArray<T> : IReadOnlyList<T>
     public DSArray(IEnumerable<T> items)
     {
         ArgumentNullException.ThrowIfNull(items);
-        _items = items.ToArray();
+        _items = [.. items];
     }
 
     public int Count => _items.Length;

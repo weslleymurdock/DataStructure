@@ -9,5 +9,6 @@
 
   <ItemGroup>
     <ProjectReference Include="../DataStructure.Abstractions/DataStructure.Abstractions.csproj" />
+    <ProjectReference Include="../DataStructure.Algorithms/DataStructure.Algorithms.csproj" />
   </ItemGroup>
 </Project>

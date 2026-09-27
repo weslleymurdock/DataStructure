@@ -1,4 +1,5 @@
 using DataStructure.Abstractions;
+using DataStructure.Algorithms;
 
 Console.WriteLine("=== DATA STRUCTURES ===");
 DemonstrateArray();
@@ -9,18 +10,19 @@ DemonstrateStack();
 DemonstrateQueue();
 DemonstrateDeque();
 DemonstratePriorityQueue();
-
+Console.WriteLine("=== ALGORITHMS ===");
+AlgorithmDemo.Run();
 static void DemonstrateArray()
 {
     Console.WriteLine("\n[Array] Fixed-size, O(1) indexed access");
-    var months = new DSArray<string>(["January", "February", "March"]);
+    DSArray<string> months = new (["January", "February", "March"]);
     Console.WriteLine($"Item at index 1: {months[1]}");
 }
 
 static void DemonstrateCollection()
 {
     Console.WriteLine("\n[Collection] Dynamic contiguous storage");
-    var collection = new DSCollection<string>();
+    DSCollection<string> collection = [];
     collection.Add("Notebook");
     collection.Add("Mouse");
     collection.Add("Keyboard");

@@ -1,1 +1,2 @@
-namespace DataStructure.Algorithms; public readonly record struct AlgorithmResult<T>(T Value,TimeSpan Elapsed);
+namespace DataStructure.Algorithms; 
+public readonly record struct AlgorithmResult<T>(T Value,TimeSpan Elapsed);
