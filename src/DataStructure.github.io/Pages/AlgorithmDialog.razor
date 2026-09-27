@@ -31,16 +31,16 @@
 
             <MudList T="string" Dense="true">
                 @{
-                    var steps = Guide.Steps?.ToArray() ?? [];
+                    var stepNumber = 0;
                 }
 
-                @for (var index = 0; index < steps.Length; index++)
+                @foreach (var step in Guide.Steps ?? [])
                 {
-                    var step = steps[index];
+                    stepNumber++;
 
                     <MudListItem>
                         <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
-                            <MudChip T="string" Color="Color.Primary" Size="Size.Small">@(index + 1)</MudChip>
+                            <MudChip T="string" Color="Color.Primary" Size="Size.Small">@stepNumber</MudChip>
                             <MudText>@step</MudText>
                         </MudStack>
                     </MudListItem>
