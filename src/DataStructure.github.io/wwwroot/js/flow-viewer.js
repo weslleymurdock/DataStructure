@@ -66,6 +66,85 @@ function parseGraph(source) {
     return [...nodes.values(), ...edges];
 }
 
+function decorateFlow(cy) {
+    const nodes = cy.nodes();
+    const stepById = new Map();
+    const remaining = new Set(nodes.map(node => node.id()));
+    const queue = [];
+
+    // A flow starts at nodes without incoming edges. In a disconnected graph,
+    // each independent source is treated as the beginning of its own flow.
+    nodes.forEach(node => {
+        if (node.incomers("edge").length === 0)
+            queue.push(node);
+    });
+
+    // Keep disconnected/cyclic graphs deterministic.
+    if (queue.length === 0 && nodes.length > 0)
+        queue.push(nodes[0]);
+
+    let nextStep = 1;
+
+    while (queue.length > 0) {
+        const node = queue.shift();
+
+        if (!remaining.has(node.id()))
+            continue;
+
+        remaining.delete(node.id());
+        stepById.set(node.id(), nextStep++);
+
+        node.outgoers("node").forEach(target => {
+            if (remaining.has(target.id()))
+                queue.push(target);
+        });
+    }
+
+    // Cycles and isolated components without a discovered source still need
+    // an orientation number.
+    while (remaining.size > 0) {
+        const nodeId = [...remaining][0];
+        const node = cy.getElementById(nodeId);
+
+        remaining.delete(nodeId);
+        stepById.set(nodeId, nextStep++);
+
+        node.outgoers("node").forEach(target => {
+            if (!stepById.has(target.id()) && remaining.has(target.id()))
+                queue.push(target);
+        });
+
+        while (queue.length > 0) {
+            const queued = queue.shift();
+
+            if (!remaining.has(queued.id()))
+                continue;
+
+            remaining.delete(queued.id());
+            stepById.set(queued.id(), nextStep++);
+
+            queued.outgoers("node").forEach(target => {
+                if (remaining.has(target.id()))
+                    queue.push(target);
+            });
+        }
+    }
+
+    nodes.forEach(node => {
+        const step = stepById.get(node.id());
+        const label = node.data("label");
+
+        node.data("step", step);
+        node.data("displayLabel", step ? `${step}. ${label}` : label);
+
+        if (node.incomers("edge").length === 0)
+            node.addClass("flow-viewer-start");
+
+        if (node.outgoers("edge").length === 0)
+            node.addClass("flow-viewer-end");
+    });
+}
+
 function createLayout(cy, animate = true) {
     return cy.layout({
         name: "cola",
@@ -101,7 +180,7 @@ function initializeCanvas(canvas) {
             {
                 selector: "node",
                 style: {
-                    label: "data(label)",
+                    label: "data(displayLabel)",
                     shape: "data(shape)",
                     "background-color": "#2b2b40",
                     "border-color": "#594ae2",
@@ -117,6 +196,28 @@ function initializeCanvas(canvas) {
                     padding: 14,
                     "text-wrap": "wrap",
                     "text-max-width": 180
+                }
+            },
+            {
+                selector: "node.flow-viewer-start",
+                style: {
+                    "background-color": "#173d31",
+                    "border-color": "#00e676",
+                    "border-width": 4,
+                    "overlay-color": "#00e676",
+                    "overlay-opacity": 0.12,
+                    "overlay-padding": 6
+                }
+            },
+            {
+                selector: "node.flow-viewer-end",
+                style: {
+                    "background-color": "#493719",
+                    "border-color": "#ffb300",
+                    "border-width": 4,
+                    "overlay-color": "#ffb300",
+                    "overlay-opacity": 0.12,
+                    "overlay-padding": 6
                 }
             },
             {
@@ -152,8 +253,11 @@ function initializeCanvas(canvas) {
     });
 
     cy.ready(() => {
-        if (elements.length > 0)
-            createLayout(cy).run();
+        if (elements.length === 0)
+            return;
+
+        decorateFlow(cy);
+        createLayout(cy).run();
     });
 
     cy.on("tap", "node", event => {
