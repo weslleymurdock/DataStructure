@@ -1,5 +1,4 @@
 @using DataStructure.github.io.Services
-@inject IJSRuntime JS
 
 <MudDialog Class="algorithm-dialog">
     <DialogContent>
@@ -45,7 +44,7 @@
             <MudText Typo="Typo.h5">Fluxo lógico</MudText>
 
             <div class="mermaid-container">
-                <div id="@_diagramId" class="mermaid">@Guide.Mermaid</div>
+                <mermaid-embed src="@MermaidUrl" height="720"></mermaid-embed>
             </div>
         </MudStack>
     </DialogContent>
@@ -64,13 +63,9 @@
     [Parameter]
     public AlgorithmGuide Guide { get; set; } = default!;
 
-    private readonly string _diagramId = $"mermaid-{Guid.NewGuid():N}";
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-            await JS.InvokeVoidAsync("mermaidInterop.render", _diagramId);
-    }
+    private string MermaidUrl =>
+        "https://mermaid.live/embed?theme=default&look=classic&mode=light&code=" +
+        Uri.EscapeDataString(Guide.Mermaid);
 
     private void Close()
         => Dialog.Close();
