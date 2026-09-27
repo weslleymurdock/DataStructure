@@ -99,12 +99,10 @@ public sealed record StructureGuide(
     Q --> RR[""Right child""]",
             "binarysearchtree" => @"flowchart TD
     R[""Root""] --> C{""value < current?""}
-    C -- ""yes"" --> L[""current.Left""]
-    C -- ""no / equal"" --> Q[""current.Right""]
+    C -- ""yes"" --> L[""current.Left: smaller""]
+    C -- ""no / equal"" --> Q[""current.Right: greater or equal""]
     L --> C
-    Q --> C
-    Z[""left: smaller""]
-    Y[""right: greater or equal""]",
+    Q --> C",
             "heap" => @"flowchart TD
     R[""heap[0]: minimum""] --> L[""heap[1]""]
     R --> Q[""heap[2]""]
