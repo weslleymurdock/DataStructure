@@ -507,7 +507,7 @@ public sealed record StructureGuide(
     C -- ""yes"" --> D[""return saved""]
     C -- ""no"" --> E[""_heap[0] = last""]
     E --> F[""SiftDown""]
-    F --> D"
+    F --> D",
                 _ => Mermaid
             },
             "binarytree" => method.Name switch
@@ -568,7 +568,7 @@ public sealed record StructureGuide(
                 "PostOrder" => @"flowchart TD
     A[""node""] --> B[""recurse Left""]
     B --> C[""recurse Right""]
-    C --> D[""yield value""]"
+    C --> D[""yield value""]",
                 _ => Mermaid
             },
             "heap" => method.Name switch
