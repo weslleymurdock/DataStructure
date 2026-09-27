@@ -19,6 +19,252 @@ public sealed record StructureGuide(
                 "Mantém o maior elemento na raiz, permitindo consultas imediatas ao máximo e remoções em tempo logarítmico.",
             _ => UseCase
         };
+
+    public string Mermaid =>
+        Key switch
+        {
+            "array" => @"flowchart LR
+A[Índice 0] --> B[Índice 1] --> C[Índice 2] --> D[...]
+A --> E[Acesso direto O(1)]",
+            "collection" => @"flowchart TD
+A[Add] --> B{Capacidade suficiente?}
+B -- Não --> C[Redimensionar]
+B -- Sim --> D[Gravar no final]
+C --> D
+D --> E[Count + 1]",
+            "list" => @"flowchart TD
+A[Insert index] --> B[Localizar posição]
+B --> C[Deslocar elementos à direita]
+C --> D[Gravar item]
+D --> E[Count + 1]",
+            "linkedlist" => @"flowchart LR
+A[Head] --> B[Nó] --> C[Nó] --> D[Nó]
+D --> E[Tail]
+B -. Previous .-> A",
+            "nodelist" => @"flowchart LR
+A[Head] --> B[Nó] --> C[Nó] --> D[Tail]",
+            "circularlinkedlist" => @"flowchart LR
+A[Head] --> B[Nó] --> C[Nó] --> D[Nó]
+D --> A",
+            "queue" => @"flowchart LR
+A[Front] --> B[Primeiro]
+B --> C[...]
+C --> D[Rear]
+E[Enqueue] --> D
+A --> F[Dequeue]",
+            "stack" => @"flowchart TD
+A[Topo] --> B[Item]
+B --> C[Item]
+C --> D[Base]
+E[Push] --> A
+A --> F[Pop]",
+            "deque" => @"flowchart LR
+A[Front] <--> B[Item] <--> C[Item] <--> D[Rear]
+A --> E[AddFirst / RemoveFirst]
+D --> F[AddLast / RemoveLast]",
+            "deck" => @"flowchart LR
+A[Topo] --> B[Item] --> C[Item] --> D[Base]
+E[Adicionar] --> A
+E --> D
+A --> F[Remover]
+D --> G[Remover]",
+            "priorityqueue" => @"flowchart TD
+A[Inserir] --> B[Heap de prioridade]
+B --> C[Menor prioridade na raiz]
+C --> D[Peek / Dequeue]",
+            "binarytree" => @"flowchart TD
+A[Raiz] --> B[Esquerda]
+A --> C[Direita]
+B --> D[Subárvore]
+C --> E[Subárvore]",
+            "binarysearchtree" => @"flowchart TD
+A[Raiz] --> B{Valor < nó?}
+B -- Sim --> C[Esquerda]
+B -- Não --> D[Direita]
+C --> E{Encontrou?}
+D --> E",
+            "heap" => @"flowchart TD
+A[Raiz: menor] --> B[Filho]
+A --> C[Filho]
+B --> D[Filhos]
+C --> E[Filhos]",
+            "maxheap" => @"flowchart TD
+A[Raiz: maior] --> B[Filho]
+A --> C[Filho]
+B --> D[Filhos]
+C --> E[Filhos]",
+            "graph" => @"flowchart LR
+A[Vértice] --> B[Vértice]
+A --> C[Vértice]
+B --> D[Vértice]
+C --> D",
+            _ => @"flowchart TD
+A[Estrutura] --> B[Elementos] --> C[Operação]"
+        };
+
+    public string GetMethodMermaid(MethodGuide method) =>
+        Key switch
+        {
+            "array" => method.Name == "indexer"
+                ? @"flowchart TD
+A[Índice] --> B[Validar posição] --> C[Calcular offset] --> D[Retornar item]"
+                : @"flowchart TD
+A[Operação] --> B[Localizar armazenamento] --> C[Aplicar operação] --> D[Resultado]",
+            "collection" => method.Name switch
+            {
+                "Add" => @"flowchart TD
+A[Add] --> B{Capacidade?}
+B -- Não --> C[Resize]
+B -- Sim --> D[Armazenar]
+C --> D --> E[Count++]",
+                "Remove" => @"flowchart TD
+A[Remove] --> B[IndexOf] --> C{Encontrou?}
+C -- Sim --> D[RemoveAt] --> E[Deslocar]
+C -- Não --> F[False]",
+                _ => @"flowchart TD
+A[Operação] --> B[Percorrer coleção] --> C[Executar] --> D[Resultado]"
+            },
+            "list" => method.Name == "Insert"
+                ? @"flowchart TD
+A[Insert] --> B[Validar índice] --> C[Deslocar direita] --> D[Inserir] --> E[Count++]"
+                : @"flowchart TD
+A[Operação] --> B[Localizar índice] --> C[Executar operação] --> D[Resultado]",
+            "linkedlist" => method.Name switch
+            {
+                "AddFirst" => @"flowchart LR
+A[Novo nó] --> B[Next = Head] --> C[Head = novo]",
+                "AddLast" => @"flowchart LR
+A[Novo nó] --> B[Tail.Next = novo] --> C[Tail = novo]",
+                "RemoveFirst" => @"flowchart LR
+A[Head] --> B[Salvar valor] --> C[Head = Head.Next] --> D[Count--]",
+                "RemoveLast" => @"flowchart LR
+A[Tail] --> B[Salvar valor] --> C[Tail = Tail.Previous] --> D[Count--]",
+                _ => @"flowchart TD
+A[Localizar nó] --> B[Atualizar referências] --> C[Count--]"
+            },
+            "nodelist" => method.Name switch
+            {
+                "Add" => @"flowchart LR
+A[Novo nó] --> B[Tail.Next] --> C[Tail = novo]",
+                "Remove" => @"flowchart TD
+A[Head] --> B[Percorrer nós] --> C{Valor encontrado?}
+C -- Sim --> D[Atualizar Next] --> E[Count--]
+C -- Não --> B",
+                _ => @"flowchart TD
+A[Head] --> B[Percorrer Next] --> C[Retornar valor]"
+            },
+            "circularlinkedlist" => @"flowchart LR
+A[Head] --> B[Nó] --> C[Nó] --> D[Tail]
+D --> A
+E[Operação] --> B",
+            "queue" => @"flowchart LR
+A[Rear] --> B[Enqueue]
+C[Front] --> D[Dequeue] --> E[Próximo]",
+            "stack" => @"flowchart TD
+A[Topo] --> B[Operação]
+B --> C{Push ou Pop}
+C --> D[Atualizar Topo]",
+            "deque" => @"flowchart LR
+A[Front] --> B{Operação}
+B --> C[AddFirst / RemoveFirst]
+B --> D[AddLast / RemoveLast]",
+            "deck" => @"flowchart LR
+A[Extremidade superior] --> B{Operação}
+B --> C[Adicionar/Remover]
+C --> D[Atualizar extremidade]",
+            "priorityqueue" => @"flowchart TD
+A[Operação] --> B[Heap]
+B --> C[Reordenar por prioridade]
+C --> D[Raiz]",
+            "binarytree" => method.Name switch
+            {
+                "PreOrder" => @"flowchart TD
+A[Raiz] --> B[Visitar raiz]
+B --> C[Percorrer esquerda]
+C --> D[Percorrer direita]",
+                "InOrder" => @"flowchart TD
+A[Raiz] --> B[Percorrer esquerda]
+B --> C[Visitar raiz]
+C --> D[Percorrer direita]",
+                "PostOrder" => @"flowchart TD
+A[Raiz] --> B[Percorrer esquerda]
+B --> C[Percorrer direita]
+C --> D[Visitar raiz]",
+                _ => Mermaid
+            },
+            "binarysearchtree" => method.Name switch
+            {
+                "Insert" => @"flowchart TD
+A[Valor] --> B{Valor < nó?}
+B -- Sim --> C[Esquerda]
+B -- Não --> D[Direita]
+C --> E{Vazio?}
+D --> E
+E -- Sim --> F[Inserir]",
+                "Contains" => @"flowchart TD
+A[Valor] --> B[Comparar com nó]
+B --> C{Igual?}
+C -- Sim --> D[Encontrado]
+C -- Não --> E{Menor?}
+E -- Sim --> F[Esquerda]
+E -- Não --> G[Direita]
+F --> B
+G --> B",
+                _ => Mermaid
+            },
+            "heap" => method.Name switch
+            {
+                "Add" => @"flowchart TD
+A[Adicionar no fim] --> B[Sift Up]
+B --> C{Menor que pai?}
+C -- Sim --> D[Trocar]
+D --> B
+C -- Não --> E[Fim]",
+                "Remove" => @"flowchart TD
+A[Remover raiz] --> B[Mover último para raiz] --> C[Sift Down]
+C --> D{Filho menor?}
+D -- Sim --> E[Trocar] --> C
+D -- Não --> F[Fim]",
+                _ => Mermaid
+            },
+            "maxheap" => method.Name switch
+            {
+                "Add" => @"flowchart TD
+A[Adicionar no fim] --> B[Sift Up]
+B --> C{Maior que pai?}
+C -- Sim --> D[Trocar]
+D --> B
+C -- Não --> E[Fim]",
+                "Remove" => @"flowchart TD
+A[Remover raiz] --> B[Mover último para raiz] --> C[Sift Down]
+C --> D{Filho maior?}
+D -- Sim --> E[Trocar] --> C
+D -- Não --> F[Fim]",
+                _ => Mermaid
+            },
+            "graph" => method.Name switch
+            {
+                "AddVertex" => @"flowchart TD
+A[Vértice] --> B{Já existe?}
+B -- Não --> C[Criar lista de adjacência]
+B -- Sim --> D[Manter vértice]",
+                "AddEdge" => @"flowchart TD
+A[Origem] --> B[Garantir vértices] --> C[Adicionar destino à adjacência]",
+                "BreadthFirst" => @"flowchart TD
+A[Início] --> B[Enfileirar]
+B --> C[Retirar da fila]
+C --> D[Visitar vizinhos]
+D --> E[Enfileirar não visitados]
+E --> C",
+                "DepthFirst" => @"flowchart TD
+A[Início] --> B[Marcar visitado]
+B --> C[Visitar vizinho]
+C --> B
+B --> D[Voltar quando não houver vizinho]",
+                _ => Mermaid
+            },
+            _ => Mermaid
+        };
 }
 
 public static class StructureCatalog
