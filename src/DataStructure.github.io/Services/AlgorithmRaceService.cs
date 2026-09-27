@@ -4,13 +4,16 @@ namespace DataStructure.github.io.Services;
 
 public sealed class RacePanel
 {
-    public RacePanel(string structure, IReadOnlyList<int> values)
+    public RacePanel(string algorithm, string structure, IReadOnlyList<int> values)
     {
+        Algorithm = algorithm;
         Structure = structure;
         Values = [.. values];
     }
 
+    public string Algorithm { get; }
     public string Structure { get; }
+    public string Title => $"{Algorithm} × {Structure}";
     public int[] Values { get; private set; }
     public int Iterations { get; private set; }
     public int CurrentIndex { get; private set; } = -1;
@@ -47,20 +50,41 @@ public sealed class AlgorithmRaceService
     public static readonly string[] Structures =
         ["array", "collection", "list", "linkedlist", "nodelist",
          "circularlinkedlist", "queue", "stack", "deque", "deck",
-         "priorityqueue", "binarytree", "binarysearchtree", "heap", "graph"];
+         "priorityqueue", "binarytree", "binarysearchtree", "heap", "maxheap", "graph"];
 
     private static readonly int[] InitialValues =
         [8, 3, 12, 5, 1, 10, 7, 14, 4, 11, 2, 13, 6, 9];
 
-    public IReadOnlyList<RacePanel> CreatePanels()
-        => Structures
+    public IReadOnlyList<RacePanel> CreatePanels(
+        string algorithm,
+        IEnumerable<string> structures)
+        => structures
             .Select(key => new RacePanel(
+                algorithm,
                 StructureCatalog.Get(key).Name,
                 GetInitialValues(key)))
             .ToArray();
 
+    public IReadOnlyList<RacePanel> CreatePanels(
+        IEnumerable<string> algorithms,
+        string structure)
+        => algorithms
+            .Select(algorithm => new RacePanel(
+                algorithm,
+                StructureCatalog.Get(structure).Name,
+                GetInitialValues(structure)))
+            .ToArray();
+
+    public IReadOnlyList<RacePanel> CreatePanels(
+        IEnumerable<(string Algorithm, string Structure)> comparisons)
+        => comparisons
+            .Select(comparison => new RacePanel(
+                comparison.Algorithm,
+                StructureCatalog.Get(comparison.Structure).Name,
+                GetInitialValues(comparison.Structure)))
+            .ToArray();
+
     public async Task RunSortAsync(
-        string algorithm,
         IReadOnlyList<RacePanel> panels,
         int delay,
         Action<RacePanel> update,
@@ -79,7 +103,7 @@ public sealed class AlgorithmRaceService
                 await Task.Delay(delay, cancellationToken);
             }
 
-            switch (algorithm)
+            switch (panel.Algorithm)
             {
                 case "BubbleSort":
                     await BubbleSort(values, Step, cancellationToken);
@@ -112,7 +136,6 @@ public sealed class AlgorithmRaceService
     }
 
     public async Task RunSearchAsync(
-        string algorithm,
         IReadOnlyList<RacePanel> panels,
         int target,
         int delay,
@@ -132,7 +155,7 @@ public sealed class AlgorithmRaceService
                 await Task.Delay(delay, cancellationToken);
             }
 
-            switch (algorithm)
+            switch (panel.Algorithm)
             {
                 case "LinearSearch":
                     await LinearSearch(values, target, Step, cancellationToken);
@@ -501,6 +524,16 @@ public sealed class AlgorithmRaceService
         if (structure == "heap")
         {
             var heap = new DSHeap<int>();
+
+            foreach (var value in values)
+                heap.Add(value);
+
+            return [.. heap.AsArray()];
+        }
+
+        if (structure == "maxheap")
+        {
+            var heap = new DSMaxHeap<int>();
 
             foreach (var value in values)
                 heap.Add(value);
