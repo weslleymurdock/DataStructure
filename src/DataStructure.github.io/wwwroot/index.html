@@ -18,7 +18,7 @@
             window.history.replaceState(
                 null,
                 document.title,
-                appBase + decodeURIComponent(route).replace(/^\//, "")
+                appBase + route.replace(/^\//, "")
             );
         }
     </script>
