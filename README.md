@@ -23,11 +23,13 @@ O repositório privilegia implementações pequenas e didáticas, para que a est
 | `DSQueue<T>` | FIFO | Enqueue/Dequeue/Peek O(1) | processamento por ordem de chegada e BFS |
 | `DSDeque<T>` | duas extremidades | Add/Remove em ambos os lados O(1) | buffers, histórico e filas com prioridade nas extremidades |
 | `DSPriorityQueue<T>` | heap binário mínimo | Peek O(1), Enqueue/Dequeue O(log n) | tarefas que precisam ser processadas por prioridade |
+| `DSHeap<T>` | heap binário mínimo | Peek O(1), Add/Remove O(log n) | obter repetidamente o menor valor |
+| `DSMaxHeap<T>` | heap binário máximo | Peek O(1), Add/Remove O(log n) | obter repetidamente o maior valor e implementar prioridades máximas |
 | `DSNode<T>` | nó compartilhado | armazenamento de valor e referências O(1) | base para estruturas encadeadas |
 | `DSNodeList<T>` | lista simplesmente encadeada | Add O(1), acesso por índice O(n) | demonstração simples de encadeamento |
 | `DSDeck<T>` | deque legado duplamente encadeado | extremos O(1) | exemplo alternativo de deque |
 
-Cada implementação possui comentários/XML docs explicando a lógica interna, as operações e a complexidade. Os nós são compartilhados pelas estruturas baseadas em encadeamento.
+Cada implementação possui comentários/XML docs explicando a lógica interna, as operações e a complexidade. O guia Blazor também mantém explicações independentes em pt-BR, incluindo utilidade, casos de uso e custos das operações, sem depender dos comentários do código. Os nós são compartilhados pelas estruturas baseadas em encadeamento.
 
 ### Complexidade
 
