@@ -1,39 +1,70 @@
 @page "/algorythms"
 
-<PageTitle>Algorítmos de busca e ordenaçao.</PageTitle>
-<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.ExtraLarge">
-<MudGrid>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="12" md="4">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6">
-        <MudGrid>
-            <MudItem xs="12">
-                <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-            </MudItem>
-            <MudItem xs="12">
-                <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-            </MudItem>
-        </MudGrid>
-    </MudItem>
-    <MudItem xs="12" sm="6">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 100%"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="12" md="4">
-        <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-    </MudItem>
-</MudGrid>
+@using DataStructure.github.io.Services
+
+<PageTitle>Algoritmos</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
+    <MudStack Spacing="3">
+        <MudText Typo="Typo.h3">Algoritmos de busca e ordenação</MudText>
+        <MudText>
+            O laboratório usa as mesmas ideias dos algoritmos do projeto de console, mas a animação é assíncrona
+            para que o navegador possa redesenhar cada etapa sem bloquear a interface.
+        </MudText>
+
+        <MudTabs Elevation="2" Rounded="true" Border="true" ApplyEffectsToContainer="true" TabPanelsClass="pa-6">
+            <MudTabPanel Text="Ordenação" Icon="@Icons.Material.Filled.Sort">
+                <MudTable Items="@AlgorithmRaceService.SortAlgorithms" Hover="true">
+                    <HeaderContent>
+                        <MudTh>Algoritmo</MudTh>
+                        <MudTh>Descrição</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@context</MudTd>
+                        <MudTd>@SortDescription(context)</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudTabPanel>
+
+            <MudTabPanel Text="Busca" Icon="@Icons.Material.Filled.Search">
+                <MudTable Items="@AlgorithmRaceService.SearchAlgorithms" Hover="true">
+                    <HeaderContent>
+                        <MudTh>Algoritmo</MudTh>
+                        <MudTh>Descrição</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@context</MudTd>
+                        <MudTd>@SearchDescription(context)</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudTabPanel>
+        </MudTabs>
+
+        <MudButton Href="/run" Variant="Variant.Filled" Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.PlayArrow">
+            Abrir laboratório
+        </MudButton>
+    </MudStack>
 </MudContainer>
->
+
+@code {
+    private static string SortDescription(string algorithm) => algorithm switch
+    {
+        "BubbleSort" => "Troca vizinhos invertidos até que a sequência fique ordenada.",
+        "SelectionSort" => "Seleciona o menor valor restante e o coloca na posição atual.",
+        "InsertionSort" => "Insere cada valor na parte esquerda já ordenada.",
+        "MergeSort" => "Divide a sequência e intercala as partes ordenadas.",
+        "QuickSort" => "Particiona em torno de um pivô e ordena os subintervalos.",
+        "HeapSort" => "Constrói um heap e extrai o maior valor para o final.",
+        _ => string.Empty
+    };
+
+    private static string SearchDescription(string algorithm) => algorithm switch
+    {
+        "LinearSearch" => "Visita os elementos sequencialmente até encontrar o alvo.",
+        "BinarySearch" => "Descarta metade do intervalo a cada comparação em dados ordenados.",
+        "JumpSearch" => "Salta blocos e depois faz uma busca linear no bloco candidato.",
+        "InterpolationSearch" => "Estima a posição do alvo usando a distribuição numérica dos extremos.",
+        _ => string.Empty
+    };
+}
