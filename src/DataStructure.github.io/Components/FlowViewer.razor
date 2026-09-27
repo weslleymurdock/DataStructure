@@ -44,7 +44,7 @@
 
         _module = await JS.InvokeAsync<IJSObjectReference>(
             "import",
-            "./js/flow-viewer.js");
+            Assets["js/flow-viewer.js"]);
 
         await _module.InvokeVoidAsync("initialize", _canvas);
         _initialized = true;
