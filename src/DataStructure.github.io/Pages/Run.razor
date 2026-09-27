@@ -1,0 +1,231 @@
+@page "/run"
+@page "/run/{StructureName}"
+
+@using DataStructure.github.io.Services
+@implements IDisposable
+@inject NavigationManager Navigation
+@inject AlgorithmRaceService RaceService
+
+<PageTitle>Run - @SelectedGuide.Name</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
+    <MudStack Spacing="3">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Wrap="Wrap.Wrap">
+            <div>
+                <MudText Typo="Typo.h3">Execução ao vivo</MudText>
+                <MudText>Todos os tipos de estrutura executam o mesmo algoritmo simultaneamente.</MudText>
+            </div>
+
+            <MudSelect T="string"
+                       Label="Estrutura"
+                       Variant="Variant.Outlined"
+                       Value="@SelectedKey"
+                       ValueChanged="ChangeStructure"
+                       Class="structure-select">
+                @foreach (var item in StructureCatalog.All)
+                {
+                    <MudSelectItem T="string" Value="@item.Key">@item.Name</MudSelectItem>
+                }
+            </MudSelect>
+        </MudStack>
+
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Wrap="Wrap.Wrap">
+                <MudSelect T="string" Label="Tipo" @bind-Value="_mode" Variant="Variant.Outlined">
+                    <MudSelectItem Value="@("sort")">Ordenação</MudSelectItem>
+                    <MudSelectItem Value="@("search")">Busca</MudSelectItem>
+                </MudSelect>
+
+                <MudSelect T="string" Label="Algoritmo" @bind-Value="_algorithm" Variant="Variant.Outlined">
+                    @foreach (var algorithm in Algorithms)
+                    {
+                        <MudSelectItem Value="@algorithm">@algorithm</MudSelectItem>
+                    }
+                </MudSelect>
+
+                @if (_mode == "search")
+                {
+                    <MudNumericField T="int" Label="Alvo" @bind-Value="_target"
+                                     Variant="Variant.Outlined" Min="0" />
+                }
+
+                <MudSlider T="int"
+                           Min="10"
+                           Max="250"
+                           Step="10"
+                           Value="@_delay"
+                           ValueChanged="value => _delay = value"
+                           Class="run-slider">
+                    Velocidade: @_delay ms
+                </MudSlider>
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Disabled="@_running"
+                           StartIcon="@Icons.Material.Filled.PlayArrow"
+                           OnClick="RunAsync">
+                    Executar
+                </MudButton>
+
+                <MudButton Variant="Variant.Outlined"
+                           Disabled="@(!_running)"
+                           StartIcon="@Icons.Material.Filled.Stop"
+                           OnClick="Cancel">
+                    Parar
+                </MudButton>
+            </MudStack>
+        </MudPaper>
+
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+            A ordem de término mede a corrida da visualização, não é um benchmark.
+            Para busca binária, jump e interpolation, os dados são ordenados antes da busca porque esses algoritmos exigem entrada ordenada.
+        </MudAlert>
+
+        <MudGrid>
+            @foreach (var panel in _panels)
+            {
+                <MudItem xs="12" sm="6" lg="4" @key="panel.Structure">
+                    <MudPaper Elevation="2" Class="pa-3 race-panel">
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                            <MudText Typo="Typo.h6">@panel.Structure</MudText>
+
+                            @if (panel.Completed)
+                            {
+                                <MudChip Color="Color.Success" Size="Size.Small">#@panel.CompletionOrder</MudChip>
+                            }
+                            else if (_running)
+                            {
+                                <MudChip Color="Color.Warning" Size="Size.Small">running</MudChip>
+                            }
+                            else
+                            {
+                                <MudChip Color="Color.Default" Size="Size.Small">ready</MudChip>
+                            }
+                        </MudStack>
+
+                        <div class="race-bars">
+                            @foreach (var item in panel.Values.Select((value, index) => (value, index)))
+                            {
+                                var height = Math.Max(8, item.value * 7);
+                                var active = panel.CurrentIndex == item.index;
+
+                                <div class="race-bar @(active ? "race-bar-active" : string.Empty)"
+                                     style="height:@($"{height}px")"
+                                     title="@($"index {item.index}: {item.value}")">
+                                    <span>@item.value</span>
+                                </div>
+                            }
+                        </div>
+
+                        <MudProgressLinear Class="mt-2"
+                                           Color="@(panel.Completed ? Color.Success : Color.Primary)"
+                                           Value="@Math.Min(panel.Iterations, 100)"
+                                           Max="100" />
+
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" Class="mt-2">
+                            <MudText Typo="Typo.caption">Passos: @panel.Iterations</MudText>
+                            <MudText Typo="Typo.caption">Comparações: @panel.Comparisons</MudText>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+            }
+        </MudGrid>
+
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Typo="Typo.h6">Estrutura selecionada</MudText>
+            <MudText>
+                @SelectedGuide.Name — @SelectedGuide.Description
+                <MudLink Href="@($"/structures/{SelectedGuide.Key}")" Class="ml-2">ver implementação</MudLink>
+            </MudText>
+        </MudPaper>
+    </MudStack>
+</MudContainer>
+
+@code {
+    [Parameter]
+    public string? StructureName { get; set; }
+
+    private string SelectedKey = StructureCatalog.All[0].Key;
+    private StructureGuide SelectedGuide = StructureCatalog.All[0];
+    private IReadOnlyList<RacePanel> _panels = [];
+    private string _mode = "sort";
+    private string _algorithm = "BubbleSort";
+    private int _target = 7;
+    private int _delay = 70;
+    private bool _running;
+    private CancellationTokenSource? _cancellation;
+
+    private IReadOnlyList<string> Algorithms =>
+        _mode == "sort"
+            ? AlgorithmRaceService.SortAlgorithms
+            : AlgorithmRaceService.SearchAlgorithms;
+
+    protected override void OnParametersSet()
+    {
+        SelectedKey = StructureCatalog.Normalize(StructureName);
+        SelectedGuide = StructureCatalog.Get(SelectedKey);
+        _panels = RaceService.CreatePanels();
+
+        if (!Algorithms.Contains(_algorithm))
+            _algorithm = Algorithms[0];
+    }
+
+    private Task ChangeStructure(string key)
+    {
+        Navigation.NavigateTo($"/run/{key}");
+        return Task.CompletedTask;
+    }
+
+    private async Task RunAsync()
+    {
+        Cancel();
+
+        _running = true;
+        _panels = RaceService.CreatePanels();
+        _cancellation = new CancellationTokenSource();
+
+        try
+        {
+            if (_mode == "sort")
+            {
+                await RaceService.RunSortAsync(
+                    _algorithm,
+                    _panels,
+                    _delay,
+                    _ => InvokeAsync(StateHasChanged),
+                    _cancellation.Token);
+            }
+            else
+            {
+                await RaceService.RunSearchAsync(
+                    _algorithm,
+                    _panels,
+                    _target,
+                    _delay,
+                    _ => InvokeAsync(StateHasChanged),
+                    _cancellation.Token);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+        }
+        finally
+        {
+            _running = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void Cancel()
+    {
+        _cancellation?.Cancel();
+        _cancellation?.Dispose();
+        _cancellation = null;
+        _running = false;
+    }
+
+    public void Dispose()
+    {
+        Cancel();
+    }
+}
