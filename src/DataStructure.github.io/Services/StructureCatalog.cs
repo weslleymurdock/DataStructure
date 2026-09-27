@@ -2309,6 +2309,50 @@ public sealed class DSHashTable<TKey, TValue> where TKey : notnull
                 new("Clear","public void Clear()","Descarta os buckets atuais e cria uma nova tabela vazia com a mesma capacidade.","O(m)"),
                 new("Enumerate","public IEnumerable<KeyValuePair<TKey,TValue>> Enumerate()","Percorre bucket por bucket e depois cada entrada encadeada.","O(n)"),
             ]),
+        new("weightedgraph","nonlinear","DSWeightedGraph","Grafo ponderado","Grafo direcionado em que cada aresta possui um custo não negativo.","Modelar rotas, redes e caminhos para Dijkstra, A* e busca gulosa.",@"namespace DataStructure.Abstractions;
+
+public sealed class DSWeightedGraph<T> where T : notnull
+{
+    private readonly Dictionary<T, List<Edge>> _adjacency = [];
+
+    public IReadOnlyCollection<T> Vertices => _adjacency.Keys;
+
+    public void AddVertex(T vertex)
+        => _adjacency.TryAdd(vertex, []);
+
+    public void AddEdge(T from, T to, double weight)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegative(weight);
+        AddVertex(from);
+        AddVertex(to);
+
+        var edges = _adjacency[from];
+
+        for (var index = 0; index < edges.Count; index++)
+        {
+            if (!EqualityComparer<T>.Default.Equals(edges[index].To, to))
+                continue;
+
+            edges[index] = new Edge(to, weight);
+            return;
+        }
+
+        edges.Add(new Edge(to, weight));
+    }
+
+    public IReadOnlyCollection<(T To, double Weight)> Neighbors(T vertex)
+        => _adjacency.TryGetValue(vertex, out var edges)
+            ? edges.Select(edge => (edge.To, edge.Weight)).ToArray()
+            : [];
+
+    private readonly record struct Edge(T To, double Weight);
+}",
+            [
+                new("AddVertex","public void AddVertex(T vertex)","Garante a existência do vértice sem criar arestas.","O(1) amortizado"),
+                new("AddEdge","public void AddEdge(T from, T to, double weight)","Cria uma aresta direcionada e registra seu peso não negativo.","O(1) amortizado"),
+                new("Neighbors","public IReadOnlyCollection<(T To, double Weight)> Neighbors(T vertex)","Obtém as arestas de saída e seus custos.","O(1) para obter a coleção"),
+                new("Vertices","public IReadOnlyCollection<T> Vertices","Expõe os vértices registrados no grafo.","O(1)")
+            ]),
         new("graph","nonlinear","DSGraph","Grafo direcionado","Vértices conectados por arestas orientadas, representados por listas de adjacência.","Modelar relações, dependências, redes e caminhos.",@"namespace DataStructure.Abstractions;
 
 public sealed class DSGraph<T> where T : notnull
