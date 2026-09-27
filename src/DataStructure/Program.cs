@@ -35,7 +35,7 @@ static void DemonstrateArray()
     Console.WriteLine();
     Console.WriteLine("[Array] Fixed-size, O(1) indexed access");
 
-    DSArray<string> months = ["January", "February", "March"];
+    DSArray<string> months = new(["January", "February", "March"]);
 
     Console.WriteLine($"Item at index 1: {months[1]}");
 }

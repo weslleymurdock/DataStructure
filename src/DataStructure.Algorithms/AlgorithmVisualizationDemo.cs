@@ -1,5 +1,4 @@
 using DataStructure.Abstractions;
-using DataStructure.Algorithms.Visualization;
 
 namespace DataStructure.Algorithms;
 
@@ -14,7 +13,7 @@ public static class AlgorithmVisualizationDemo
     /// <param name="render">
     /// Callback invoked after each meaningful mutation of the sorting sequence.
     /// </param>
-    public static void Run(Action<Console> render)
+    public static void Run(Action<Visualization.Console> render)
     {
         ArgumentNullException.ThrowIfNull(render);
 
@@ -76,23 +75,23 @@ public static class AlgorithmVisualizationDemo
     private static void RunAlgorithm(
         string name,
         IReadOnlyList<int> values,
-        Action<Console> render,
+        Action<Visualization.Console> render,
         Action<Action<IReadOnlyList<int>>> execute)
     {
         var snapshot = values.ToArray();
         var step = 0;
 
-        render(new Console(name, snapshot, step));
+        render(new Visualization.Console(name, snapshot, step));
 
         execute(current =>
         {
             step++;
-            render(new Console(name, current, step));
+            render(new Visualization.Console(name, current, step));
         });
 
         // The algorithm itself has already produced the sorted sequence.
         // This final frame explicitly shows the expected terminal state.
-        render(new Console(name, snapshot.Order().ToArray(), ++step));
+        render(new Visualization.Console(name, snapshot.Order().ToArray(), ++step));
 
         System.Threading.Thread.Sleep(250);
     }
