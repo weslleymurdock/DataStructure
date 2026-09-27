@@ -67,7 +67,7 @@
                         </MudText>
                         <AlgorithmTreeViewer T="int"
                                              Root="_result.Tree"
-                                             CurrentItem="_currentItem" />
+                                             CurrentItem="_currentItem!.Value" />
                         @if (_currentItem is not null)
                         {
                             <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
