@@ -33,6 +33,9 @@ public sealed class HeapSort(Action<IReadOnlyList<int>>? onStep = null)
     public AlgorithmResult<int> ExecuteDSDeque(DSDeque<int> data)
         => SortDeque(data);
 
+    public AlgorithmResult<int> ExecuteDSMaxHeap(DSMaxHeap<int> data)
+        => SortCopy([.. data.AsArray()]);
+
     private AlgorithmResult<int> Sort(
         int count,
         Func<int, int> get,
