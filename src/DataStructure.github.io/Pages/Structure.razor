@@ -1,6 +1,7 @@
 @page "/structures/{StructureName}"
 
 @using DataStructure.github.io.Services
+@using DataStructure.github.io.Components
 @inject NavigationManager Navigation
 
 <PageTitle>@Guide.Name - Estruturas de dados</PageTitle>
@@ -71,9 +72,9 @@
                 índices ou relações entre nós participam da estrutura.
             </MudText>
 
-            <div class="mermaid-container">
-                <div class="mermaid-diagram">@Guide.Mermaid</div>
-            </div>
+            <FlowViewer>
+                @Guide.Mermaid
+            </FlowViewer>
         </MudPaper>
 
         <MudPaper Elevation="2" Class="pa-4">
@@ -111,9 +112,9 @@
                         <MudText Typo="Typo.h6">@method.Name</MudText>
                         <MudText Typo="Typo.body2" Class="mb-2">@method.Explanation</MudText>
 
-                        <div class="mermaid-container">
-                            <div class="mermaid-diagram">@Guide.GetMethodMermaid(method)</div>
-                        </div>
+                        <FlowViewer>
+                            @Guide.GetMethodMermaid(method)
+                        </FlowViewer>
                     </MudPaper>
                 }
             </MudStack>
