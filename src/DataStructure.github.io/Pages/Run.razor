@@ -103,19 +103,19 @@
                             }
                         </MudStack>
 
-                        <div class="race-bars">
+                        <MudPaper Class="race-bars">
                             @foreach (var item in panel.Values.Select((value, index) => (value, index)))
                             {
                                 var height = Math.Max(8, item.value * 7);
                                 var active = panel.CurrentIndex == item.index;
 
-                                <div class="race-bar @(active ? "race-bar-active" : string.Empty)"
+                                <div class="race-bar @(active ? "race-bar-active" : "")"
                                      style="height:@($"{height}px")"
                                      title="@($"index {item.index}: {item.value}")">
                                     <span>@item.value</span>
                                 </div>
                             }
-                        </div>
+                        </MudPaper>
 
                         <MudProgressLinear Class="mt-2"
                                            Color="@(panel.Completed ? Color.Success : Color.Primary)"
