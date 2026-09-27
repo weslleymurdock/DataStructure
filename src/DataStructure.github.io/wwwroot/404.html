@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <script>
+        const base = "/DataStructure.github.io/";
+        const path = window.location.pathname;
+        const relative = path.startsWith(base) ? path.slice(base.length) : "";
+        window.location.replace(base + "?p=/" + relative + window.location.search);
+    </script>
+</head>
+<body></body>
+</html>
