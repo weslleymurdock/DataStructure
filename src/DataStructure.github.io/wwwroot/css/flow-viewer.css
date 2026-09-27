@@ -1,0 +1,71 @@
+.flow-viewer {
+    position: relative;
+    width: 100%;
+    min-height: 420px;
+    overflow: hidden;
+    border: 1px solid var(--mud-palette-lines-default);
+    border-radius: 12px;
+    background: var(--mud-palette-background-grey);
+}
+
+.flow-viewer-toolbar {
+    position: absolute;
+    z-index: 10;
+    top: 12px;
+    right: 12px;
+    left: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.flow-viewer-toolbar > * {
+    pointer-events: auto;
+}
+
+.flow-viewer-toolbar > .mud-typography {
+    padding: 5px 10px;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--mud-palette-surface) 90%, transparent);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+}
+
+.flow-viewer-actions {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--mud-palette-surface) 94%, transparent);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+}
+
+.flow-viewer-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.flow-viewer-source {
+    display: none;
+}
+
+.flow-viewer-canvas canvas {
+    outline: none;
+}
+
+@media (max-width: 768px) {
+    .flow-viewer {
+        min-height: 360px;
+    }
+
+    .flow-viewer-toolbar {
+        align-items: flex-start;
+    }
+
+    .flow-viewer-toolbar > .mud-typography {
+        display: none;
+    }
+}
