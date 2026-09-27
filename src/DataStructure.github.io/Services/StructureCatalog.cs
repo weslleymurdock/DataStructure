@@ -411,6 +411,7 @@ public sealed record StructureGuide(
     C --> D[""Count-- / return""],
                 "Peek" => @"flowchart TD
     A[""top""] --> B[""return top.Value""]"
+                _ => Mermaid
             },
             "deque" => method.Name switch
             {
@@ -450,6 +451,7 @@ public sealed record StructureGuide(
     A[""head""] --> B[""return head.Value""]",
                 "PeekLast" => @"flowchart TD
     A[""tail""] --> B[""return tail.Value""]"
+                _ => Mermaid
             },
             "deck" => method.Name switch
             {
@@ -506,6 +508,7 @@ public sealed record StructureGuide(
     C -- ""no"" --> E[""_heap[0] = last""]
     E --> F[""SiftDown""]
     F --> D"
+                _ => Mermaid
             },
             "binarytree" => method.Name switch
             {
@@ -566,6 +569,7 @@ public sealed record StructureGuide(
     A[""node""] --> B[""recurse Left""]
     B --> C[""recurse Right""]
     C --> D[""yield value""]"
+                _ => Mermaid
             },
             "heap" => method.Name switch
             {
@@ -615,6 +619,7 @@ public sealed record StructureGuide(
     G -- ""no"" --> D",
                 "AsArray" => @"flowchart LR
     A[""_items""] --> B[""IReadOnlyList<T> view""]
+                _ => Mermaid
             },
             "graph" => method.Name switch
             {
