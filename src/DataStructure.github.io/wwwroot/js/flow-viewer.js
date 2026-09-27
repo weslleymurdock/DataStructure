@@ -20,7 +20,7 @@ function parseGraph(source) {
         nodes.set(id, {
             data: {
                 id,
-                label: existing?.data.label ?? decodeLabel(label) || id,
+                label: (existing?.data.label ?? decodeLabel(label)) || id,
                 shape: existing?.data.shape ?? shape
             }
         });
@@ -90,7 +90,7 @@ function initializeCanvas(canvas) {
     const source = sourceElement?.textContent?.trim() ?? "";
     const elements = parseGraph(source);
 
-    const cy = cytoscape({
+    const cy = window.cytoscape({
         container: canvas,
         elements,
         wheelSensitivity: 0.12,
@@ -118,6 +118,17 @@ function initializeCanvas(canvas) {
                     padding: 14,
                     "text-wrap": "wrap",
                     "text-max-width": 180
+                }
+            },
+            {
+                selector: "node.flow-viewer-selected",
+                style: {
+                    "background-color": "#594ae2",
+                    "border-color": "#00e676",
+                    "border-width": 4,
+                    "overlay-color": "#00e676",
+                    "overlay-opacity": 0.15,
+                    "overlay-padding": 5
                 }
             },
             {
