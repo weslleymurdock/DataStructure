@@ -49,15 +49,15 @@
                                      Variant="Variant.Outlined" Min="0" />
                 }
 
-                <MudSlider T="int"
-                           Min="10"
-                           Max="250"
-                           Step="10"
-                           Value="@_delay"
-                           ValueChanged="value => _delay = value"
-                           Class="run-slider">
-                    Velocidade: @_delay ms
-                </MudSlider>
+                <MudStack Class="run-slider">
+                    <MudText Typo="Typo.caption">Velocidade: @_delay ms</MudText>
+                    <MudSlider T="int"
+                               Min="10"
+                               Max="250"
+                               Step="10"
+                               Value="@_delay"
+                               ValueChanged="value => _delay = value" />
+                </MudStack>
 
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
