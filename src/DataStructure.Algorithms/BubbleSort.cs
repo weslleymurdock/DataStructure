@@ -7,15 +7,10 @@ namespace DataStructure.Algorithms;
 /// remaining value toward the end of the unsorted region.
 /// Best case is O(n) with early exit; average and worst cases are O(n²).
 /// </summary>
-public sealed class BubbleSort
+/// <remarks>Creates the algorithm and optionally enables step notifications.</remarks>
+public sealed class BubbleSort(Action<IReadOnlyList<int>>? onStep = null)
 {
-    private readonly Action<IReadOnlyList<int>>? _onStep;
-
-    /// <summary>Creates the algorithm and optionally enables step notifications.</summary>
-    public BubbleSort(Action<IReadOnlyList<int>>? onStep = null)
-    {
-        _onStep = onStep;
-    }
+    private readonly Action<IReadOnlyList<int>>? _onStep = onStep;
 
     public AlgorithmResult<int> ExecuteDSArray(DSArray<int> data)
         => Sort(data.Count, index => data[index], (index, value) => data[index] = value);

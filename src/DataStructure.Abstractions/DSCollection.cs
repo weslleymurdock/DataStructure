@@ -13,9 +13,7 @@ public class DSCollection<T> : ICollection<T>
     /// <summary>Creates a collection with the specified initial capacity.</summary>
     public DSCollection(int capacity = 4)
     {
-        if (capacity < 0)
-            throw new ArgumentOutOfRangeException(nameof(capacity));
-
+        ArgumentOutOfRangeException.ThrowIfNegative(capacity);
         // A zero-capacity collection starts without an allocated backing array.
         _items = capacity == 0 ? [] : new T[capacity];
     }

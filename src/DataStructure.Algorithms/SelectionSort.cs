@@ -7,15 +7,10 @@ namespace DataStructure.Algorithms;
 /// and places that minimum at the next output position.
 /// Best, average and worst cases are O(n²).
 /// </summary>
-public sealed class SelectionSort
+/// <remarks>Creates the algorithm and optionally enables step notifications.</remarks>
+public sealed class SelectionSort(Action<IReadOnlyList<int>>? onStep = null)
 {
-    private readonly Action<IReadOnlyList<int>>? _onStep;
-
-    /// <summary>Creates the algorithm and optionally enables step notifications.</summary>
-    public SelectionSort(Action<IReadOnlyList<int>>? onStep = null)
-    {
-        _onStep = onStep;
-    }
+    private readonly Action<IReadOnlyList<int>>? _onStep = onStep;
 
     public AlgorithmResult<int> ExecuteDSArray(DSArray<int> data)
         => Sort(data.Count, index => data[index], (index, value) => data[index] = value);

@@ -259,7 +259,7 @@ public static class AlgorithmVisualizationDemo
                     lock (synchronization)
                     {
                         panel.Update(snapshot);
-                        Render(panel.Structure, panels, completed, render);
+                        Render(panel.Structure, panels, [.. completed], render);
                     }
 
                     Thread.Sleep(45);
@@ -271,7 +271,7 @@ public static class AlgorithmVisualizationDemo
                 {
                     panel.Complete(completed.Count + 1);
                     completed.Add(algorithmName);
-                    Render(panel.Structure, panels, completed, render);
+                    Render(panel.Structure, panels, [.. completed], render);
                 }
             }
         };

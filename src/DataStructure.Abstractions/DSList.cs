@@ -4,24 +4,21 @@ namespace DataStructure.Abstractions;
 /// Dynamic list derived from <see cref="DSCollection{T}"/>.
 /// It exposes insertion and removal by index while retaining O(1) indexed reads.
 /// </summary>
-public sealed class DSList<T> : DSCollection<T>, IReadOnlyList<T>
+/// <remarks>Creates a list with the specified initial capacity.</remarks>
+public sealed class DSList<T>(int capacity = 4) : DSCollection<T>(capacity), IReadOnlyList<T>
 {
-    /// <summary>Creates a list with the specified initial capacity.</summary>
-    public DSList(int capacity = 4)
-        : base(capacity)
-    {
-    }
+
 
     /// <summary>Inserts a value at an index. The suffix shift costs O(n).</summary>
     public void Insert(int index, T item)
         => InsertAt(index, item);
 
     /// <summary>Removes and returns the value at an index. The suffix shift costs O(n).</summary>
-    public T RemoveAt(int index)
+    public new T RemoveAt(int index)
         => base.RemoveAt(index);
 
     /// <summary>Finds the first matching value using a linear O(n) scan.</summary>
-    public int IndexOf(T item)
+    public new int IndexOf(T item)
     {
         var comparer = EqualityComparer<T>.Default;
 
@@ -35,6 +32,6 @@ public sealed class DSList<T> : DSCollection<T>, IReadOnlyList<T>
     }
 
     /// <summary>Checks whether a value exists using IndexOf.</summary>
-    public bool Contains(T item)
+    public new bool Contains(T item)
         => IndexOf(item) >= 0;
 }

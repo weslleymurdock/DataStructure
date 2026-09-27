@@ -7,15 +7,10 @@ namespace DataStructure.Algorithms;
 /// and inserting the next value into the resulting gap.
 /// Best case is O(n); average and worst cases are O(n²).
 /// </summary>
-public sealed class InsertionSort
+/// <remarks>Creates the algorithm and optionally enables step notifications.</remarks>
+public sealed class InsertionSort(Action<IReadOnlyList<int>>? onStep = null)
 {
-    private readonly Action<IReadOnlyList<int>>? _onStep;
-
-    /// <summary>Creates the algorithm and optionally enables step notifications.</summary>
-    public InsertionSort(Action<IReadOnlyList<int>>? onStep = null)
-    {
-        _onStep = onStep;
-    }
+    private readonly Action<IReadOnlyList<int>>? _onStep = onStep;
 
     public AlgorithmResult<int> ExecuteDSArray(DSArray<int> data)
         => Sort(data.Count, index => data[index], (index, value) => data[index] = value);

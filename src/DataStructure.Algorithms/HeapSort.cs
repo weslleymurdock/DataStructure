@@ -7,15 +7,10 @@ namespace DataStructure.Algorithms;
 /// and restores the heap property. All cases are O(n log n) with O(1)
 /// auxiliary space for the sorting array.
 /// </summary>
-public sealed class HeapSort
+/// <remarks>Creates the algorithm and optionally enables step notifications.</remarks>
+public sealed class HeapSort(Action<IReadOnlyList<int>>? onStep = null)
 {
-    private readonly Action<IReadOnlyList<int>>? _onStep;
-
-    /// <summary>Creates the algorithm and optionally enables step notifications.</summary>
-    public HeapSort(Action<IReadOnlyList<int>>? onStep = null)
-    {
-        _onStep = onStep;
-    }
+    private readonly Action<IReadOnlyList<int>>? _onStep = onStep;
 
     public AlgorithmResult<int> ExecuteDSArray(DSArray<int> data)
         => Sort(data.Count, index => data[index], (index, value) => data[index] = value);

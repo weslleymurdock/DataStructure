@@ -6,15 +6,10 @@ namespace DataStructure.Algorithms;
 /// Quick sort chooses a pivot, partitions values around it, and recursively
 /// sorts the resulting ranges. Average time is O(n log n), worst time is O(n²).
 /// </summary>
-public sealed class QuickSort
+/// <remarks>Creates the algorithm and optionally enables step notifications.</remarks>
+public sealed class QuickSort(Action<IReadOnlyList<int>>? onStep = null)
 {
-    private readonly Action<IReadOnlyList<int>>? _onStep;
-
-    /// <summary>Creates the algorithm and optionally enables step notifications.</summary>
-    public QuickSort(Action<IReadOnlyList<int>>? onStep = null)
-    {
-        _onStep = onStep;
-    }
+    private readonly Action<IReadOnlyList<int>>? _onStep = onStep;
 
     public AlgorithmResult<int> ExecuteDSArray(DSArray<int> data)
         => Sort(data.Count, index => data[index], (index, value) => data[index] = value);
