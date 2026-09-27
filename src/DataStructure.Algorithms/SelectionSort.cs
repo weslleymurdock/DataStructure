@@ -100,9 +100,10 @@ public sealed class SelectionSort
     private AlgorithmResult<int> SortQueue(DSQueue<int> data)
     {
         var values = Materialize(data);
-        var result = SortCopy([.. values]);
+        var sorted = values.ToArray();
+        var result = SortCopy(sorted);
 
-        foreach (var value in values)
+        foreach (var value in sorted)
             data.Enqueue(value);
 
         return result;
@@ -148,9 +149,10 @@ public sealed class SelectionSort
         while (data.Count > 0)
             values.Add(data.RemoveFirst());
 
-        var result = SortCopy([.. values]);
+        var sorted = values.ToArray();
+        var result = SortCopy(sorted);
 
-        foreach (var value in values)
+        foreach (var value in sorted)
             data.AddLast(value);
 
         return result;
