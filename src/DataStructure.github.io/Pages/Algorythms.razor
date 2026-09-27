@@ -38,9 +38,14 @@
             semântica própria da estrutura.
         </MudAlert>
 
-        <MudButton Href="/run" Variant="Variant.Filled" Color="Color.Primary">
-            Abrir laboratório
-        </MudButton>
+        <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap">
+            <MudButton Href="/run" Variant="Variant.Filled" Color="Color.Primary">
+                Laboratório de ordenação e busca
+            </MudButton>
+            <MudButton Href="/run/advanced" Variant="Variant.Outlined" Color="Color.Primary">
+                Laboratório de buscas avançadas
+            </MudButton>
+        </MudStack>
     </MudStack>
 </MudContainer>
 
@@ -48,7 +53,9 @@
     private IReadOnlyList<AlgorithmGroup> Groups =>
     [
         new("Ordenação", "Reorganizam valores em uma sequência definida.", AlgorithmCatalog.Sorts),
-        new("Busca", "Localizam um alvo percorrendo ou reduzindo um espaço de pesquisa.", AlgorithmCatalog.Searches)
+        new("Busca", "Localizam um alvo percorrendo ou reduzindo um espaço de pesquisa.", AlgorithmCatalog.Searches),
+        new("Busca em grafos", "Exploram relações entre vértices e calculam caminhos orientados por custo ou heurística.", AlgorithmCatalog.GraphSearches),
+        new("Busca por similaridade", "Comparam representações de dados e ranqueiam os candidatos mais próximos.", AlgorithmCatalog.SimilaritySearches)
     ];
 
     private async Task Open(AlgorithmGuide algorithm)
