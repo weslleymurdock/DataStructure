@@ -24,247 +24,641 @@ public sealed record StructureGuide(
         Key switch
         {
             "array" => @"flowchart LR
-A[Índice 0] --> B[Índice 1] --> C[Índice 2] --> D[...]
-A --> E[Acesso direto O(1)]",
+    A[""_items: T[]""]
+    A --> B[""index 0""]
+    A --> C[""index 1""]
+    A --> D[""index n-1""]
+    B -. ""contiguous"" .- C
+    C -. ""contiguous"" .- D",
             "collection" => @"flowchart TD
-A[Add] --> B{Capacidade suficiente?}
-B -- Não --> C[Redimensionar]
-B -- Sim --> D[Gravar no final]
-C --> D
-D --> E[Count + 1]",
+    A[""_items: T[] + _count""] --> B{""_count < capacity?""}
+    B -- ""yes"" --> C[""store at _items[_count]""]
+    C --> D[""_count++""]
+    B -- ""no"" --> E[""double capacity""]
+    E --> F[""Array.Resize""]
+    F --> C",
             "list" => @"flowchart TD
-A[Insert index] --> B[Localizar posição]
-B --> C[Deslocar elementos à direita]
-C --> D[Gravar item]
-D --> E[Count + 1]",
+    A[""DSList""] --> B[""DSCollection backing array""]
+    B --> C[""index access O(1)""]
+    B --> D[""Insert / RemoveAt""]
+    D --> E[""shift suffix""]
+    E --> F[""update _count""]",
             "linkedlist" => @"flowchart LR
-A[Head] --> B[Nó] --> C[Nó] --> D[Nó]
-D --> E[Tail]
-B -. Previous .-> A",
+    H[""Head""] <--> A[""Node 1""]
+    A <--> B[""Node 2""]
+    B <--> C[""Node n""]
+    C <--> T[""Tail""]
+    A -. ""Previous"" .-> H
+    C -. ""Next = null"" .-> X[""end""]",
             "nodelist" => @"flowchart LR
-A[Head] --> B[Nó] --> C[Nó] --> D[Tail]",
+    H[""Head""] --> A[""Node 1""] --> B[""Node 2""] --> C[""Node n""]
+    C --> T[""Tail""]",
             "circularlinkedlist" => @"flowchart LR
-A[Head] --> B[Nó] --> C[Nó] --> D[Nó]
-D --> A",
+    H[""Head""] --> A[""Node 1""] --> B[""Node 2""] --> T[""Tail""]
+    T --> H
+    N[""tail.Next = head""] -.-> T",
             "queue" => @"flowchart LR
-A[Front] --> B[Primeiro]
-B --> C[...]
-C --> D[Rear]
-E[Enqueue] --> D
-A --> F[Dequeue]",
+    H[""Head / Front""] --> A[""oldest""]
+    A --> B[""next""]
+    B --> T[""Tail / newest""]
+    E[""Enqueue""] --> T
+    D[""Dequeue""] --> H",
             "stack" => @"flowchart TD
-A[Topo] --> B[Item]
-B --> C[Item]
-C --> D[Base]
-E[Push] --> A
-A --> F[Pop]",
+    T[""Top""] --> A[""newest""]
+    A --> B[""older""]
+    B --> C[""oldest / base""]
+    P[""Push""] --> T
+    O[""Pop / Peek""] --> T",
             "deque" => @"flowchart LR
-A[Front] <--> B[Item] <--> C[Item] <--> D[Rear]
-A --> E[AddFirst / RemoveFirst]
-D --> F[AddLast / RemoveLast]",
+    H[""Head / Front""] <--> A[""Node""]
+    A <--> B[""Node""]
+    B <--> T[""Tail / Rear""]
+    F[""AddFirst / RemoveFirst""] --> H
+    L[""AddLast / RemoveLast""] --> T",
             "deck" => @"flowchart LR
-A[Topo] --> B[Item] --> C[Item] --> D[Base]
-E[Adicionar] --> A
-E --> D
-A --> F[Remover]
-D --> G[Remover]",
+    H[""Head""] <--> A[""Node""]
+    A <--> B[""Node""]
+    B <--> T[""Tail""]
+    F[""AddFirst / RemoveFirst""] --> H
+    L[""AddLast / RemoveLast""] --> T",
             "priorityqueue" => @"flowchart TD
-A[Inserir] --> B[Heap de prioridade]
-B --> C[Menor prioridade na raiz]
-C --> D[Peek / Dequeue]",
+    R[""heap[0]: minimum""] --> L[""heap[1]""]
+    R --> Q[""heap[2]""]
+    L --> A[""heap[3]""]
+    L --> B[""heap[4]""]
+    Q --> C[""heap[5]""]
+    Q --> D[""heap[6]""]
+    P[""parent = (i-1)/2""] -.-> L
+    K[""children = 2i+1, 2i+2""] -.-> Q",
             "binarytree" => @"flowchart TD
-A[Raiz] --> B[Esquerda]
-A --> C[Direita]
-B --> D[Subárvore]
-C --> E[Subárvore]",
+    R[""Root""] --> L[""Left subtree""]
+    R --> Q[""Right subtree""]
+    L --> LL[""Left child""]
+    L --> LR[""Right child""]
+    Q --> RL[""Left child""]
+    Q --> RR[""Right child""]",
             "binarysearchtree" => @"flowchart TD
-A[Raiz] --> B{Valor < nó?}
-B -- Sim --> C[Esquerda]
-B -- Não --> D[Direita]
-C --> E{Encontrou?}
-D --> E",
+    R[""Root""] --> C{""value < current?""}
+    C -- ""yes"" --> L[""current.Left""]
+    C -- ""no / equal"" --> Q[""current.Right""]
+    L --> C
+    Q --> C
+    Z[""left: smaller""]
+    Y[""right: greater or equal""]",
             "heap" => @"flowchart TD
-A[Raiz: menor] --> B[Filho]
-A --> C[Filho]
-B --> D[Filhos]
-C --> E[Filhos]",
+    R[""heap[0]: minimum""] --> L[""heap[1]""]
+    R --> Q[""heap[2]""]
+    L --> A[""heap[3]""]
+    L --> B[""heap[4]""]
+    Q --> C[""heap[5]""]
+    Q --> D[""heap[6]""]
+    I[""complete tree stored in List<T>""] -.-> R",
             "maxheap" => @"flowchart TD
-A[Raiz: maior] --> B[Filho]
-A --> C[Filho]
-B --> D[Filhos]
-C --> E[Filhos]",
+    R[""heap[0]: maximum""] --> L[""heap[1]""]
+    R --> Q[""heap[2]""]
+    L --> A[""heap[3]""]
+    L --> B[""heap[4]""]
+    Q --> C[""heap[5]""]
+    Q --> D[""heap[6]""]
+    I[""parent >= children""] -.-> R",
             "graph" => @"flowchart LR
-A[Vértice] --> B[Vértice]
-A --> C[Vértice]
-B --> D[Vértice]
-C --> D",
+    A[""A""] --> B[""B""]
+    A --> C[""C""]
+    B --> D[""D""]
+    C --> D
+    E[""_adjacency: Dictionary<T, HashSet<T>>""] -.-> A
+    E -.-> B
+    E -.-> C
+    E -.-> D",
             _ => @"flowchart TD
-A[Estrutura] --> B[Elementos] --> C[Operação]"
+    A[""Structure""] --> B[""Storage""]
+    B --> C[""Elements""]"
         };
 
     public string GetMethodMermaid(MethodGuide method) =>
         Key switch
         {
-            "array" => method.Name == "indexer"
-                ? @"flowchart TD
-A[Índice] --> B[Validar posição] --> C[Calcular offset] --> D[Retornar item]"
-                : @"flowchart TD
-A[Operação] --> B[Localizar armazenamento] --> C[Aplicar operação] --> D[Resultado]",
+            "array" => method.Name switch
+            {
+                "Construtor" => @"flowchart TD
+    A[""length""] --> B[""new T[length]""]
+    B --> C[""fixed contiguous storage""]",
+                "Count" => @"flowchart LR
+    A[""_items.Length""] --> B[""Count""]",
+                "indexer" => @"flowchart TD
+    A[""index""] --> B[""T[] indexer""]
+    B --> C[""_items[index]""]",
+                _ => @"flowchart LR
+    A[""Enumerator""] --> B[""next array position""] --> C[""value""]"
+            },
             "collection" => method.Name switch
             {
+                "Construtor" => @"flowchart TD
+    A[""capacity""] --> B{""capacity = 0?""}
+    B -- ""yes"" --> C[""_items = []""]
+    B -- ""no"" --> D[""new T[capacity]""]
+    C --> E[""_count = 0""]
+    D --> E",
                 "Add" => @"flowchart TD
-A[Add] --> B{Capacidade?}
-B -- Não --> C[Resize]
-B -- Sim --> D[Armazenar]
-C --> D --> E[Count++]",
+    A[""Add(item)""] --> B[""EnsureCapacity(_count + 1)""]
+    B --> C[""_items[_count] = item""]
+    C --> D[""_count++""]
+    B --> E{""required > length?""}
+    E -- ""yes"" --> F[""double capacity""]
+    F --> G[""Array.Resize""]
+    G --> C
+    E -- ""no"" --> C",
+                "Clear" => @"flowchart TD
+    A[""Clear()""] --> B[""Array.Clear(_items, 0, _count)""]
+    B --> C[""_count = 0""]",
+                "Contains" => @"flowchart TD
+    A[""Contains(item)""] --> B[""IndexOf(item)""]
+    B --> C{""match?""}
+    C -- ""yes"" --> D[""index >= 0: true""]
+    C -- ""no"" --> E[""-1: false""]",
+                "CopyTo" => @"flowchart TD
+    A[""CopyTo(array, arrayIndex)""] --> B[""validate destination""]
+    B --> C[""Array.Copy(_items, 0, array, arrayIndex, _count)""]",
                 "Remove" => @"flowchart TD
-A[Remove] --> B[IndexOf] --> C{Encontrou?}
-C -- Sim --> D[RemoveAt] --> E[Deslocar]
-C -- Não --> F[False]",
-                _ => @"flowchart TD
-A[Operação] --> B[Percorrer coleção] --> C[Executar] --> D[Resultado]"
+    A[""Remove(item)""] --> B[""IndexOf(item)""]
+    B --> C{""found?""}
+    C -- ""no"" --> D[""false""]
+    C -- ""yes"" --> E[""RemoveAt(index)""]
+    E --> F[""true""]",
+                "indexer" => @"flowchart TD
+    A[""index""] --> B[""ValidateIndex""]
+    B --> C[""_items[index] get/set""]",
+                "IndexOf" => @"flowchart TD
+    A[""index = 0""] --> B{""index < _count?""}
+    B -- ""yes"" --> C{""items[index] == target?""}
+    C -- ""yes"" --> D[""return index""]
+    C -- ""no"" --> E[""index++""]
+    E --> B
+    B -- ""no"" --> F[""return -1""]",
+                "InsertAt" => @"flowchart TD
+    A[""InsertAt(index,item)""] --> B[""EnsureCapacity""]
+    B --> C[""Array.Copy suffix right by 1""]
+    C --> D[""_items[index] = item""]
+    D --> E[""_count++""]",
+                "RemoveAt" => @"flowchart TD
+    A[""RemoveAt(index)""] --> B[""ValidateIndex""]
+    B --> C[""save _items[index]""]
+    C --> D[""Array.Copy suffix left by 1""]
+    D --> E[""_items[--_count] = default""]
+    E --> F[""return value""]",
+                "EnsureCapacity" => @"flowchart TD
+    A[""required""] --> B{""required <= length?""}
+    B -- ""yes"" --> C[""return""]
+    B -- ""no"" --> D[""double capacity until enough""]
+    D --> E[""Array.Resize""]
+    E --> F[""return"" ]",
+                _ => @"flowchart LR
+    A[""Enumerator""] --> B[""index 0.._count-1""] --> C[""yield value""]"
             },
-            "list" => method.Name == "Insert"
-                ? @"flowchart TD
-A[Insert] --> B[Validar índice] --> C[Deslocar direita] --> D[Inserir] --> E[Count++]"
-                : @"flowchart TD
-A[Operação] --> B[Localizar índice] --> C[Executar operação] --> D[Resultado]",
+            "list" => method.Name switch
+            {
+                "Insert" => @"flowchart TD
+    A[""Insert(index,item)""] --> B[""InsertAt""]
+    B --> C[""EnsureCapacity""]
+    C --> D[""shift suffix right""]
+    D --> E[""write item""]
+    E --> F[""_count++""]",
+                "RemoveAt" => @"flowchart TD
+    A[""RemoveAt(index)""] --> B[""base.RemoveAt""]
+    B --> C[""shift suffix left""]
+    C --> D[""decrement count""]
+    D --> E[""return removed value""]",
+                "IndexOf" => @"flowchart TD
+    A[""index = 0""] --> B{""index < Count?""}
+    B -- ""yes"" --> C{""this[index] == item?""}
+    C -- ""yes"" --> D[""return index""]
+    C -- ""no"" --> E[""index++""]
+    E --> B
+    B -- ""no"" --> F[""return -1""]",
+                "Contains" => @"flowchart TD
+    A[""Contains(item)""] --> B[""IndexOf(item)""]
+    B --> C{""index >= 0?""}
+    C -- ""yes"" --> D[""true""]
+    C -- ""no"" --> E[""false""]",
+                _ => Mermaid
+            },
             "linkedlist" => method.Name switch
             {
-                "AddFirst" => @"flowchart LR
-A[Novo nó] --> B[Next = Head] --> C[Head = novo]",
-                "AddLast" => @"flowchart LR
-A[Novo nó] --> B[Tail.Next = novo] --> C[Tail = novo]",
-                "RemoveFirst" => @"flowchart LR
-A[Head] --> B[Salvar valor] --> C[Head = Head.Next] --> D[Count--]",
-                "RemoveLast" => @"flowchart LR
-A[Tail] --> B[Salvar valor] --> C[Tail = Tail.Previous] --> D[Count--]",
+                "AddFirst" => @"flowchart TD
+    A[""new node""] --> B{""head is null?""}
+    B -- ""yes"" --> C[""head = tail = node""]
+    B -- ""no"" --> D[""node.Next = head""]
+    D --> E[""head.Previous = node""]
+    E --> F[""head = node""]
+    C --> G[""Count++""]
+    F --> G",
+                "AddLast" => @"flowchart TD
+    A[""new node""] --> B{""tail is null?""}
+    B -- ""yes"" --> C[""head = tail = node""]
+    B -- ""no"" --> D[""node.Previous = tail""]
+    D --> E[""tail.Next = node""]
+    E --> F[""tail = node""]
+    C --> G[""Count++""]
+    F --> G",
+                "RemoveFirst" => @"flowchart TD
+    A[""head""] --> B[""save value""]
+    B --> C[""head = head.Next""]
+    C --> D{""head is null?""}
+    D -- ""yes"" --> E[""tail = null""]
+    D -- ""no"" --> F[""head.Previous = null""]
+    E --> G[""Count-- / return""]
+    F --> G",
+                "RemoveLast" => @"flowchart TD
+    A[""tail""] --> B[""save value""]
+    B --> C[""tail = tail.Previous""]
+    C --> D{""tail is null?""}
+    D -- ""yes"" --> E[""head = null""]
+    D -- ""no"" --> F[""tail.Next = null""]
+    E --> G[""Count-- / return""]
+    F --> G",
+                "Insert" => @"flowchart TD
+    A[""Insert(index,item)""] --> B{""index = 0?""}
+    B -- ""yes"" --> C[""AddFirst""]
+    B -- ""no"" --> D{""index = Count?""}
+    D -- ""yes"" --> E[""AddLast""]
+    D -- ""no"" --> F[""GetNode(index)""]
+    F --> G[""node.Previous = current.Previous""]
+    G --> H[""node.Next = current""]
+    H --> I[""previous.Next = node""]
+    I --> J[""current.Previous = node""]
+    J --> K[""Count++""]",
+                "Remove" => @"flowchart TD
+    A[""current = head""] --> B{""current != null?""}
+    B -- ""yes"" --> C{""current.Value == item?""}
+    C -- ""no"" --> D[""current = current.Next""] --> B
+    C -- ""yes"" --> E{""head / tail / middle?""}
+    E --> F[""unlink or delegate to RemoveFirst/RemoveLast""]
+    F --> G[""Count-- / true""]
+    B -- ""no"" --> H[""false""]",
                 _ => @"flowchart TD
-A[Localizar nó] --> B[Atualizar referências] --> C[Count--]"
+    A[""GetNode(index)""] --> B{""index < Count / 2?""}
+    B -- ""yes"" --> C[""walk Next from head""]
+    B -- ""no"" --> D[""walk Previous from tail""]
+    C --> E[""return node""]
+    D --> E"
             },
             "nodelist" => method.Name switch
             {
-                "Add" => @"flowchart LR
-A[Novo nó] --> B[Tail.Next] --> C[Tail = novo]",
+                "Add" => @"flowchart TD
+    A[""new node""] --> B{""head null?""}
+    B -- ""yes"" --> C[""head = tail = node""]
+    B -- ""no"" --> D[""tail.Next = node""]
+    D --> E[""tail = node""]
+    C --> F[""Count++""]
+    E --> F",
                 "Remove" => @"flowchart TD
-A[Head] --> B[Percorrer nós] --> C{Valor encontrado?}
-C -- Sim --> D[Atualizar Next] --> E[Count--]
-C -- Não --> B",
+    A[""head""] --> B{""head matches?""}
+    B -- ""yes"" --> C[""head = head.Next""]
+    B -- ""no"" --> D[""walk current.Next""]
+    D --> E{""next matches?""}
+    E -- ""no"" --> D
+    E -- ""yes"" --> F[""current.Next = current.Next.Next""]
+    F --> G{""tail removed?""}
+    G -- ""yes"" --> H[""tail = current""]
+    G -- ""no"" --> I[""keep tail""]
+    C --> J[""Count--""]
+    H --> J
+    I --> J",
                 _ => @"flowchart TD
-A[Head] --> B[Percorrer Next] --> C[Retornar valor]"
+    A[""index""] --> B[""current = head""]
+    B --> C[""advance Next until index""]
+    C --> D[""return current.Value""]"
             },
-            "circularlinkedlist" => @"flowchart LR
-A[Head] --> B[Nó] --> C[Nó] --> D[Tail]
-D --> A
-E[Operação] --> B",
-            "queue" => @"flowchart LR
-A[Rear] --> B[Enqueue]
-C[Front] --> D[Dequeue] --> E[Próximo]",
-            "stack" => @"flowchart TD
-A[Topo] --> B[Operação]
-B --> C{Push ou Pop}
-C --> D[Atualizar Topo]",
-            "deque" => @"flowchart LR
-A[Front] --> B{Operação}
-B --> C[AddFirst / RemoveFirst]
-B --> D[AddLast / RemoveLast]",
-            "deck" => @"flowchart LR
-A[Extremidade superior] --> B{Operação}
-B --> C[Adicionar/Remover]
-C --> D[Atualizar extremidade]",
-            "priorityqueue" => @"flowchart TD
-A[Operação] --> B[Heap]
-B --> C[Reordenar por prioridade]
-C --> D[Raiz]",
+            "circularlinkedlist" => method.Name switch
+            {
+                "AddFirst" => @"flowchart TD
+    A[""new node""] --> B{""empty?""}
+    B -- ""yes"" --> C[""head = tail = node; node.Next = node""]
+    B -- ""no"" --> D[""node.Next = head""]
+    D --> E[""head = node""]
+    E --> F[""tail.Next = head""]
+    C --> G[""Count++""]
+    F --> G",
+                "AddLast" => @"flowchart TD
+    A[""new node""] --> B{""empty?""}
+    B -- ""yes"" --> C[""head = tail = node; node.Next = node""]
+    B -- ""no"" --> D[""node.Next = head""]
+    D --> E[""tail.Next = node""]
+    E --> F[""tail = node""]
+    C --> G[""Count++""]
+    F --> G",
+                "RemoveFirst" => @"flowchart TD
+    A[""head""] --> B{""Count = 1?""}
+    B -- ""yes"" --> C[""head = tail = null""]
+    B -- ""no"" --> D[""head = head.Next""]
+    D --> E[""tail.Next = head""]
+    C --> F[""Count-- / return""]
+    E --> F",
+                "RemoveLast" => @"flowchart TD
+    A[""tail""] --> B{""Count = 1?""}
+    B -- ""yes"" --> C[""head = tail = null""]
+    B -- ""no"" --> D[""walk until current.Next = tail""]
+    D --> E[""current.Next = head""]
+    E --> F[""tail = current""]
+    C --> G[""Count-- / return""]
+    F --> G",
+                "Contains" => @"flowchart TD
+    A[""current = head""] --> B[""compare current.Value""]
+    B --> C{""match?""}
+    C -- ""yes"" --> D[""true""]
+    C -- ""no"" --> E[""current = current.Next""]
+    E --> F{""back at head?""}
+    F -- ""no"" --> B
+    F -- ""yes"" --> G[""false""]",
+                _ => @"flowchart TD
+    A[""current = head""] --> B[""yield value""]
+    B --> C[""current = current.Next""]
+    C --> D{""current == head?""}
+    D -- ""no"" --> B
+    D -- ""yes"" --> E[""stop""]"
+            },
+            "queue" => method.Name switch
+            {
+                "Enqueue" => @"flowchart TD
+    A[""new node""] --> B{""tail null?""}
+    B -- ""yes"" --> C[""head = tail = node""]
+    B -- ""no"" --> D[""tail.Next = node""]
+    D --> E[""tail = node""]
+    C --> F[""Count++""]
+    E --> F",
+                "Dequeue" => @"flowchart TD
+    A[""head""] --> B[""save value""]
+    B --> C[""head = head.Next""]
+    C --> D{""head null?""}
+    D -- ""yes"" --> E[""tail = null""]
+    D -- ""no"" --> F[""keep tail""]
+    E --> G[""Count-- / return""]
+    F --> G",
+                "Peek" => @"flowchart TD
+    A[""head""] --> B[""return head.Value""]
+            },
+            "stack" => method.Name switch
+            {
+                "Push" => @"flowchart TD
+    A[""new node""]
+    A --> B[""node.Next = top""]
+    B --> C[""top = node""]
+    C --> D[""Count++""]",
+                "Pop" => @"flowchart TD
+    A[""top""] --> B[""save value""]
+    B --> C[""top = top.Next""]
+    C --> D[""Count-- / return""],
+                "Peek" => @"flowchart TD
+    A[""top""] --> B[""return top.Value""]"
+            },
+            "deque" => method.Name switch
+            {
+                "AddFirst" => @"flowchart TD
+    A[""new node""] --> B{""head null?""}
+    B -- ""yes"" --> C[""head = tail = node""]
+    B -- ""no"" --> D[""node.Next = head""]
+    D --> E[""head.Previous = node""]
+    E --> F[""head = node""]
+    C --> G[""Count++""]
+    F --> G",
+                "AddLast" => @"flowchart TD
+    A[""new node""] --> B{""tail null?""}
+    B -- ""yes"" --> C[""head = tail = node""]
+    B -- ""no"" --> D[""node.Previous = tail""]
+    D --> E[""tail.Next = node""]
+    E --> F[""tail = node""]
+    C --> G[""Count++""]
+    F --> G",
+                "RemoveFirst" => @"flowchart TD
+    A[""head""] --> B[""save value""]
+    B --> C[""head = head.Next""]
+    C --> D{""head null?""}
+    D -- ""yes"" --> E[""tail = null""]
+    D -- ""no"" --> F[""head.Previous = null""]
+    E --> G[""Count-- / return""]
+    F --> G",
+                "RemoveLast" => @"flowchart TD
+    A[""tail""] --> B[""save value""]
+    B --> C[""tail = tail.Previous""]
+    C --> D{""tail null?""}
+    D -- ""yes"" --> E[""head = null""]
+    D -- ""no"" --> F[""tail.Next = null""]
+    E --> G[""Count-- / return""]
+    F --> G",
+                "PeekFirst" => @"flowchart TD
+    A[""head""] --> B[""return head.Value""]",
+                "PeekLast" => @"flowchart TD
+    A[""tail""] --> B[""return tail.Value""]"
+            },
+            "deck" => method.Name switch
+            {
+                "AddFirst" => @"flowchart TD
+    A[""new node""] --> B{""head null?""}
+    B -- ""yes"" --> C[""head = tail = node""]
+    B -- ""no"" --> D[""node.Next = head""]
+    D --> E[""head.Previous = node""]
+    E --> F[""head = node""]
+    C --> G[""Count++""]
+    F --> G",
+                "AddLast" => @"flowchart TD
+    A[""new node""] --> B{""tail null?""}
+    B -- ""yes"" --> C[""head = tail = node""]
+    B -- ""no"" --> D[""tail.Next = node""]
+    D --> E[""node.Previous = tail""]
+    E --> F[""tail = node""]
+    C --> G[""Count++""]
+    F --> G",
+                "RemoveFirst" => @"flowchart TD
+    A[""head""] --> B[""save value""]
+    B --> C[""head = head.Next""]
+    C --> D{""head null?""}
+    D -- ""yes"" --> E[""tail = null""]
+    D -- ""no"" --> F[""head.Previous = null""]
+    E --> G[""Count-- / return""]
+    F --> G",
+                "RemoveLast" => @"flowchart TD
+    A[""tail""] --> B[""save value""]
+    B --> C[""tail = tail.Previous""]
+    C --> D{""tail null?""}
+    D -- ""yes"" --> E[""head = null""]
+    D -- ""no"" --> F[""tail.Next = null""]
+    E --> G[""Count-- / return""]
+    F --> G"
+            },
+            "priorityqueue" => method.Name switch
+            {
+                "Enqueue" => @"flowchart TD
+    A[""append to _heap""] --> B[""index = Count - 1""]
+    B --> C[""parent = (index - 1) / 2""]
+    C --> D{""parent <= child?""}
+    D -- ""yes"" --> E[""done""]
+    D -- ""no"" --> F[""swap""]
+    F --> C",
+                "Peek" => @"flowchart TD
+    A[""_heap[0]""] --> B[""return minimum""]",
+                "Dequeue" => @"flowchart TD
+    A[""save _heap[0]""]
+    A --> B[""remove last""]
+    B --> C{""heap empty?""}
+    C -- ""yes"" --> D[""return saved""]
+    C -- ""no"" --> E[""_heap[0] = last""]
+    E --> F[""SiftDown""]
+    F --> D"
+            },
             "binarytree" => method.Name switch
             {
                 "PreOrder" => @"flowchart TD
-A[Raiz] --> B[Visitar raiz]
-B --> C[Percorrer esquerda]
-C --> D[Percorrer direita]",
+    A[""node""] --> B{""node null?""}
+    B -- ""yes"" --> C[""yield nothing""]
+    B -- ""no"" --> D[""yield node.Value""]
+    D --> E[""recurse Left""]
+    E --> F[""recurse Right""]",
                 "InOrder" => @"flowchart TD
-A[Raiz] --> B[Percorrer esquerda]
-B --> C[Visitar raiz]
-C --> D[Percorrer direita]",
+    A[""node""] --> B{""node null?""}
+    B -- ""yes"" --> C[""yield nothing""]
+    B -- ""no"" --> D[""recurse Left""]
+    D --> E[""yield node.Value""]
+    E --> F[""recurse Right""]",
                 "PostOrder" => @"flowchart TD
-A[Raiz] --> B[Percorrer esquerda]
-B --> C[Percorrer direita]
-C --> D[Visitar raiz]",
+    A[""node""] --> B{""node null?""}
+    B -- ""yes"" --> C[""yield nothing""]
+    B -- ""no"" --> D[""recurse Left""]
+    D --> E[""recurse Right""]
+    E --> F[""yield node.Value""]",
                 _ => Mermaid
             },
             "binarysearchtree" => method.Name switch
             {
                 "Insert" => @"flowchart TD
-A[Valor] --> B{Valor < nó?}
-B -- Sim --> C[Esquerda]
-B -- Não --> D[Direita]
-C --> E{Vazio?}
-D --> E
-E -- Sim --> F[Inserir]",
+    A[""value""] --> B{""Root null?""}
+    B -- ""yes"" --> C[""Root = new node""]
+    B -- ""no"" --> D[""compare with current""]
+    D --> E{""value < current?""}
+    E -- ""yes"" --> F[""go Left""]
+    E -- ""no"" --> G[""go Right""]
+    F --> H{""child null?""}
+    G --> H
+    H -- ""no"" --> D
+    H -- ""yes"" --> I[""insert node / Count++""]
+                ,
                 "Contains" => @"flowchart TD
-A[Valor] --> B[Comparar com nó]
-B --> C{Igual?}
-C -- Sim --> D[Encontrado]
-C -- Não --> E{Menor?}
-E -- Sim --> F[Esquerda]
-E -- Não --> G[Direita]
-F --> B
-G --> B",
-                _ => Mermaid
+    A[""current = Root""] --> B{""current null?""}
+    B -- ""yes"" --> C[""false""]
+    B -- ""no"" --> D[""Compare target""]
+    D --> E{""comparison = 0?""}
+    E -- ""yes"" --> F[""true""]
+    E -- ""no"" --> G{""target < current?""}
+    G -- ""yes"" --> H[""current = Left""]
+    G -- ""no"" --> I[""current = Right""]
+    H --> B
+    I --> B",
+                "InOrder" => @"flowchart TD
+    A[""node""] --> B[""recurse Left""]
+    B --> C[""yield value""]
+    C --> D[""recurse Right""]",
+                "PreOrder" => @"flowchart TD
+    A[""node""] --> B[""yield value""]
+    B --> C[""recurse Left""]
+    C --> D[""recurse Right""]",
+                "PostOrder" => @"flowchart TD
+    A[""node""] --> B[""recurse Left""]
+    B --> C[""recurse Right""]
+    C --> D[""yield value""]"
             },
             "heap" => method.Name switch
             {
                 "Add" => @"flowchart TD
-A[Adicionar no fim] --> B[Sift Up]
-B --> C{Menor que pai?}
-C -- Sim --> D[Trocar]
-D --> B
-C -- Não --> E[Fim]",
+    A[""append at end""] --> B[""index = last""]
+    B --> C[""parent = (index - 1) / 2""]
+    C --> D{""parent <= child?""}
+    D -- ""yes"" --> E[""done""]
+    D -- ""no"" --> F[""swap""]
+    F --> C",
+                "Peek" => @"flowchart TD
+    A[""_items[0]""] --> B[""return minimum""]",
                 "Remove" => @"flowchart TD
-A[Remover raiz] --> B[Mover último para raiz] --> C[Sift Down]
-C --> D{Filho menor?}
-D -- Sim --> E[Trocar] --> C
-D -- Não --> F[Fim]",
-                _ => Mermaid
-            },
+    A[""save root minimum""] --> B[""remove last""]
+    B --> C{""items remain?""}
+    C -- ""no"" --> D[""return root""]
+    C -- ""yes"" --> E[""move last to root""]
+    E --> F[""SiftDown: choose smaller child""]
+    F --> G{""child smaller than parent?""}
+    G -- ""yes"" --> H[""swap and continue""]
+    H --> F
+    G -- ""no"" --> D",
+                "AsArray" => @"flowchart LR
+    A[""_items""] --> B[""IReadOnlyList<T> view""]
+            }
+            ,
             "maxheap" => method.Name switch
             {
                 "Add" => @"flowchart TD
-A[Adicionar no fim] --> B[Sift Up]
-B --> C{Maior que pai?}
-C -- Sim --> D[Trocar]
-D --> B
-C -- Não --> E[Fim]",
+    A[""append at end""] --> B[""index = last""]
+    B --> C[""parent = (index - 1) / 2""]
+    C --> D{""parent >= child?""}
+    D -- ""yes"" --> E[""done""]
+    D -- ""no"" --> F[""swap""]
+    F --> C",
+                "Peek" => @"flowchart TD
+    A[""_items[0]""] --> B[""return maximum""]",
                 "Remove" => @"flowchart TD
-A[Remover raiz] --> B[Mover último para raiz] --> C[Sift Down]
-C --> D{Filho maior?}
-D -- Sim --> E[Trocar] --> C
-D -- Não --> F[Fim]",
-                _ => Mermaid
+    A[""save root maximum""] --> B[""remove last""]
+    B --> C{""items remain?""}
+    C -- ""no"" --> D[""return maximum""]
+    C -- ""yes"" --> E[""move last to root""]
+    E --> F[""SiftDown: choose larger child""]
+    F --> G{""child larger than parent?""}
+    G -- ""yes"" --> H[""swap and continue""]
+    H --> F
+    G -- ""no"" --> D",
+                "AsArray" => @"flowchart LR
+    A[""_items""] --> B[""IReadOnlyList<T> view""]
             },
             "graph" => method.Name switch
             {
                 "AddVertex" => @"flowchart TD
-A[Vértice] --> B{Já existe?}
-B -- Não --> C[Criar lista de adjacência]
-B -- Sim --> D[Manter vértice]",
+    A[""vertex""] --> B[""_adjacency.TryAdd(vertex, empty set)""]
+    B --> C[""vertex available in Vertices""]",
                 "AddEdge" => @"flowchart TD
-A[Origem] --> B[Garantir vértices] --> C[Adicionar destino à adjacência]",
+    A[""from, to""] --> B[""AddVertex(from)""]
+    B --> C[""AddVertex(to)""]
+    C --> D[""_adjacency[from].Add(to)""]
+    D --> E[""directed edge from -> to""]",
+                "HasEdge" => @"flowchart TD
+    A[""from""] --> B[""TryGetValue(from)""]
+    B --> C{""neighbors found?""}
+    C -- ""no"" --> D[""false""]
+    C -- ""yes"" --> E[""neighbors.Contains(to)""]
+    E --> F[""true / false""]",
+                "Neighbors" => @"flowchart TD
+    A[""vertex""] --> B[""TryGetValue(vertex)""]
+    B --> C{""found?""}
+    C -- ""yes"" --> D[""return HashSet neighbors""]
+    C -- ""no"" --> E[""return empty collection""]",
                 "BreadthFirst" => @"flowchart TD
-A[Início] --> B[Enfileirar]
-B --> C[Retirar da fila]
-C --> D[Visitar vizinhos]
-D --> E[Enfileirar não visitados]
-E --> C",
+    A[""start""] --> B[""visited = {start}; enqueue start""]
+    B --> C{""queue not empty?""}
+    C -- ""yes"" --> D[""dequeue vertex; yield it""]
+    D --> E[""for each neighbor""]
+    E --> F{""visited.Add(neighbor)?""}
+    F -- ""yes"" --> G[""enqueue neighbor""]
+    F -- ""no"" --> E
+    G --> C
+    C -- ""no"" --> H[""finish"" ]",
                 "DepthFirst" => @"flowchart TD
-A[Início] --> B[Marcar visitado]
-B --> C[Visitar vizinho]
-C --> B
-B --> D[Voltar quando não houver vizinho]",
+    A[""start""] --> B[""visited = empty""]
+    B --> C[""DepthFirstCore(start)""]
+    C --> D{""visited.Add(vertex)?""}
+    D -- ""no"" --> E[""return""]
+    D -- ""yes"" --> F[""yield vertex""]
+    F --> G[""for each neighbor""]
+    G --> H[""DepthFirstCore(neighbor)""]
+    H --> G",
                 _ => Mermaid
             },
             _ => Mermaid
         };
+
 }
 
 public static class StructureCatalog
