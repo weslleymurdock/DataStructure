@@ -140,6 +140,34 @@ public sealed class LinearSearch
         return new(found, stopwatch.Elapsed);
     }
 
+    public AlgorithmResult<int> ExecuteDSCircularLinkedList<T>(
+        DSCircularLinkedList<T> data,
+        T target)
+        => Run(data.Enumerate(), target);
+
+    public AlgorithmResult<int> ExecuteDSBinaryTree<T>(
+        DSBinaryTree<T> data,
+        T target)
+        => Run(data.PreOrder(), target);
+
+    public AlgorithmResult<int> ExecuteDSBinarySearchTree<T>(
+        DSBinarySearchTree<T> data,
+        T target)
+        where T : IComparable<T>
+        => Run(data.PreOrder(), target);
+
+    public AlgorithmResult<int> ExecuteDSHeap<T>(
+        DSHeap<T> data,
+        T target)
+        where T : IComparable<T>
+        => Run(data.AsArray(), target);
+
+    public AlgorithmResult<int> ExecuteDSGraph<T>(
+        DSGraph<T> data,
+        T target)
+        where T : notnull
+        => Run(data.BreadthFirst(target), target);
+
     private static AlgorithmResult<int> Run<T>(
         IEnumerable<T> data,
         T target)
