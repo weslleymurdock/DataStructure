@@ -163,42 +163,21 @@ Construa um max-heap, troque a raiz com o último elemento da região não orden
 
 Assim, a complexidade do algoritmo deve ser analisada junto com o custo das operações da estrutura.
 
-### Visualização das ordenações
+### Laboratório visual
 
-A visualização gráfica permite comparar um algoritmo contra várias estruturas ou vários algoritmos contra uma estrutura. O modo personalizado só permite adicionar pares que compartilham o mesmo algoritmo ou a mesma estrutura, evitando comparar simultaneamente dimensões diferentes. A execução percorre `DSArray`, `DSList`, `DSLinkedList`, `DSCollection`, `DSQueue`, `DSStack` e `DSDeque`, garantindo que cada implementação `Execute<TEstruturaDeDado>` dos seis sorts também seja exercitada visualmente.
+O laboratório permite dois modos de comparação:
 
-Cada coluna representa um algoritmo:
+- **Comparar tudo** por algoritmo: um algoritmo é executado sobre todas as estruturas disponíveis.
+- **Comparar tudo** por estrutura: todos os algoritmos são executados sobre uma única estrutura.
+- **Comparação personalizada**: cada gráfico é um par explícito algoritmo × estrutura. Depois do primeiro gráfico, os próximos precisam compartilhar o mesmo algoritmo ou a mesma estrutura.
 
-- `BubbleSort`
-- `SelectionSort`
-- `InsertionSort`
-- `MergeSort`
-- `QuickSort`
-- `HeapSort`
+Isso evita comparar, por exemplo, um algoritmo A × estrutura X com algoritmo B × estrutura Y e tratar essa combinação como uma única comparação.
 
-Cada algoritmo recebe o mesmo conjunto de valores, mas uma instância própria da estrutura da rodada. Os algoritmos são iniciados em `Task`s independentes; os callbacks de mutação atualizam apenas o painel correspondente e um lock protege o estado compartilhado do frame.
+Os painéis são instâncias independentes e exibem a evolução dos valores, índice atualmente processado, número de passos e ordem de conclusão. A ordem de conclusão representa o tempo da animação, não um benchmark científico.
 
-O cabeçalho de cada painel mostra:
+Estruturas não sequenciais são linearizadas apenas para a visualização. Por exemplo, a Hash Table é materializada na ordem de seus buckets e o heap é exibido na sua representação em níveis. Isso permite visualizar algoritmos sobre os dados sem afirmar que essas estruturas possuem operações nativas de ordenação equivalentes a um array.
 
-- `running` enquanto o algoritmo está executando;
-- `#1`, `#2`, etc. quando ele termina, indicando a posição na ordem de conclusão;
-- `N iter`, representando quantos snapshots de mutação foram publicados pelo algoritmo durante a animação.
-
-O cabeçalho geral também exibe a sequência de conclusão, por exemplo:
-
-> `Finish order: #1 HeapSort -> #2 QuickSort -> ...`
-
-Assim é possível observar simultaneamente **como cada algoritmo ordena os valores, quantas alterações visualizáveis realizou e qual algoritmo terminou primeiro e qual terminou por último**.
-
-A execução é repetida para cada estrutura de dados. Isso é importante porque as classes possuem implementações específicas para `DSArray`, `DSList`, `DSLinkedList`, `DSCollection`, `DSQueue`, `DSStack` e `DSDeque`; a visualização não substitui essas implementações por uma ordenação genérica.
-
-A API continua recebendo um callback de frame:
-
-`Action<DataStructure.Algorithms.Visualization.Console>`
-
-O callback padrão do projeto apenas chama `frame.Render()`. O atraso de animação fica dentro do mecanismo visualizador, e não na implementação dos algoritmos, mantendo o algoritmo independente de I/O.
-
-> `System.Console` é estático e não pode ser usado como argumento de `Action<T>`. Por isso o callback recebe a classe de frame `DataStructure.Algorithms.Visualization.Console`, enquanto `System.Console` continua sendo usado para escrever o terminal.
+A DSHashTable<TKey,TValue> possui uma demonstração própria na página de estudo e pode ser selecionada no laboratório. Nessa visualização, suas associações são convertidas em uma sequência independente apenas para a animação dos algoritmos.
 
 ### Complexidade em termos simples
 
