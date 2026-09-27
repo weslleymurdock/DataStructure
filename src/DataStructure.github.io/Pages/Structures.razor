@@ -5,36 +5,47 @@
 <PageTitle>Estruturas de dados</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
-    <MudStack Spacing="3">
+    <MudStack Spacing="4">
         <MudText Typo="Typo.h3">Estruturas de dados</MudText>
         <MudText>
-            Escolha uma estrutura para abrir sua implementação, métodos, complexidade e demonstração.
+            As estruturas estão divididas entre organizações lineares e não lineares.
+            Cada cartão abre a implementação e a explicação dos métodos.
         </MudText>
 
-        <MudGrid>
-            @foreach (var structure in StructureCatalog.All)
-            {
-                <MudItem xs="12" sm="6" md="4" @key="structure.Key">
-                    <MudPaper Elevation="2" Class="pa-4 structure-card">
-                        <MudText Typo="Typo.h5">@structure.Name</MudText>
-                        <MudText Typo="Typo.body2" Class="my-2">@structure.Description</MudText>
-                        <MudText Typo="Typo.caption">Melhor uso: @structure.UseCase</MudText>
-
-                        <MudStack Row="true" Class="mt-3">
-                            <MudButton Href="@($"/structures/{structure.Key}")"
-                                       Variant="Variant.Filled"
-                                       Color="Color.Primary">
-                                Estudar
-                            </MudButton>
-                            <MudButton Href="@($"/run/{structure.Key}")"
-                                       Variant="Variant.Outlined"
-                                       Color="Color.Primary">
-                                Run
-                            </MudButton>
-                        </MudStack>
-                    </MudPaper>
-                </MudItem>
-            }
-        </MudGrid>
+        @foreach (var group in Groups)
+        {
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h4">@group.Name</MudText>
+                <MudText Typo="Typo.body2">@group.Description</MudText>
+                <MudGrid Class="mt-2">
+                    @foreach (var structure in group.Items)
+                    {
+                        <MudItem xs="12" sm="6" lg="4" @key="structure.Key">
+                            <MudCard Class="structure-card">
+                                <MudCardContent>
+                                    <MudText Typo="Typo.h6">@structure.Name</MudText>
+                                    <MudText Typo="Typo.body2" Class="mt-1">@structure.Description</MudText>
+                                    <MudText Typo="Typo.caption" Class="mt-2">Uso: @structure.UseCase</MudText>
+                                </MudCardContent>
+                                <MudCardActions>
+                                    <MudButton Href="@($"/structures/{structure.Key}")" Variant="Variant.Filled" Color="Color.Primary">Estudar</MudButton>
+                                    <MudButton Href="@($"/run/{structure.Key}")" Variant="Variant.Outlined">Run</MudButton>
+                                </MudCardActions>
+                            </MudCard>
+                        </MudItem>
+                    }
+                </MudGrid>
+            </MudPaper>
+        }
     </MudStack>
 </MudContainer>
+
+@code {
+    private IReadOnlyList<StructureGroup> Groups =>
+    [
+        new("Lineares", "Os elementos possuem uma relação sequencial ou são acessados por duas extremidades.", StructureCatalog.Linear),
+        new("Não lineares", "Os elementos formam hierarquias, prioridades ou relações entre múltiplos caminhos.", StructureCatalog.NonLinear)
+    ];
+
+    private sealed record StructureGroup(string Name, string Description, IReadOnlyList<StructureGuide> Items);
+}
