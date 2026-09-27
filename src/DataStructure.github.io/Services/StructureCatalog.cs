@@ -669,10 +669,7 @@ public sealed record StructureGuide(
     C --> D{""key found?""}
     D -- ""yes"" --> E[""RemoveAt(index)""]
     E --> F[""_count-- / true""]
-    D -- ""no"" --> G[""false""]
-    "clear" => @"flowchart TD
-    A[""Clear()""] --> B[""create fresh bucket array""]
-    B --> C[""_count = 0""]",
+    D -- ""no"" --> G[""false""]",
                 "Clear" => @"flowchart TD
     A[""Clear()""] --> B[""create fresh bucket array with same capacity""]
     B --> C[""_count = 0""]",
