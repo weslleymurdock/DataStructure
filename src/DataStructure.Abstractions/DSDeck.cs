@@ -1,84 +1,82 @@
 namespace DataStructure.Abstractions;
 
-// ==========================================
-// 2. DECK / DEQUE - Fila de Duas Pontas O(1)
-// ==========================================
+/// <summary>
+/// Legacy double-ended queue implementation retained as a structural example.
+/// Both ends are backed by explicit node references and operate in O(1).
+/// </summary>
 public sealed class DSDeck<T>
 {
-    private DSNode<T>? _head; // Topo/Início
-    private DSNode<T>? _tail; // Base/Fim
+    private DSNode<T>? _head;
+    private DSNode<T>? _tail;
 
+    /// <summary>Gets the number of values stored.</summary>
     public int Count { get; private set; }
 
-    // Insere no Início O(1)
+    /// <summary>Adds a value at the beginning in O(1).</summary>
     public void AddFirst(T item)
     {
-        var newNode = new DSNode<T>(item);
+        var node = new DSNode<T>(item);
 
-        if (_head == null)
-        {
-            _head = newNode;
-            _tail = newNode;
-        }
+        if (_head is null)
+            _head = _tail = node;
         else
         {
-            newNode.Next = _head;
-            _head.Previous = newNode; // O head antigo agora tem o novo como anterior
-            _head = newNode;
+            node.Next = _head;
+            _head.Previous = node;
+            _head = node;
         }
+
         Count++;
     }
 
-    // Insere no Final O(1)
+    /// <summary>Adds a value at the end in O(1).</summary>
     public void AddLast(T item)
     {
-        var newNode = new DSNode<T>(item);
+        var node = new DSNode<T>(item);
 
-        if (_tail == null)
-        {
-            _head = newNode;
-            _tail = newNode;
-        }
+        if (_tail is null)
+            _head = _tail = node;
         else
         {
-            _tail.Next = newNode;
-            newNode.Previous = _tail; // O novo aponta para o tail antigo
-            _tail = newNode;
+            _tail.Next = node;
+            node.Previous = _tail;
+            _tail = node;
         }
+
         Count++;
     }
 
-    // Remove do Início O(1)
+    /// <summary>Removes and returns the first value in O(1).</summary>
     public T RemoveFirst()
     {
-        if (_head == null)
-            throw new InvalidOperationException("O deque está vazio.");
+        if (_head is null)
+            throw new InvalidOperationException("The deck is empty.");
 
-        T value = _head.Value;
-        _head = _head.Next; // O segundo vira o primeiro
+        var value = _head.Value;
+        _head = _head.Next;
 
-        if (_head == null)
-            _tail = null; // Esvaziou
+        if (_head is null)
+            _tail = null;
         else
-            _head.Previous = null; // Corta a ligação para trás (ajuda o Garbage Collector)
+            _head.Previous = null;
 
         Count--;
         return value;
     }
 
-    // Remove do Final O(1)
+    /// <summary>Removes and returns the last value in O(1).</summary>
     public T RemoveLast()
     {
-        if (_tail == null)
-            throw new InvalidOperationException("O deque está vazio.");
+        if (_tail is null)
+            throw new InvalidOperationException("The deck is empty.");
 
-        T value = _tail.Value;
-        _tail = _tail.Previous; // O penúltimo vira o último
+        var value = _tail.Value;
+        _tail = _tail.Previous;
 
-        if (_tail == null)
-            _head = null; // Esvaziou
+        if (_tail is null)
+            _head = null;
         else
-            _tail.Next = null; // Corta a ligação para a frente
+            _tail.Next = null;
 
         Count--;
         return value;
