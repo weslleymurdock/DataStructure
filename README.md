@@ -9,7 +9,7 @@ O repositório privilegia implementações pequenas e didáticas, para que a est
 - **DataStructure.Abstractions** — implementações das estruturas.
 - **DataStructure** — console com exemplos de uso das estruturas.
 - **DataStructure.Algorithms** — algoritmos e métodos `Execute<TEstruturaDeDado>`.
-- **DataStructure.AlgorithmsConsole** — segundo console que executa os algoritmos e mede o tempo.
+- **DataStructure** — console único que demonstra as estruturas, mede os algoritmos e executa a visualização ANSI das ordenações.
 - **DataStructure.Tests** — testes das operações fundamentais.
 
 ## Estruturas
@@ -25,7 +25,7 @@ O repositório privilegia implementações pequenas e didáticas, para que a est
 | `DSDeque<T>` | duas extremidades | Add/Remove em ambos os lados O(1) | buffers, histórico e filas com prioridade nas extremidades |
 | `DSPriorityQueue<T>` | heap binário mínimo | Peek O(1), Enqueue/Dequeue O(log n) | tarefas que precisam ser processadas por prioridade |
 
-Cada implementação possui comentários/XML docs sobre sua organização e complexidade. Os nós são compartilhados pelas estruturas baseadas em encadeamento.
+Cada implementação possui comentários/XML docs explicando a lógica interna, as operações e a complexidade. Os nós são compartilhados pelas estruturas baseadas em encadeamento.
 
 ### Complexidade
 
@@ -37,7 +37,7 @@ Cada implementação possui comentários/XML docs sobre sua organização e comp
 
 ## Algoritmos
 
-Cada algoritmo fica em uma classe com nome correspondente à técnica. Os métodos seguem o padrão `Execute<TEstruturaDeDado>` e o console executa cada implementação sobre estruturas equivalentes, medindo o tempo com `Stopwatch`.
+Cada algoritmo fica em uma classe com nome correspondente à técnica. Os métodos seguem o padrão `Execute<TEstruturaDeDado>` e o console executa cada implementação sobre estruturas equivalentes, medindo o tempo com `Stopwatch`. As classes de ordenação também aceitam opcionalmente um callback `Action<IReadOnlyList<int>>`, usado pelo demo visual sem acoplar os algoritmos ao terminal.
 
 ### Busca
 
@@ -158,6 +158,14 @@ Construa um max-heap, troque a raiz com o último elemento da região não orden
 
 Assim, a complexidade do algoritmo deve ser analisada junto com o custo das operações da estrutura.
 
+### Visualização das ordenações
+
+A visualização usa `DataStructure.Algorithms.Visualization.Console` como um frame imutável do gráfico. O método `AlgorithmVisualizationDemo.Run` recebe `Action<Console>` e invoca o callback depois das mutações relevantes de cada sort. O callback padrão do projeto chama `frame.Render()`, que limpa o terminal com ANSI e desenha um gráfico conceitual X/Y de `0..N`, com uma coluna por valor e altura proporcional ao valor.
+
+A lista usada na animação é uma permutação determinística de `1..14`, evitando valores repetidos e tornando a movimentação das barras fácil de acompanhar. O atraso de 80 ms fica no `Program`, fora dos algoritmos, para que a lógica de ordenação continue independente de I/O.
+
+> `System.Console` é estático e não pode ser usado como argumento de `Action<T>`. Por isso o callback recebe a classe de frame `DataStructure.Algorithms.Visualization.Console`, enquanto `System.Console` continua sendo usado para desenhar o terminal.
+
 ### Complexidade em termos simples
 
 - **O(1)** — custo constante.
@@ -173,11 +181,10 @@ Assim, a complexidade do algoritmo deve ser analisada junto com o custo das oper
 
 ```bash
 dotnet run --project src/DataStructure/DataStructure.csproj
-dotnet run --project src/DataStructure.AlgorithmsConsole/DataStructure.AlgorithmsConsole.csproj
 dotnet test
 ```
 
-O primeiro console demonstra as estruturas. O segundo instancia cada classe de algoritmo e chama os métodos `Execute<TEstruturaDeDado>`, exibindo o tempo medido por estrutura.
+O console `DataStructure` demonstra as estruturas, instancia cada classe de algoritmo e chama os métodos `Execute<TEstruturaDeDado>`, exibindo o tempo medido por estrutura. Ao final, `AlgorithmVisualizationDemo` executa os sorts sobre uma permutação de 1..N e desenha cada mutação em um gráfico ANSI N×N.
 
 ## Objetivo didático
 
