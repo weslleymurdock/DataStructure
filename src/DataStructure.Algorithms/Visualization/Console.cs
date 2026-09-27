@@ -1,71 +1,158 @@
 namespace DataStructure.Algorithms.Visualization;
 
 /// <summary>
-/// Represents one frame of a sorting visualization.
-/// The frame is deliberately named <c>Console</c> because it is the object
-/// received by the visualization callback; it is not <see cref="System.Console"/>.
+/// Composite frame received by <see cref="AlgorithmVisualizationDemo"/> callbacks.
+/// It renders all sorting algorithms side by side and exposes their progress.
 /// </summary>
 public sealed class Console
 {
-    /// <summary>Creates a visualization frame from the current values.</summary>
-    public Console(string algorithm, IReadOnlyList<int> values, int step)
+    /// <summary>Creates a composite visualization frame.</summary>
+    public Console(
+        string structure,
+        IReadOnlyList<PanelState> panels,
+        IReadOnlyList<string> completionOrder)
     {
-        ArgumentNullException.ThrowIfNull(algorithm);
-        ArgumentNullException.ThrowIfNull(values);
+        ArgumentNullException.ThrowIfNull(structure);
+        ArgumentNullException.ThrowIfNull(panels);
+        ArgumentNullException.ThrowIfNull(completionOrder);
 
-        Algorithm = algorithm;
-        Values = [.. values];
-        Step = step;
+        Structure = structure;
+        Panels = [.. panels];
+        CompletionOrder = [.. completionOrder];
+
+        foreach (var panel in Panels)
+            panel.Structure = structure;
     }
 
-    /// <summary>Gets the algorithm currently being animated.</summary>
-    public string Algorithm { get; }
+    /// <summary>Gets the data structure used by this race.</summary>
+    public string Structure { get; }
 
-    /// <summary>Gets an immutable snapshot of the values represented by this frame.</summary>
-    public IReadOnlyList<int> Values { get; }
+    /// <summary>Gets the six algorithm panels.</summary>
+    public IReadOnlyList<PanelState> Panels { get; }
 
-    /// <summary>Gets the zero-based frame number.</summary>
-    public int Step { get; }
+    /// <summary>Gets algorithms ordered by the moment they finished.</summary>
+    public IReadOnlyList<string> CompletionOrder { get; }
 
-    /// <summary>Gets the side length of the conceptual X/Y chart.</summary>
-    public int Count => Values.Count;
-
-    /// <summary>Draws the frame using ANSI escape sequences.</summary>
+    /// <summary>Draws all six panels side by side using ANSI escape sequences.</summary>
     public void Render()
     {
-        System.Console.Write("\x1b[2J\x1b[H");
-        System.Console.WriteLine($"{Algorithm}  |  frame {Step:N0}  |  N = {Count}");
+        System.Console.Write("[2J[H");
+
+        System.Console.WriteLine(
+            $"SORT RACE | Structure: {Structure} | " +
+            $"Algorithms: {Panels.Count}");
+
+        System.Console.WriteLine(
+            CompletionOrder.Count == 0
+                ? "Finish order: -"
+                : $"Finish order: {FormatCompletionOrder()}");
+
         System.Console.WriteLine();
 
-        if (Count == 0)
+        RenderHeaders();
+        RenderCharts();
+        RenderFooter();
+    }
+
+    private void RenderHeaders()
+    {
+        foreach (var panel in Panels)
         {
-            System.Console.WriteLine("(empty)");
-            return;
+            var status = panel.Completed
+                ? $"#{panel.CompletionOrder}"
+                : "running";
+
+            var header =
+                $"{panel.Algorithm} {status} | {panel.Iterations:N0} iter";
+
+            System.Console.Write(
+                header.PadRight(GetPanelWidth()));
         }
 
-        // Y is Count and X contains one column per value.
-        // A value of N reaches the top row, while a value of 1 reaches one row.
-        for (var y = Count; y >= 1; y--)
-        {
-            for (var x = 0; x < Count; x++)
-            {
-                var value = Values[x];
+        System.Console.WriteLine();
+    }
 
-                if (value < y)
+    private void RenderCharts()
+    {
+        var count = Panels.Count == 0
+            ? 0
+            : Panels.Max(panel => panel.Values.Count);
+
+        for (var y = count; y >= 1; y--)
+        {
+            foreach (var panel in Panels)
+            {
+                for (var x = 0; x < panel.Values.Count; x++)
                 {
-                    System.Console.Write(" ");
-                    continue;
+                    var value = panel.Values[x];
+
+                    if (value < y)
+                    {
+                        System.Console.Write(" ");
+                        continue;
+                    }
+
+                    var color =
+                        16 + value * 200 / Math.Max(1, count);
+
+                    System.Console.Write(
+                        $"[48;5;{color}m [0m");
                 }
 
-                // ANSI 256-color output gives each bar a visible terminal color.
-                var color = 16 + (value * 200 / Math.Max(1, Count));
-                System.Console.Write($"\x1b[48;5;{color}m \x1b[0m");
+                System.Console.Write(
+                    new string(
+                        ' ',
+                        Math.Max(0, GetPanelWidth() - panel.Values.Count)));
             }
 
             System.Console.WriteLine();
         }
 
-        System.Console.WriteLine(new string('─', Count));
-        System.Console.WriteLine($"0{new string(' ', Math.Max(0, Count - 1))}{Count}");
+        foreach (var panel in Panels)
+        {
+            System.Console.Write(
+                new string('─', panel.Values.Count));
+
+            System.Console.Write(
+                new string(
+                    ' ',
+                    Math.Max(0, GetPanelWidth() - panel.Values.Count)));
+        }
+
+        System.Console.WriteLine();
+    }
+
+    private void RenderFooter()
+    {
+        foreach (var panel in Panels)
+        {
+            var status = panel.Completed
+                ? $"DONE #{panel.CompletionOrder}"
+                : "RUNNING";
+
+            var text =
+                $"{status} | iterations={panel.Iterations:N0}";
+
+            System.Console.Write(
+                text.PadRight(GetPanelWidth()));
+        }
+
+        System.Console.WriteLine();
+        System.Console.WriteLine(
+            "Finish rank: #1 is first; " +
+            $"#{Panels.Count} is last.");
+    }
+
+    private string FormatCompletionOrder()
+    {
+        return string.Join(
+            " -> ",
+            CompletionOrder.Select(
+                (algorithm, index) => $"#{index + 1} {algorithm}"));
+    }
+
+    private static int GetPanelWidth()
+    {
+        return 20;
     }
 }
