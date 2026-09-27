@@ -2,70 +2,160 @@ using DataStructure.Abstractions;
 
 namespace DataStructure.Algorithms;
 
-/// <summary>Heap sort using a max heap. Time O(n log n) in best, average and worst cases; space O(1) for the array itself.</summary>
+/// <summary>
+/// Heap sort builds a max-heap, repeatedly moves its root to the end,
+/// and restores the heap property. All cases are O(n log n) with O(1)
+/// auxiliary space for the sorting array.
+/// </summary>
 public sealed class HeapSort
 {
-    public AlgorithmResult<int> ExecuteDSArray(DSArray<int> d) => Sort(d.Count, i => d[i], (i, v) => d[i] = v);
-    public AlgorithmResult<int> ExecuteDSList(DSList<int> d) => Sort(d.Count, i => d[i], (i, v) => d[i] = v);
-    public AlgorithmResult<int> ExecuteDSLinkedList(DSLinkedList<int> d) => SortCopy([.. d]);
-    public AlgorithmResult<int> ExecuteDSCollection(DSCollection<int> d) => SortCopy([.. d]);
-    public AlgorithmResult<int> ExecuteDSQueue(DSQueue<int> d) => SortQueue(d);
-    public AlgorithmResult<int> ExecuteDSStack(DSStack<int> d) => SortStack(d);
-    public AlgorithmResult<int> ExecuteDSDeque(DSDeque<int> d) => SortDeque(d);
+    private readonly Action<IReadOnlyList<int>>? _onStep;
 
-    private static AlgorithmResult<int> Sort(int count, Func<int, int> get, Action<int, int> set) 
-    { 
-        var s = System.Diagnostics.Stopwatch.StartNew(); 
-        var a = Enumerable.Range(0, count).Select(get).ToArray(); 
-        Heap(a); 
-        for (var i = 0; i < count; i++) set(i, a[i]); 
-        return new(count, s.Elapsed); 
-    }
-    private static AlgorithmResult<int> SortCopy(int[] a) { var s = System.Diagnostics.Stopwatch.StartNew(); Heap(a); return new(a.Length, s.Elapsed); }
-    private static void Heap(int[] a) 
-    { 
-        for (var i = a.Length / 2 - 1; i >= 0; i--) Down(a, i, a.Length); 
-        for (var end = a.Length - 1; end > 0; end--) 
-        { 
-            (a[0], a[end]) = (a[end], a[0]); 
-            Down(a, 0, end); 
-        } 
-    }
-    private static void Down(int[] a, int i, int n)
-    { 
-        while (true) 
-        { 
-            var l = i * 2 + 1; 
-            if (l >= n) return; 
-            var r = l + 1; 
-            var c = r < n && a[r] > a[l] ? r : l; 
-            if (a[i] >= a[c]) return; 
-            (a[i], a[c]) = (a[c], a[i]); 
-            i = c; 
-        } 
-    }
-    private static AlgorithmResult<int> SortQueue(DSQueue<int> d) 
+    /// <summary>Creates the algorithm and optionally enables step notifications.</summary>
+    public HeapSort(Action<IReadOnlyList<int>>? onStep = null)
     {
-        var a = new List<int>(); 
-        while (d.Count > 0) a.Add(d.Dequeue()); 
-        var r = SortCopy([.. a]); 
-        foreach (var x in a.Order()) d.Enqueue(x);
-        return r;
+        _onStep = onStep;
     }
-    private static AlgorithmResult<int> SortStack(DSStack<int> d) 
+
+    public AlgorithmResult<int> ExecuteDSArray(DSArray<int> data)
+        => Sort(data.Count, index => data[index], (index, value) => data[index] = value);
+
+    public AlgorithmResult<int> ExecuteDSList(DSList<int> data)
+        => Sort(data.Count, index => data[index], (index, value) => data[index] = value);
+
+    public AlgorithmResult<int> ExecuteDSLinkedList(DSLinkedList<int> data)
+        => SortCopy([.. data]);
+
+    public AlgorithmResult<int> ExecuteDSCollection(DSCollection<int> data)
+        => SortCopy([.. data]);
+
+    public AlgorithmResult<int> ExecuteDSQueue(DSQueue<int> data)
+        => SortQueue(data);
+
+    public AlgorithmResult<int> ExecuteDSStack(DSStack<int> data)
+        => SortStack(data);
+
+    public AlgorithmResult<int> ExecuteDSDeque(DSDeque<int> data)
+        => SortDeque(data);
+
+    private AlgorithmResult<int> Sort(
+        int count,
+        Func<int, int> get,
+        Action<int, int> set)
     {
-        var a = new List<int>(); 
-        while (d.Count > 0) a.Add(d.Pop()); 
-        var r = SortCopy([.. a]); 
-        foreach (var x in a.OrderDescending()) d.Push(x); 
-        return r;
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var values = new int[count];
+
+        for (var index = 0; index < count; index++)
+            values[index] = get(index);
+
+        Heap(values);
+
+        for (var index = 0; index < count; index++)
+            set(index, values[index]);
+
+        _onStep?.Invoke(values);
+
+        return new(count, stopwatch.Elapsed);
     }
-    private static AlgorithmResult<int> SortDeque(DSDeque<int> d) 
-    { 
-        var a = new List<int>();
-        while (d.Count > 0) a.Add(d.RemoveFirst());
-        var r = SortCopy([.. a]); 
-        foreach (var x in a.Order()) d.AddLast(x);
-        return r;
+
+    private AlgorithmResult<int> SortCopy(int[] values)
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+        Heap(values);
+
+        return new(values.Length, stopwatch.Elapsed);
+    }
+
+    private void Heap(int[] values)
+    {
+        // Every internal node is processed bottom-up to construct the max-heap.
+        for (var index = values.Length / 2 - 1; index >= 0; index--)
+            SiftDown(values, index, values.Length);
+
+        // The root is the largest element, so place it at the end.
+        for (var end = values.Length - 1; end > 0; end--)
+        {
+            (values[0], values[end]) = (values[end], values[0]);
+            _onStep?.Invoke(values);
+
+            // The remaining prefix no longer contains the extracted maximum.
+            SiftDown(values, 0, end);
+        }
+    }
+
+    private void SiftDown(int[] values, int root, int length)
+    {
+        while (true)
+        {
+            var left = root * 2 + 1;
+
+            // A node without a left child is a leaf and already satisfies the heap property.
+            if (left >= length)
+                return;
+
+            var right = left + 1;
+            var largest = left;
+
+            // Choose the larger child as the candidate parent replacement.
+            if (right < length && values[right] > values[left])
+                largest = right;
+
+            // The heap property is already satisfied.
+            if (values[root] >= values[largest])
+                return;
+
+            (values[root], values[largest]) =
+                (values[largest], values[root]);
+
+            _onStep?.Invoke(values);
+            root = largest;
+        }
+    }
+
+    private AlgorithmResult<int> SortQueue(DSQueue<int> data)
+    {
+        var values = new List<int>();
+
+        while (data.Count > 0)
+            values.Add(data.Dequeue());
+
+        var result = SortCopy([.. values]);
+
+        foreach (var value in values)
+            data.Enqueue(value);
+
+        return result;
+    }
+
+    private AlgorithmResult<int> SortStack(DSStack<int> data)
+    {
+        var values = new List<int>();
+
+        while (data.Count > 0)
+            values.Add(data.Pop());
+
+        var result = SortCopy([.. values]);
+
+        for (var index = values.Count - 1; index >= 0; index--)
+            data.Push(values[index]);
+
+        return result;
+    }
+
+    private AlgorithmResult<int> SortDeque(DSDeque<int> data)
+    {
+        var values = new List<int>();
+
+        while (data.Count > 0)
+            values.Add(data.RemoveFirst());
+
+        var result = SortCopy([.. values]);
+
+        foreach (var value in values)
+            data.AddLast(value);
+
+        return result;
     }
 }
