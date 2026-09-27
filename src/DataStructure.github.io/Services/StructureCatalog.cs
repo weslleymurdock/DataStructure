@@ -395,7 +395,8 @@ public sealed record StructureGuide(
     E --> G[""Count-- / return""]
     F --> G",
                 "Peek" => @"flowchart TD
-    A[""head""] --> B[""return head.Value""]
+    A[""head""] --> B[""return head.Value""],
+                _ => Mermaid
             },
             "stack" => method.Name switch
             {
@@ -483,7 +484,8 @@ public sealed record StructureGuide(
     D -- ""yes"" --> E[""head = null""]
     D -- ""no"" --> F[""tail.Next = null""]
     E --> G[""Count-- / return""]
-    F --> G"
+    F --> G",
+                _ => Mermaid
             },
             "priorityqueue" => method.Name switch
             {
