@@ -2,6 +2,7 @@
 @using Microsoft.JSInterop
 @implements IAsyncDisposable
 @inject IJSRuntime JS
+@inject NavigationManager Navigation
 
 <div class="flow-viewer">
     <div class="flow-viewer-toolbar">
@@ -44,7 +45,7 @@
 
         _module = await JS.InvokeAsync<IJSObjectReference>(
             "import",
-            Assets["js/flow-viewer.js"]);
+            new Uri(Navigation.BaseUri, "js/flow-viewer.js").ToString());
 
         await _module.InvokeVoidAsync("initialize", _canvas);
         _initialized = true;
