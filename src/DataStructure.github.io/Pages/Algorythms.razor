@@ -23,12 +23,10 @@
                         <MudTh>Aplicação</MudTh>
                     </HeaderContent>
                     <RowTemplate>
-                        <MudTr @onclick="@(() => Open(context))" Style="cursor:pointer">
-                            <MudTd DataLabel="Algoritmo">@context.Name</MudTd>
-                            <MudTd DataLabel="Complexidade">@context.Complexity</MudTd>
-                            <MudTd DataLabel="Pré-condições">@context.Preconditions</MudTd>
-                            <MudTd DataLabel="Aplicação">@context.StructureScope</MudTd>
-                        </MudTr>
+                        <MudTd DataLabel="Algoritmo" @onclick="@(() => Open(context))" Style="cursor:pointer">@context.Name</MudTd>
+                        <MudTd DataLabel="Complexidade" @onclick="@(() => Open(context))" Style="cursor:pointer">@context.Complexity</MudTd>
+                        <MudTd DataLabel="Pré-condições" @onclick="@(() => Open(context))" Style="cursor:pointer">@context.Preconditions</MudTd>
+                        <MudTd DataLabel="Aplicação" @onclick="@(() => Open(context))" Style="cursor:pointer">@context.StructureScope</MudTd>
                     </RowTemplate>
                 </MudTable>
             </MudPaper>
