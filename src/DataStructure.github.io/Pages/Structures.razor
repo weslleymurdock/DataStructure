@@ -18,22 +18,24 @@
                 <MudText Typo="Typo.h4">@group.Name</MudText>
                 <MudText Typo="Typo.body2">@group.Description</MudText>
                 <MudGrid Class="mt-2">
-                    @foreach (var structure in group.Items)
-                    {
-                        <MudItem xs="12" sm="6" lg="4" @key="structure.Key">
-                            <MudCard Class="structure-card">
-                                <MudCardContent>
-                                    <MudText Typo="Typo.h6">@structure.Name</MudText>
-                                    <MudText Typo="Typo.body2" Class="mt-1">@structure.Description</MudText>
-                                    <MudText Typo="Typo.caption" Class="mt-2">Uso: @structure.UseCase</MudText>
-                                </MudCardContent>
-                                <MudCardActions>
-                                    <MudButton Href="@($"/structures/{structure.Key}")" Variant="Variant.Filled" Color="Color.Primary">Estudar</MudButton>
-                                    <MudButton Href="@($"/run/{structure.Key}")" Variant="Variant.Outlined">Run</MudButton>
-                                </MudCardActions>
-                            </MudCard>
-                        </MudItem>
-                    }
+                   <MudPaper Elevation="0" Class="pa-6 hero-panel">
+                        @foreach (var structure in group.Items)
+                        {
+                            <MudItem xs="12" sm="6" lg="4" @key="structure.Key">
+                                <MudCard Class="structure-card">
+                                    <MudCardContent>
+                                        <MudText Typo="Typo.h6">@structure.Name</MudText>
+                                        <MudText Typo="Typo.body2" Class="mt-1">@structure.Description</MudText>
+                                        <MudText Typo="Typo.caption" Class="mt-2">Uso: @structure.UseCase</MudText>
+                                    </MudCardContent>
+                                    <MudCardActions>
+                                        <MudButton Href="@($"/structures/{structure.Key}")" Variant="Variant.Filled" Color="Color.Primary">Estudar</MudButton>
+                                        <MudButton Href="@($"/run/{structure.Key}")" Variant="Variant.Outlined">Run</MudButton>
+                                    </MudCardActions>
+                                </MudCard>
+                            </MudItem>
+                        }
+                    </MudPaper>
                 </MudGrid>
             </MudPaper>
         }

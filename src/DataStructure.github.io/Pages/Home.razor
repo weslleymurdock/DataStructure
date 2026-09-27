@@ -51,27 +51,29 @@
 
         <section>
             <MudText Typo="Typo.h4">2. Estruturas de dados</MudText>
-            @foreach (var group in new[] { ("Lineares", StructureCatalog.Linear), ("Não lineares", StructureCatalog.NonLinear) })
-            {
-                <MudText Typo="Typo.h5" Class="mt-4">@group.Item1</MudText>
-                <MudGrid Class="mt-1">
-                    @foreach (var structure in group.Item2)
-                    {
-                        <MudItem xs="12" sm="6" lg="4" @key="structure.Key">
-                            <MudCard Class="structure-card">
-                                <MudCardContent>
-                                    <MudText Typo="Typo.h6">@structure.Name</MudText>
-                                    <MudText Typo="Typo.body2" Class="mt-1">@structure.Description</MudText>
-                                </MudCardContent>
-                                <MudCardActions>
-                                    <MudButton Href="@($"/structures/{structure.Key}")">Guia</MudButton>
-                                    <MudButton Href="@($"/run/{structure.Key}")" Color="Color.Secondary">Executar</MudButton>
-                                </MudCardActions>
-                            </MudCard>
-                        </MudItem>
-                    }
-                </MudGrid>
-            }
+            <div class="pa-6 hero-panel">
+                @foreach (var group in new[] { ("Lineares", StructureCatalog.Linear), ("Não lineares", StructureCatalog.NonLinear) })
+                {
+                    <MudText Typo="Typo.h5" Class="mt-4">@group.Item1</MudText>
+                    <MudGrid Class="mt-1">
+                        @foreach (var structure in group.Item2)
+                        {
+                            <MudItem xs="12" sm="6" lg="4" @key="structure.Key">
+                                <MudCard Class="structure-card">
+                                    <MudCardContent>
+                                        <MudText Typo="Typo.h6">@structure.Name</MudText>
+                                        <MudText Typo="Typo.body2" Class="mt-1">@structure.Description</MudText>
+                                    </MudCardContent>
+                                    <MudCardActions>
+                                        <MudButton Href="@($"/structures/{structure.Key}")">Guia</MudButton>
+                                        <MudButton Href="@($"/run/{structure.Key}")" Color="Color.Secondary">Executar</MudButton>
+                                    </MudCardActions>
+                                </MudCard>
+                            </MudItem>
+                        }
+                    </MudGrid>
+                }
+            </div>
         </section>
 
         <section>
