@@ -10,7 +10,16 @@ public sealed record StructureGuide(
     string Description,
     string UseCase,
     string Source,
-    IReadOnlyList<MethodGuide> Methods);
+    IReadOnlyList<MethodGuide> Methods)
+{
+    public string Utility =>
+        Key switch
+        {
+            "maxheap" =>
+                "Mantém o maior elemento na raiz, permitindo consultas imediatas ao máximo e remoções em tempo logarítmico.",
+            _ => UseCase
+        };
+}
 
 public static class StructureCatalog
 {
