@@ -63,7 +63,7 @@ public sealed class AlgorithmRaceService
         => structures
             .Select(key => new RacePanel(
                 algorithm,
-                StructureCatalog.Get(key).Name,
+                key,
                 GetInitialValues(key)))
             .ToArray();
 
@@ -73,7 +73,7 @@ public sealed class AlgorithmRaceService
         => algorithms
             .Select(algorithm => new RacePanel(
                 algorithm,
-                StructureCatalog.Get(structure).Name,
+                structure,
                 GetInitialValues(structure)))
             .ToArray();
 
@@ -82,7 +82,7 @@ public sealed class AlgorithmRaceService
         => comparisons
             .Select(comparison => new RacePanel(
                 comparison.Algorithm,
-                StructureCatalog.Get(comparison.Structure).Name,
+                comparison.Structure,
                 GetInitialValues(comparison.Structure)))
             .ToArray();
 
@@ -126,7 +126,7 @@ public sealed class AlgorithmRaceService
                     await HeapSort(values, Step, cancellationToken);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(algorithm));
+                    throw new ArgumentOutOfRangeException(nameof(panel.Algorithm));
             }
 
             panel.Update(values);
