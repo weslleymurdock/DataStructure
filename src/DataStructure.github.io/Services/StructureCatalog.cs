@@ -618,7 +618,7 @@ public sealed record StructureGuide(
     H --> F
     G -- ""no"" --> D",
                 "AsArray" => @"flowchart LR
-    A[""_items""] --> B[""IReadOnlyList<T> view""]
+    A[""_items""] --> B[""IReadOnlyList<T> view""],
                 _ => Mermaid
             },
             "graph" => method.Name switch
