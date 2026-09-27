@@ -175,6 +175,94 @@ public static class AlgorithmCatalog
     K -- ""no"" --> M[""high = position - 1""]
     L --> B
     M --> B"),
+        new("hash-search","search","HashSearch","Consulta uma chave por sua função hash e percorre somente o bucket necessário.","O(1) médio; O(n) pior caso","DSHashTable<TKey,TValue> e chave válida.","Hash Table.",
+            ["Calcule o hash da chave.","Mapeie o hash para um bucket.","Percorra a cadeia de colisões.","Compare as chaves.","Retorne ao encontrar ou informe ausência."],
+            @"flowchart TD
+    A[""key""] --> B[""GetHashCode()""] --> C[""bucket index""]
+    C --> D[""collision chain""]
+    D --> E{""key matches?""}
+    E -- ""yes"" --> F[""found / return value""]
+    E -- ""no"" --> G[""next entry""]
+    G --> E
+    D --> H[""chain exhausted""]
+    H --> I[""not found""]"),
+        new("breadth-first-search","graph-search","BreadthFirstSearch","Explora primeiro os vizinhos mais próximos da origem, nível por nível.","O(V + E)","Grafo direcionado com listas de adjacência.","DSGraph<T>; redes, níveis, menor número de arestas em grafos não ponderados.",
+            ["Marque a origem como visitada.","Coloque a origem na fila.","Retire o próximo vértice.","Visite os vizinhos ainda não visitados.","Enfileire esses vizinhos e repita."],
+            @"flowchart TD
+    A[""start""] --> B[""mark visited""]
+    B --> C[""enqueue start""]
+    C --> D{""queue empty?""}
+    D -- ""no"" --> E[""dequeue vertex""]
+    E --> F[""inspect neighbors""]
+    F --> G{""unvisited neighbor?""}
+    G -- ""yes"" --> H[""mark + enqueue""]
+    G -- ""no"" --> F
+    H --> F
+    F --> D
+    D -- ""yes"" --> I[""finish traversal""]"),
+        new("depth-first-search","graph-search","DepthFirstSearch","Explora um caminho até o fim antes de retornar e tentar outro ramo.","O(V + E)","Grafo direcionado com listas de adjacência.","DSGraph<T>; conectividade, exploração de caminhos e backtracking.",
+            ["Marque a origem como visitada.","Visite o vértice atual.","Escolha um vizinho não visitado.","Aprofunde recursivamente.","Ao terminar um ramo, volte ao ponto anterior."],
+            @"flowchart TD
+    A[""start""] --> B[""mark visited""]
+    B --> C[""visit vertex""]
+    C --> D{""unvisited neighbor?""}
+    D -- ""yes"" --> E[""recurse into neighbor""]
+    E --> C
+    D -- ""no"" --> F[""backtrack""]
+    F --> G{""caller remains?""}
+    G -- ""yes"" --> C
+    G -- ""no"" --> H[""finish traversal""]"),
+        new("dijkstra","graph-search","Dijkstra","Calcula os menores custos a partir de uma origem em um grafo com pesos não negativos.","O((V + E) log V)","Arestas com pesos não negativos.","DSWeightedGraph<T>; rotas, redes e custos acumulados.",
+            ["Defina distância da origem como zero e as demais como infinito.","Extraia o vértice com menor distância conhecida.","Relaxe cada aresta de saída.","Atualize a fila quando uma distância melhorar.","Repita até esvaziar a fila de prioridades."],
+            @"flowchart TD
+    A[""distance[start] = 0""] --> B[""priority queue""]
+    B --> C[""extract smallest distance""]
+    C --> D{""stale entry?""}
+    D -- ""yes"" --> C
+    D -- ""no"" --> E[""inspect weighted edges""]
+    E --> F[""candidate = distance + weight""]
+    F --> G{""candidate < known?""}
+    G -- ""yes"" --> H[""update distance + enqueue""]
+    G -- ""no"" --> E
+    H --> E
+    E --> C
+    C --> I[""all reachable vertices processed""]"),
+        new("a-star","graph-search","A* (A-estrela)","Combina o custo já percorrido com uma heurística para orientar a busca até o objetivo.","O depende da heurística e do grafo","Pesos não negativos e heurística admissível quando se exige caminho ótimo.","Mapas, jogos e navegação com objetivo conhecido.",
+            ["Coloque a origem na fronteira.","Calcule f(n) = g(n) + h(n).","Escolha o menor f(n).","Atualize vizinhos quando o novo custo for menor.","Pare ao alcançar o objetivo e reconstrua o caminho."],
+            @"flowchart TD
+    A[""start""] --> B[""g = 0; f = g + h""]
+    B --> C[""open set""]
+    C --> D[""extract smallest f""]
+    D --> E{""goal?""}
+    E -- ""yes"" --> F[""reconstruct path""]
+    E -- ""no"" --> G[""inspect neighbors""]
+    G --> H[""candidate g = current g + weight""]
+    H --> I{""better g?""}
+    I -- ""yes"" --> J[""save predecessor; enqueue with g + h""]
+    I -- ""no"" --> G
+    J --> G
+    G --> C"),
+        new("greedy-best-first-search","graph-search","Busca Gulosa","Prioriza o vértice que parece mais próximo do objetivo segundo a heurística, ignorando o custo acumulado.","Depende da estrutura do grafo","Heurística para estimar a proximidade ao objetivo.","Navegação aproximada quando velocidade de orientação é mais importante que garantia de menor custo.",
+            ["Coloque a origem na fila de prioridade.","Calcule apenas h(n).","Extraia o vértice com menor heurística.","Marque-o como visitado.","Adicione os vizinhos e repita até alcançar o objetivo."],
+            @"flowchart TD
+    A[""start""] --> B[""priority = h(start, goal)""]
+    B --> C[""open set""]
+    C --> D[""extract smallest h""]
+    D --> E{""goal?""}
+    E -- ""yes"" --> F[""return path""]
+    E -- ""no"" --> G[""mark visited""]
+    G --> H[""enqueue neighbors by h""]
+    H --> C"),
+        new("similarity-search","similarity","SimilaritySearch","Compara uma consulta com candidatos e os ordena por um índice de similaridade.","O(n · d) para vetores; texto depende do número de tokens","Representação comparável: tokens ou vetores numéricos.","Textos, embeddings e dados multimídia representados como vetores.",
+            ["Represente a consulta e cada candidato.","Calcule uma medida de similaridade.","Associe a pontuação ao candidato.","Ordene as pontuações em ordem decrescente.","Retorne os candidatos mais semelhantes."],
+            @"flowchart TD
+    A[""query representation""] --> B[""candidate 1..n""]
+    B --> C[""compute similarity""]
+    C --> D[""store score""]
+    D --> E{""more candidates?""}
+    E -- ""yes"" --> B
+    E -- ""no"" --> F[""sort scores descending""]
+    F --> G[""return ranked results""]"),
     ];
 
     public static IReadOnlyList<AlgorithmGuide> Sorts =>
@@ -182,6 +270,12 @@ public static class AlgorithmCatalog
 
     public static IReadOnlyList<AlgorithmGuide> Searches =>
         All.Where(item => item.Category == "search").ToArray();
+
+    public static IReadOnlyList<AlgorithmGuide> GraphSearches =>
+        All.Where(item => item.Category == "graph-search").ToArray();
+
+    public static IReadOnlyList<AlgorithmGuide> SimilaritySearches =>
+        All.Where(item => item.Category == "similarity").ToArray();
 
     public static AlgorithmGuide Get(string key) =>
         All.First(item => item.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
