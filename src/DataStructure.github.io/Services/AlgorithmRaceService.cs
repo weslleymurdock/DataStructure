@@ -4,14 +4,16 @@ namespace DataStructure.github.io.Services;
 
 public sealed class RacePanel
 {
-    public RacePanel(string algorithm, string structure, IReadOnlyList<int> values)
+    public RacePanel(string algorithm, string structureKey, IReadOnlyList<int> values)
     {
         Algorithm = algorithm;
-        Structure = structure;
+        StructureKey = structureKey;
+        Structure = StructureCatalog.Get(structureKey).Name;
         Values = [.. values];
     }
 
     public string Algorithm { get; }
+    public string StructureKey { get; }
     public string Structure { get; }
     public string Title => $"{Algorithm} × {Structure}";
     public int[] Values { get; private set; }
