@@ -1,4 +1,5 @@
 @using DataStructure.github.io.Services
+@using DataStructure.github.io.Components
 <MudDialog Class="algorithm-dialog">
     <DialogContent>
         <MudStack Spacing="3">
@@ -48,9 +49,9 @@
 
             <MudText Typo="Typo.h5">Fluxo lógico</MudText>
 
-            <div class="mermaid-container">
-                <div class="mermaid-diagram">@Guide.Mermaid</div>
-            </div>
+            <FlowViewer>
+                @Guide.Mermaid
+            </FlowViewer>
         </MudStack>
     </DialogContent>
 
