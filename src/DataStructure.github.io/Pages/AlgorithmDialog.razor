@@ -30,12 +30,18 @@
             <MudText Typo="Typo.h5">Passo a passo</MudText>
 
             <MudList T="string" Dense="true">
-                @for (var index = 0; index < Guide.Steps.Count; index++)
+                @{
+                    var steps = Guide.Steps?.ToArray() ?? [];
+                }
+
+                @for (var index = 0; index < steps.Length; index++)
                 {
+                    var step = steps[index];
+
                     <MudListItem>
                         <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
                             <MudChip T="string" Color="Color.Primary" Size="Size.Small">@(index + 1)</MudChip>
-                            <MudText>@Guide.Steps[index]</MudText>
+                            <MudText>@step</MudText>
                         </MudStack>
                     </MudListItem>
                 }
