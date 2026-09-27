@@ -1,0 +1,79 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+<div class="flow-viewer">
+    <div class="flow-viewer-toolbar">
+        <MudText Typo="Typo.caption">Grafo interativo</MudText>
+        <div class="flow-viewer-actions">
+            <MudButton Variant="Variant.Outlined"
+                       Size="Size.Small"
+                       OnClick="ResetLayout"
+                       StartIcon="@Icons.Material.Filled.AccountTree">
+                Reorganizar
+            </MudButton>
+            <MudButton Variant="Variant.Text"
+                       Size="Size.Small"
+                       OnClick="FitGraph"
+                       StartIcon="@Icons.Material.Filled.FitScreen">
+                Ajustar
+            </MudButton>
+        </div>
+    </div>
+
+    <div class="flow-viewer-canvas" @ref="_canvas"></div>
+
+    <div class="flow-viewer-source" aria-hidden="true">
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public RenderFragment? ChildContent { get; set; }
+
+    private ElementReference _canvas;
+    private IJSObjectReference? _module;
+    private bool _initialized;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        _module = await JS.InvokeAsync<IJSObjectReference>(
+            "import",
+            "./js/flow-viewer.js");
+
+        await _module.InvokeVoidAsync("initialize", _canvas);
+        _initialized = true;
+    }
+
+    private async Task ResetLayout()
+    {
+        if (_initialized && _module is not null)
+            await _module.InvokeVoidAsync("resetLayout", _canvas);
+    }
+
+    private async Task FitGraph()
+    {
+        if (_initialized && _module is not null)
+            await _module.InvokeVoidAsync("fit", _canvas);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null)
+            return;
+
+        try
+        {
+            await _module.InvokeVoidAsync("dispose", _canvas);
+            await _module.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+    }
+}
