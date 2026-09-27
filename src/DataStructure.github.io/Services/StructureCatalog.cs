@@ -2179,7 +2179,7 @@ public sealed class DSHashTable<TKey, TValue> where TKey : notnull
             if (TryGetValue(key, out var value))
                 return value;
 
-            throw new KeyNotFoundException($"The key '{key}' was not found.");
+            throw new KeyNotFoundException($""The key '{key}' was not found."");
         }
         set => Set(key, value);
     }
@@ -2191,7 +2191,7 @@ public sealed class DSHashTable<TKey, TValue> where TKey : notnull
         foreach (var entry in bucket)
         {
             if (EqualityComparer<TKey>.Default.Equals(entry.Key, key))
-                throw new ArgumentException("A value with the same key already exists.", nameof(key));
+                throw new ArgumentException(""A value with the same key already exists."", nameof(key));
         }
 
         EnsureCapacity(_count + 1);
