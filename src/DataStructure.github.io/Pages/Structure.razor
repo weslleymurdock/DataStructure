@@ -66,6 +66,18 @@
         </MudGrid>
 
         <MudPaper Elevation="2" Class="pa-4">
+            <MudText Typo="Typo.h5" GutterBottom="true">Representação da estrutura</MudText>
+            <MudText Typo="Typo.body2" Class="mb-3">
+                O diagrama mostra como os elementos são organizados e como as referências,
+                índices ou relações entre nós participam da estrutura.
+            </MudText>
+
+            <div class="mermaid-container">
+                <mermaid-embed src="@MermaidUrl(Guide.Mermaid)" height="560"></mermaid-embed>
+            </div>
+        </MudPaper>
+
+        <MudPaper Elevation="2" Class="pa-4">
             <MudText Typo="Typo.h5" GutterBottom="true">Como cada método funciona</MudText>
 
             <MudTable Items="@Guide.Methods" Hover="true" Striped="true" Dense="true">
@@ -86,6 +98,27 @@
                     </MudTd>
                 </RowTemplate>
             </MudTable>
+        </MudPaper>
+
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Typo="Typo.h5" GutterBottom="true">
+                Fluxos das operações
+            </MudText>
+
+            <MudStack Spacing="4">
+                @foreach (var method in Guide.Methods)
+                {
+                    <MudPaper Variant="Variant.Outlined" Class="pa-3">
+                        <MudText Typo="Typo.h6">@method.Name</MudText>
+                        <MudText Typo="Typo.body2" Class="mb-2">@method.Explanation</MudText>
+
+                        <div class="mermaid-container">
+                            <mermaid-embed src="@MermaidUrl(Guide.GetMethodMermaid(method))"
+                                           height="420"></mermaid-embed>
+                        </div>
+                    </MudPaper>
+                }
+            </MudStack>
         </MudPaper>
     </MudStack>
 </MudContainer>
@@ -108,4 +141,8 @@
         Navigation.NavigateTo($"/structures/{key}");
         return Task.CompletedTask;
     }
+
+    private static string MermaidUrl(string diagram) =>
+        "https://mermaid.live/embed?theme=default&look=classic&mode=light&code=" +
+        Uri.EscapeDataString(diagram);
 }
