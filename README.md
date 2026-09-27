@@ -26,6 +26,7 @@ O repositório privilegia implementações pequenas e didáticas, para que a est
 | `DSHeap<T>` | heap binário mínimo | Peek O(1), Add/Remove O(log n) | obter repetidamente o menor valor |
 | `DSMaxHeap<T>` | heap binário máximo | Peek O(1), Add/Remove O(log n) | obter repetidamente o maior valor e implementar prioridades máximas |
 | `DSHashTable<TKey,TValue>` | buckets com encadeamento | acesso médio O(1), pior caso O(n) | associações chave/valor, caches, índices e tabelas de símbolos |
+| `DSWeightedGraph<T>` | listas de adjacência com pesos | vizinhança armazenada em lista | grafos ponderados usados por Dijkstra, A* e busca gulosa |
 | `DSNode<T>` | nó compartilhado | armazenamento de valor e referências O(1) | base para estruturas encadeadas |
 | `DSNodeList<T>` | lista simplesmente encadeada | Add O(1), acesso por índice O(n) | demonstração simples de encadeamento |
 | `DSDeck<T>` | deque legado duplamente encadeado | extremos O(1) | exemplo alternativo de deque |
