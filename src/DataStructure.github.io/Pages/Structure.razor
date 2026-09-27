@@ -4,7 +4,6 @@
 @inject NavigationManager Navigation
 
 <PageTitle>@Guide.Name - Estruturas de dados</PageTitle>
-<script src="https://mermaid.live/embed.js" async></script>
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
     <MudStack Spacing="3">
         <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Wrap="Wrap.Wrap">
@@ -73,7 +72,7 @@
             </MudText>
 
             <div class="mermaid-container">
-                <mermaid-embed src="@MermaidUrl(Guide.Mermaid)" height="560"></mermaid-embed>
+                <div class="mermaid-diagram" data-mermaid="@Guide.Mermaid"></div>
             </div>
         </MudPaper>
 
@@ -113,8 +112,7 @@
                         <MudText Typo="Typo.body2" Class="mb-2">@method.Explanation</MudText>
 
                         <div class="mermaid-container">
-                            <mermaid-embed src="@MermaidUrl(Guide.GetMethodMermaid(method))"
-                                           height="420"></mermaid-embed>
+                            <div class="mermaid-diagram" data-mermaid="@Guide.GetMethodMermaid(method)"></div>
                         </div>
                     </MudPaper>
                 }
@@ -142,7 +140,4 @@
         return Task.CompletedTask;
     }
 
-    private static string MermaidUrl(string diagram) =>
-        "https://mermaid.live/embed?theme=default&look=classic&mode=light&code=" +
-        Uri.EscapeDataString(diagram);
 }
