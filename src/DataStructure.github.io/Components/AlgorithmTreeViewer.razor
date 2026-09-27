@@ -5,7 +5,7 @@
         @if (Root is not null)
         {
             <div class="algorithm-tree-root">
-                <AlgorithmTreeNode Node="Root" CurrentItem="CurrentItem" />
+                <AlgorithmTreeNode T="T" Node="Root" CurrentItem="CurrentItem" />
             </div>
         }
         else
@@ -17,7 +17,7 @@
 
 @code {
     [Parameter, EditorRequired]
-    public AlgorithmTreeNode<T>? Root { get; set; }
+    public AlgorithmTreeDataNode<T>? Root { get; set; }
 
     [Parameter]
     public T? CurrentItem { get; set; }
