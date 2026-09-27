@@ -26,6 +26,7 @@ public static class AlgorithmDemo
         Binary(values);
         Jump(values);
         Interpolation(values);
+        Advanced();
     }
 
     private static void Bubble(int[] values)
@@ -247,6 +248,49 @@ public static class AlgorithmDemo
 
         Print("JumpSearch", "DSCollection",
             algorithm.ExecuteDSCollection(CreateCollection(sorted), 1_000));
+    }
+
+    private static void Advanced()
+    {
+        var hashTable = new DSHashTable<int, string>();
+        hashTable.Add(10, "A");
+        hashTable.Add(20, "B");
+
+        var hashResult = new HashSearch().Execute(hashTable, 20);
+        Print("HashSearch", "DSHashTable", hashResult);
+
+        var graph = new DSGraph<int>();
+        graph.AddEdge(1, 2);
+        graph.AddEdge(1, 3);
+        graph.AddEdge(2, 4);
+        graph.AddEdge(3, 4);
+
+        var bfs = new BreadthFirstSearch().Execute(graph, 1);
+        Print("BreadthFirstSearch", "DSGraph", bfs);
+
+        var dfs = new DepthFirstSearch().Execute(graph, 1);
+        Print("DepthFirstSearch", "DSGraph", dfs);
+
+        var weighted = new DSWeightedGraph<int>();
+        weighted.AddEdge(1, 2, 2);
+        weighted.AddEdge(1, 3, 5);
+        weighted.AddEdge(2, 4, 2);
+        weighted.AddEdge(3, 4, 1);
+
+        var dijkstra = new Dijkstra().Execute(weighted, 1);
+        Print("Dijkstra", "DSWeightedGraph", dijkstra);
+
+        var astar = new AStar().Execute(weighted, 1, 4, (_, _) => 0);
+        Print("AStar", "DSWeightedGraph", astar);
+
+        var greedy = new GreedyBestFirstSearch().Execute(weighted, 1, 4, (_, _) => 0);
+        Print("GreedyBestFirstSearch", "DSWeightedGraph", greedy);
+
+        var similarity = new SimilaritySearch().ExecuteText(
+            "data structures and algorithms",
+            ["data structures", "graph algorithms", "chocolate cake"]);
+
+        Print("SimilaritySearch", "Text", similarity[0]);
     }
 
     private static void Interpolation(int[] values)
