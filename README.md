@@ -25,6 +25,7 @@ O repositório privilegia implementações pequenas e didáticas, para que a est
 | `DSPriorityQueue<T>` | heap binário mínimo | Peek O(1), Enqueue/Dequeue O(log n) | tarefas que precisam ser processadas por prioridade |
 | `DSHeap<T>` | heap binário mínimo | Peek O(1), Add/Remove O(log n) | obter repetidamente o menor valor |
 | `DSMaxHeap<T>` | heap binário máximo | Peek O(1), Add/Remove O(log n) | obter repetidamente o maior valor e implementar prioridades máximas |
+| `DSHashTable<TKey,TValue>` | buckets com encadeamento | acesso médio O(1), pior caso O(n) | associações chave/valor, caches, índices e tabelas de símbolos |
 | `DSNode<T>` | nó compartilhado | armazenamento de valor e referências O(1) | base para estruturas encadeadas |
 | `DSNodeList<T>` | lista simplesmente encadeada | Add O(1), acesso por índice O(n) | demonstração simples de encadeamento |
 | `DSDeck<T>` | deque legado duplamente encadeado | extremos O(1) | exemplo alternativo de deque |
@@ -164,7 +165,7 @@ Assim, a complexidade do algoritmo deve ser analisada junto com o custo das oper
 
 ### Visualização das ordenações
 
-A visualização gráfica executa **todos os sorts simultaneamente**, lado a lado, sobre instâncias independentes da mesma estrutura de dados. A execução percorre `DSArray`, `DSList`, `DSLinkedList`, `DSCollection`, `DSQueue`, `DSStack` e `DSDeque`, garantindo que cada implementação `Execute<TEstruturaDeDado>` dos seis sorts também seja exercitada visualmente.
+A visualização gráfica permite comparar um algoritmo contra várias estruturas ou vários algoritmos contra uma estrutura. O modo personalizado só permite adicionar pares que compartilham o mesmo algoritmo ou a mesma estrutura, evitando comparar simultaneamente dimensões diferentes. A execução percorre `DSArray`, `DSList`, `DSLinkedList`, `DSCollection`, `DSQueue`, `DSStack` e `DSDeque`, garantindo que cada implementação `Execute<TEstruturaDeDado>` dos seis sorts também seja exercitada visualmente.
 
 Cada coluna representa um algoritmo:
 
@@ -222,3 +223,22 @@ O console `DataStructure` demonstra as estruturas, instancia cada classe de algo
 ## Objetivo didático
 
 A intenção não é substituir `Array`, `List<T>`, `Queue<T>`, `LinkedList<T>`, `Stack<T>` ou `PriorityQueue<TElement,TPriority>` do .NET em aplicações reais. O objetivo é tornar explícitos os mecanismos que essas estruturas e algoritmos utilizam e relacioná-los às suas complexidades.
+
+
+### Hash Table
+
+DSHashTable<TKey, TValue> usa um vetor de buckets e resolve colisões por encadeamento. A posição inicial é calculada a partir de GetHashCode() da chave. Quando a chave já existe, Set atualiza o valor; Add rejeita duplicatas.
+
+A tabela mantém fator de carga máximo de 0,75. Ao ultrapassá-lo, os buckets são ampliados e todas as entradas são redistribuídas de acordo com a nova capacidade.
+
+Operações principais:
+
+- Add — insere uma nova associação.
+- Set — insere ou atualiza.
+- TryGetValue — consulta sem lançar exceção.
+- ContainsKey — verifica a existência da chave.
+- Remove — remove uma associação.
+- Clear — recria os buckets vazios.
+- Enumerate — percorre as associações em ordem de bucket.
+
+A página Estudar da Hash Table apresenta a representação dos buckets, o tratamento de colisões, o redimensionamento e o fluxo individual de cada operação. O laboratório também materializa as associações em uma sequência independente para permitir a visualização dos algoritmos sobre a estrutura, deixando explícito que essa visualização é uma linearização didática e não uma propriedade nativa da Hash Table.
