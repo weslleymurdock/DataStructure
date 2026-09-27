@@ -5,6 +5,48 @@
 <MudText Typo="Typo.h3" GutterBottom="true">Olá, dev</MudText>
 <MudText Class="mb-8">Bem vindo ao seu guia de estruturas de dados e algoritmos em .NET 10!</MudText>
 
+<MudGrid>
+    @foreach (var ds in  DataStructures)
+    {
+        if (DataStructures.Count % 2 != 0 && DataStructures.Last().Equals(ds))
+        {
+            <MudItem xs="12" sm="12">
+                <MudCard>
+                    <MudCardHeader>
+                        <MudText Typo="Typo.h3" >@ds.Name</MudText>
+                    </MudCardHeader>
+                    <MudCardActions> 
+                        <MudChipSet T="MudChip<string>">
+                        @foreach (var algorythm in ds.Algorythms)
+                        {
+                            <MudChip T="string" Icon="@Icons.Material.Filled.PlaylistPlay" IconColor="@Color.Success" Value="@algorythm.Name"/>
+                        } 
+                        </MudChipSet>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>    
+        }
+        else
+        {
+            <MudItem xs="12" sm="6">
+                <MudCard>
+                    <MudCardHeader>
+                        <MudText Typo="Typo.h3">@ds.Name</MudText>
+                    </MudCardHeader>
+                    <MudCardActions>
+                        <MudChipSet T="MudChip<string>">
+                            @foreach (var algorythm in ds.Algorythms)
+                            {
+                                <MudChip T="string" Icon="@Icons.Material.Filled.PlaylistPlay" IconColor="@Color.Success"
+                                         Value="@algorythm.Name" />
+                            }
+                        </MudChipSet>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    }
+</MudGrid>
 <MudTable Items="@DataStructures" Hover="true" Breakpoint="Breakpoint.Sm">
     <ColGroup>
         <col />
@@ -20,14 +62,7 @@
         <MudTd DataLabel="Name">@context.Name</MudTd>
         <MudTd DataLabel="Page">@context.Page</MudTd>
         <MudTd DataLabel="Algorythms">
-            <MudSelect T="ICollection<MudButton>">
-                @foreach(var algorythm in @context.Algorythms)
-                {
-                    <MudSelectItem T="MudButton">
-                        <MudButton StartIcon="@Icons.Material.Filled.PlaylistPlay" IconColor="@Color.Success" Href="@(string.Concat(context.Page, algorythm.Page))">@context.Name | @algorythm.Name</MudButton>
-                    </MudSelectItem>
-                }
-            </MudSelect>            
+                     
         </MudTd>
     </RowTemplate>
      
@@ -46,23 +81,22 @@
         new("Queue", "/structures/queue", Algorythms),
         new("Stack", "/structures/stack", Algorythms),];
     public static readonly ICollection<Algorythm> Algorythms = [
-        new("BubbleSort", "/algorythm/bubblesort"), 
-        new("BinarySearch", "/algorythm/binarysearch"),
-        new("HeapSort", "/algorythm/heapsort"),
-        new("InsertionSort", "/algorythm/insertionsort"),
-        new("InterpolationSearch", "/algorythm/interpolationsearch"),
-        new("JumpSearch", "/algorythm/jumpsearch"),
-        new("LinearSearch", "/algorythm/linearsearch"),
-        new("MergeSort", "/algorythm/mergesort"),
-        new("QuickSort", "/algorythm/quicksort"),
-        new("SelectionSort", "/algorythm/selectionsort")
+        new("BubbleSort"), 
+        new("BinarySearch"),
+        new("HeapSort"),
+        new("InsertionSort"),
+        new("InterpolationSearch"),
+        new("JumpSearch"),
+        new("LinearSearch"),
+        new("MergeSort"),
+        new("QuickSort"),
+        new("SelectionSort")
     ];
 
     public sealed class Algorythm
     {
-        public Algorythm(string name, string page) => (Name, Page) = (name, page);
-        public string Name { get; set; }
-        public string Page { get; set; }
+        public Algorythm(string name) => (Name) = (name);
+        public string Name { get; set; } 
     }
     public sealed class DataStructure
     {
