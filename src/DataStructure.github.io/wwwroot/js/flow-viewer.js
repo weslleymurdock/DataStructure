@@ -5,6 +5,7 @@ function decodeLabel(value) {
         .replaceAll("&quot;", '"')
         .replaceAll("&#39;", "'")
         .replaceAll("&amp;", "&")
+        .replace(/^"(.*)"$/s, "$1")
         .trim();
 }
 
@@ -34,7 +35,7 @@ function parseGraph(source) {
         addNode(match[1], label, shape);
     }
 
-    const edgePattern = /([A-Za-z_][\\w-]*)\\s*(-->|-.->|==>|--\\s*"([^"]*)"\\s*-->|-\\.\\s*"([^"]*)"\\s*\\.->|-->\\|([^|]*)\\|)\\s*([A-Za-z_][\\w-]*)/g;
+    const edgePattern = /([A-Za-z_][\\w-]*)\\s*(?:\\[[^\\]]*\\]|\\{[^}]*\\}|\\([^)]*\\))?\\s*(-->|-.->|==>|--\\s*"([^"]*)"\\s*-->|-\\.\\s*"([^"]*)"\\s*\\.->|-->\\|([^|]*)\\|)\\s*([A-Za-z_][\\w-]*)(?:\\[[^\\]]*\\]|\\{[^}]*\\}|\\([^)]*\\))?/g;
 
     for (const match of source.matchAll(edgePattern)) {
         const sourceId = match[1];
