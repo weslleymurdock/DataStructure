@@ -24,6 +24,26 @@ public sealed class BinarySearch
         int target)
         => Run(data.Count, index => data[index], target);
 
+    public AlgorithmResult<int> ExecuteDSBinarySearchTree(
+        DSBinarySearchTree<int> data,
+        int target)
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var current = data.Root;
+
+        while (current is not null)
+        {
+            if (current.Value == target)
+                return new(0, stopwatch.Elapsed);
+
+            current = target < current.Value
+                ? current.Left
+                : current.Right;
+        }
+
+        return new(-1, stopwatch.Elapsed);
+    }
+
     private static AlgorithmResult<int> Run(
         int count,
         Func<int, int> get,
