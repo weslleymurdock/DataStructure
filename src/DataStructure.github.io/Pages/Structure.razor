@@ -1,0 +1,101 @@
+@page "/structures"
+@page "/structures/{StructureName}"
+
+@using DataStructure.github.io.Services
+@inject NavigationManager Navigation
+
+<PageTitle>@Guide.Name - Estruturas de dados</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
+    <MudStack Spacing="3">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Wrap="Wrap.Wrap">
+            <div>
+                <MudText Typo="Typo.h3">@Guide.Name</MudText>
+                <MudText Typo="Typo.body1" Class="mt-1">@Guide.Description</MudText>
+            </div>
+
+            <MudSelect T="string"
+                       Label="Estrutura"
+                       Variant="Variant.Outlined"
+                       Value="@SelectedKey"
+                       ValueChanged="ChangeStructure"
+                       Class="structure-select">
+                @foreach (var item in StructureCatalog.All)
+                {
+                    <MudSelectItem T="string" Value="@item.Key">@item.Name</MudSelectItem>
+                }
+            </MudSelect>
+        </MudStack>
+
+        <MudGrid>
+            <MudItem xs="12" md="8">
+                <MudPaper Elevation="2" Class="pa-4">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.h5">Implementação</MudText>
+                        <MudChip Color="Color.Primary" Variant="Variant.Outlined">@Guide.Key</MudChip>
+                    </MudStack>
+
+                    <pre class="source-code"><code>@Guide.Source</code></pre>
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12" md="4">
+                <MudPaper Elevation="2" Class="pa-4">
+                    <MudText Typo="Typo.h5" GutterBottom="true">Quando usar</MudText>
+                    <MudText>@Guide.UseCase</MudText>
+
+                    <MudButton Href="@($"/run/{Guide.Key}")"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.PlayArrow"
+                               Class="mt-4">
+                        Abrir demonstração
+                    </MudButton>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Typo="Typo.h5" GutterBottom="true">Como cada método funciona</MudText>
+
+            <MudTable Items="@Guide.Methods" Hover="true" Striped="true" Dense="true">
+                <HeaderContent>
+                    <MudTh>Método</MudTh>
+                    <MudTh>Assinatura</MudTh>
+                    <MudTh>Funcionamento</MudTh>
+                    <MudTh>Custo</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Método">
+                        <MudText Typo="Typo.subtitle2">@context.Name</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Assinatura"><code>@context.Signature</code></MudTd>
+                    <MudTd DataLabel="Funcionamento">@context.Explanation</MudTd>
+                    <MudTd DataLabel="Custo">
+                        <MudChip Size="Size.Small" Color="Color.Info">@context.Complexity</MudChip>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
+    </MudStack>
+</MudContainer>
+
+@code {
+    [Parameter]
+    public string? StructureName { get; set; }
+
+    private string SelectedKey = StructureCatalog.All[0].Key;
+    private StructureGuide Guide = StructureCatalog.All[0];
+
+    protected override void OnParametersSet()
+    {
+        SelectedKey = StructureCatalog.Normalize(StructureName);
+        Guide = StructureCatalog.Get(SelectedKey);
+    }
+
+    private Task ChangeStructure(string key)
+    {
+        Navigation.NavigateTo($"/structures/{key}");
+        return Task.CompletedTask;
+    }
+}
