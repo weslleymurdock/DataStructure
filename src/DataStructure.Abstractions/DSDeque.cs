@@ -1,21 +1,26 @@
 namespace DataStructure.Abstractions;
 
 /// <summary>
-/// Double-ended queue. Both ends support insertion and removal in O(1).
+/// Double-ended queue backed by a doubly linked chain.
+/// Both ends support insertion and removal in O(1).
 /// </summary>
 public sealed class DSDeque<T>
 {
     private DSNode<T>? _head;
     private DSNode<T>? _tail;
 
+    /// <summary>Gets the number of values currently stored.</summary>
     public int Count { get; private set; }
 
+    /// <summary>Adds a value before the head in O(1).</summary>
     public void AddFirst(T item)
     {
         var node = new DSNode<T>(item);
 
         if (_head is null)
+        {
             _head = _tail = node;
+        }
         else
         {
             node.Next = _head;
@@ -26,12 +31,15 @@ public sealed class DSDeque<T>
         Count++;
     }
 
+    /// <summary>Adds a value after the tail in O(1).</summary>
     public void AddLast(T item)
     {
         var node = new DSNode<T>(item);
 
         if (_tail is null)
+        {
             _head = _tail = node;
+        }
         else
         {
             node.Previous = _tail;
@@ -42,6 +50,7 @@ public sealed class DSDeque<T>
         Count++;
     }
 
+    /// <summary>Removes and returns the first value in O(1).</summary>
     public T RemoveFirst()
     {
         if (_head is null)
@@ -59,6 +68,7 @@ public sealed class DSDeque<T>
         return value;
     }
 
+    /// <summary>Removes and returns the last value in O(1).</summary>
     public T RemoveLast()
     {
         if (_tail is null)
@@ -76,6 +86,7 @@ public sealed class DSDeque<T>
         return value;
     }
 
+    /// <summary>Reads the first value without removing it.</summary>
     public T PeekFirst()
     {
         if (_head is null)
@@ -84,6 +95,7 @@ public sealed class DSDeque<T>
         return _head.Value;
     }
 
+    /// <summary>Reads the last value without removing it.</summary>
     public T PeekLast()
     {
         if (_tail is null)
