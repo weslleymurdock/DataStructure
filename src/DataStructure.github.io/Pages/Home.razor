@@ -1,0 +1,75 @@
+@page "/"
+
+<PageTitle>Estruturas de dados</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Olá, dev</MudText>
+<MudText Class="mb-8">Bem vindo ao seu guia de estruturas de dados e algoritmos em .NET 10!</MudText>
+
+<MudTable Items="@DataStructures" Hover="true" Breakpoint="Breakpoint.Sm">
+    <ColGroup>
+        <col />
+        <col style="width:100px;" />
+        <col style="width:300px;" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Page</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Page">@context.Page</MudTd>
+        <MudTd DataLabel="Algorythms">
+            <MudSelect T="ICollection<MudButton>">
+                @foreach(var algorythm in @context.Algorythms)
+                {
+                    <MudSelectItem T="MudButton">
+                        <MudButton StartIcon="@Icons.Material.Filled.PlaylistPlay" IconColor="@Color.Success" Href="@(string.Concat(context.Page, algorythm.Page))">@context.Name | @algorythm.Name</MudButton>
+                    </MudSelectItem>
+                }
+            </MudSelect>            
+        </MudTd>
+    </RowTemplate>
+     
+</MudTable>
+
+@code
+{
+    public ICollection<DataStructure> DataStructures = [
+        new("Array", "/structures/array", Algorythms),
+        new("Collection", "/structures/collection", Algorythms),
+        new("Deck", "/structures/deck", Algorythms),
+        new("List", "/structures/list", Algorythms),
+        new("LinkedList", "/structures/linkedlist", Algorythms),
+        new("NodeList", "/structures/nodelist", Algorythms),
+        new("PriorityQueue", "/structures/priorityqueue", Algorythms),
+        new("Queue", "/structures/queue", Algorythms),
+        new("Stack", "/structures/stack", Algorythms),];
+    public static readonly ICollection<Algorythm> Algorythms = [
+        new("BubbleSort", "/algorythm/bubblesort"), 
+        new("BinarySearch", "/algorythm/binarysearch"),
+        new("HeapSort", "/algorythm/heapsort"),
+        new("InsertionSort", "/algorythm/insertionsort"),
+        new("InterpolationSearch", "/algorythm/interpolationsearch"),
+        new("JumpSearch", "/algorythm/jumpsearch"),
+        new("LinearSearch", "/algorythm/linearsearch"),
+        new("MergeSort", "/algorythm/mergesort"),
+        new("QuickSort", "/algorythm/quicksort"),
+        new("SelectionSort", "/algorythm/selectionsort")
+    ];
+
+    public sealed class Algorythm
+    {
+        public Algorythm(string name, string page) => (Name, Page) = (name, page);
+        public string Name { get; set; }
+        public string Page { get; set; }
+    }
+    public sealed class DataStructure
+    {
+        public DataStructure(string name, string page, ICollection<Algorythm> algorythms) => (Name, Page, Algorythms) = (name, page, algorythms);
+        public string Name { get; set;}
+        public string Page {get;set;} 
+        public ICollection<Algorythm> Algorythms { get; set; }
+        public bool ShowDetails { get; set; } = false;
+    }
+}
