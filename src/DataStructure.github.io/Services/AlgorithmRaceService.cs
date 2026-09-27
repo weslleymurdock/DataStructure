@@ -543,6 +543,16 @@ public sealed class AlgorithmRaceService
             return [.. heap.AsArray()];
         }
 
+        if (structure == "hashtable")
+        {
+            var table = new DSHashTable<int, int>();
+
+            foreach (var value in values)
+                table.Add(value, value);
+
+            return [.. table.Enumerate().Select(entry => entry.Value)];
+        }
+
         if (structure == "graph")
         {
             var graph = new DSGraph<int>();
