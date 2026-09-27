@@ -166,7 +166,7 @@ public sealed class LinearSearch
         DSGraph<T> data,
         T target)
         where T : notnull
-        => Run(data.BreadthFirst(target), target);
+        => Run(data.Vertices, target);
 
     private static AlgorithmResult<int> Run<T>(
         IEnumerable<T> data,
