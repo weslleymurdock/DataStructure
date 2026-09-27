@@ -5,7 +5,7 @@ function decodeLabel(value) {
         .replaceAll("&quot;", '"')
         .replaceAll("&#39;", "'")
         .replaceAll("&amp;", "&")
-        .replace(/^"(.*)"$/s, "$1")
+        .replace(/"(.+?)"$/s, "$1")
         .trim();
 }
 
@@ -21,32 +21,31 @@ function parseGraph(source) {
         nodes.set(id, {
             data: {
                 id,
-                label: (existing?.data.label ?? decodeLabel(label)) || id,
+                label: existing?.data.label ?? decodeLabel(label) || id,
                 shape: existing?.data.shape ?? shape
             }
         });
     };
 
-    const nodePattern = /([A-Za-z_][\\w-]*)\\s*(\\[([^\\]]*)\\]|\\{([^}]*)\\}|\\(([^)]*)\\))/g;
+    const nodePattern = /([A-Za-z_][\w-]*)\s*(\[([^\]]*)\]|\{([^}]*)\}|\(([^)]*)\))/g;
 
     for (const match of source.matchAll(nodePattern)) {
         const label = match[3] ?? match[4] ?? match[5] ?? match[1];
-        const shape = match[4] !== undefined ? "diamond" : match[5] !== undefined ? "ellipse" : "round-rectangle";
+        const shape = match[4] !== undefined
+            ? "diamond"
+            : match[5] !== undefined
+                ? "ellipse"
+                : "round-rectangle";
+
         addNode(match[1], label, shape);
     }
 
-    const edgePattern = /([A-Za-z_][\\w-]*)\\s*(?:\\[[^\\]]*\\]|\\{[^}]*\\}|\\([^)]*\\))?\\s*(-->|-.->|==>|--\\s*"([^"]*)"\\s*-->|-\\.\\s*"([^"]*)"\\s*\\.->|-->\\|([^|]*)\\|)\\s*([A-Za-z_][\\w-]*)(?:\\[[^\\]]*\\]|\\{[^}]*\\}|\\([^)]*\\))?/g;
+    const edgePattern = /([A-Za-z_][\w-]*)\s*(?:\[[^\]]*\]|\{[^}]*\}|\([^)]*\))?\s*(?:--\s*"([^"]*)"\s*-->|-\.\s*"([^"]*)"\s*\.->|-->\|([^|]*)\||-->|-\.->|==>)\s*([A-Za-z_][\w-]*)(?:\[[^\]]*\]|\{[^}]*\}|\([^)]*\))?/g;
 
     for (const match of source.matchAll(edgePattern)) {
         const sourceId = match[1];
-        const operator = match[2];
-        const label = match[3] ?? match[4] ?? match[5] ?? "";
-
-        let targetId = match[6];
-
-        if (operator === "-->|" + label + "|") {
-            targetId = match[6];
-        }
+        const label = match[2] ?? match[3] ?? match[4] ?? "";
+        const targetId = match[5];
 
         if (!targetId)
             continue;
@@ -54,10 +53,9 @@ function parseGraph(source) {
         addNode(sourceId);
         addNode(targetId);
 
-        const edgeId = "edge-" + edges.length;
         edges.push({
             data: {
-                id: edgeId,
+                id: "edge-" + edges.length,
                 source: sourceId,
                 target: targetId,
                 label: decodeLabel(label)
@@ -94,7 +92,7 @@ function initializeCanvas(canvas) {
     const cy = window.cytoscape({
         container: canvas,
         elements,
-        wheelSensitivity: 0.12,
+        wheelSensitivity: 0.05,
         minZoom: 0.2,
         maxZoom: 3,
         boxSelectionEnabled: false,
