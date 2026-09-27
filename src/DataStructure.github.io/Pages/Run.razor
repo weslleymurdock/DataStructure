@@ -358,7 +358,10 @@
         var normalized = StructureCatalog.Normalize(StructureName);
 
         if (StructureName is not null)
+        {
             _selectedStructure = normalized;
+            _compareBy = CompareByStructure;
+        }
 
         if (!Algorithms.Contains(_selectedAlgorithm))
         {
@@ -404,6 +407,7 @@
     {
         Cancel();
         _mode = value;
+        _customComparisons.Clear();
 
         if (!Algorithms.Contains(_selectedAlgorithm))
             _selectedAlgorithm = Algorithms[0];
