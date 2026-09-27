@@ -162,11 +162,40 @@ Assim, a complexidade do algoritmo deve ser analisada junto com o custo das oper
 
 ### Visualização das ordenações
 
-A visualização usa `DataStructure.Algorithms.Visualization.Console` como um frame imutável do gráfico. O método `AlgorithmVisualizationDemo.Run` recebe `Action<Console>` e invoca o callback depois das mutações relevantes de cada sort. O callback padrão do projeto chama `frame.Render()`, que limpa o terminal com ANSI e desenha um gráfico conceitual X/Y de `0..N`, com uma coluna por valor e altura proporcional ao valor.
+A visualização gráfica executa **todos os sorts simultaneamente**, lado a lado, sobre instâncias independentes da mesma estrutura de dados. A execução percorre `DSArray`, `DSList`, `DSLinkedList`, `DSCollection`, `DSQueue`, `DSStack` e `DSDeque`, garantindo que cada implementação `Execute<TEstruturaDeDado>` dos seis sorts também seja exercitada visualmente.
 
-A lista usada na animação é uma permutação determinística de `1..14`, evitando valores repetidos e tornando a movimentação das barras fácil de acompanhar. O atraso de 80 ms fica no `Program`, fora dos algoritmos, para que a lógica de ordenação continue independente de I/O.
+Cada coluna representa um algoritmo:
 
-> `System.Console` é estático e não pode ser usado como argumento de `Action<T>`. Por isso o callback recebe a classe de frame `DataStructure.Algorithms.Visualization.Console`, enquanto `System.Console` continua sendo usado para desenhar o terminal.
+- `BubbleSort`
+- `SelectionSort`
+- `InsertionSort`
+- `MergeSort`
+- `QuickSort`
+- `HeapSort`
+
+Cada algoritmo recebe o mesmo conjunto de valores, mas uma instância própria da estrutura da rodada. Os algoritmos são iniciados em `Task`s independentes; os callbacks de mutação atualizam apenas o painel correspondente e um lock protege o estado compartilhado do frame.
+
+O cabeçalho de cada painel mostra:
+
+- `running` enquanto o algoritmo está executando;
+- `#1`, `#2`, etc. quando ele termina, indicando a posição na ordem de conclusão;
+- `N iter`, representando quantos snapshots de mutação foram publicados pelo algoritmo durante a animação.
+
+O cabeçalho geral também exibe a sequência de conclusão, por exemplo:
+
+> `Finish order: #1 HeapSort -> #2 QuickSort -> ...`
+
+Assim é possível observar simultaneamente **como cada algoritmo ordena os valores, quantas alterações visualizáveis realizou e qual algoritmo terminou primeiro e qual terminou por último**.
+
+A execução é repetida para cada estrutura de dados. Isso é importante porque as classes possuem implementações específicas para `DSArray`, `DSList`, `DSLinkedList`, `DSCollection`, `DSQueue`, `DSStack` e `DSDeque`; a visualização não substitui essas implementações por uma ordenação genérica.
+
+A API continua recebendo um callback de frame:
+
+`Action<DataStructure.Algorithms.Visualization.Console>`
+
+O callback padrão do projeto apenas chama `frame.Render()`. O atraso de animação fica dentro do mecanismo visualizador, e não na implementação dos algoritmos, mantendo o algoritmo independente de I/O.
+
+> `System.Console` é estático e não pode ser usado como argumento de `Action<T>`. Por isso o callback recebe a classe de frame `DataStructure.Algorithms.Visualization.Console`, enquanto `System.Console` continua sendo usado para escrever o terminal.
 
 ### Complexidade em termos simples
 
