@@ -629,6 +629,61 @@ public sealed record StructureGuide(
     A[""_items""] --> B[""IReadOnlyList<T> view""]",
                 _ => Mermaid
             },
+            "hashtable" => method.Name switch
+            {
+                "Construtor" => @"flowchart TD
+    A[""capacity""] --> B[""create List<Entry> bucket for each slot""]
+    B --> C[""_count = 0""]",
+                "Add" => @"flowchart TD
+    A[""key""] --> B[""GetHashCode()""]
+    B --> C[""bucket index""]
+    C --> D[""scan bucket for duplicate key""]
+    D --> E{""duplicate?""}
+    E -- ""yes"" --> F[""throw ArgumentException""]
+    E -- ""no"" --> G[""EnsureCapacity""]
+    G --> H[""recalculate bucket after resize""]
+    H --> I[""append Entry(key,value)""]
+    I --> J[""_count++""]",
+                "Set" => @"flowchart TD
+    A[""key""] --> B[""calculate bucket""]
+    B --> C[""scan chained entries""]
+    C --> D{""key found?""}
+    D -- ""yes"" --> E[""replace Entry value""]
+    D -- ""no"" --> F[""EnsureCapacity""]
+    F --> G[""append new Entry""]
+    G --> H[""_count++""]",
+                "TryGetValue" => @"flowchart TD
+    A[""key""] --> B[""hash -> bucket index""]
+    B --> C[""current entry in bucket""]
+    C --> D{""current key == key?""}
+    D -- ""yes"" --> E[""return value / true""]
+    D -- ""no"" --> F[""next entry in chain""]
+    F --> C
+    C --> G[""end of bucket -> false""]",
+                "ContainsKey" => @"flowchart TD
+    A[""key""] --> B[""TryGetValue(key)""]
+    B --> C[""true when key is found; otherwise false""]",
+                "Remove" => @"flowchart TD
+    A[""key""] --> B[""hash -> bucket index""]
+    B --> C[""scan bucket chain""]
+    C --> D{""key found?""}
+    D -- ""yes"" --> E[""RemoveAt(index)""]
+    E --> F[""_count-- / true""]
+    D -- ""no"" --> G[""false""]
+    "clear" => @"flowchart TD
+    A[""Clear()""] --> B[""create fresh bucket array""]
+    B --> C[""_count = 0""]",
+                "Clear" => @"flowchart TD
+    A[""Clear()""] --> B[""create fresh bucket array with same capacity""]
+    B --> C[""_count = 0""]",
+                "Enumerate" => @"flowchart TD
+    A[""buckets[0]""] --> B[""iterate entries""]
+    B --> C[""next bucket""]
+    C --> D{""more buckets?""}
+    D -- ""yes"" --> B
+    D -- ""no"" --> E[""finish""]",
+                _ => Mermaid
+            },
             "graph" => method.Name switch
             {
                 "AddVertex" => @"flowchart TD
