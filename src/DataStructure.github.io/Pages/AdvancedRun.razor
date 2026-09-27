@@ -1,0 +1,130 @@
+@page "/run/advanced"
+
+@using DataStructure.github.io.Services
+@inject AdvancedAlgorithmLabService Lab
+
+<PageTitle>Laboratório de buscas avançadas</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
+    <MudStack Spacing="4">
+        <div>
+            <MudText Typo="Typo.h3">Laboratório de buscas avançadas</MudText>
+            <MudText>
+                Execute buscas em tabelas hash, grafos ponderados e não ponderados,
+                além de busca por similaridade, acompanhando cada etapa do algoritmo.
+            </MudText>
+        </div>
+
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Wrap="Wrap.Wrap">
+                <MudSelect T="string"
+                           Label="Algoritmo"
+                           Variant="Variant.Outlined"
+                           Value="@_algorithm"
+                           ValueChanged="ChangeAlgorithm">
+                    @foreach (var algorithm in Lab.Algorithms)
+                    {
+                        <MudSelectItem T="string" Value="@algorithm">@algorithm</MudSelectItem>
+                    }
+                </MudSelect>
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.PlayArrow"
+                           OnClick="Run">
+                    Executar
+                </MudButton>
+
+                <MudButton Variant="Variant.Outlined"
+                           Href="/algorythms">
+                    Ver documentação
+                </MudButton>
+            </MudStack>
+        </MudPaper>
+
+        @if (_result is not null)
+        {
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudStack Spacing="3">
+                    <div>
+                        <MudText Typo="Typo.h5">@_result.Algorithm</MudText>
+                        <MudText>@_result.Description</MudText>
+                    </div>
+
+                    <MudAlert Severity="Severity.Success" Variant="Variant.Outlined">
+                        <strong>Resultado:</strong> @_result.Result
+                    </MudAlert>
+
+                    <MudText Typo="Typo.h6">Execução</MudText>
+                    <MudList T="string" Dense="true">
+                        @{
+                            var stepNumber = 0;
+                        }
+
+                        @foreach (var step in _result.Steps)
+                        {
+                            stepNumber++;
+                            <MudListItem>
+                                <MudStack Row="true" AlignItems="AlignItems.Start" Spacing="2">
+                                    <MudChip T="string" Color="Color.Primary" Size="Size.Small">@stepNumber</MudChip>
+                                    <MudText>@step</MudText>
+                                </MudStack>
+                            </MudListItem>
+                        }
+                    </MudList>
+
+                    <MudText Typo="Typo.caption">
+                        Tempo medido: @_result.Elapsed.TotalMicroseconds.ToString("F2") µs.
+                        O tempo é apenas informativo para esta demonstração.
+                    </MudText>
+                </MudStack>
+            </MudPaper>
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                Escolha um algoritmo e execute a demonstração para visualizar o percurso.
+            </MudAlert>
+        }
+
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudText Typo="Typo.h5" GutterBottom="true">Grafo usado no laboratório</MudText>
+            <MudText Typo="Typo.body2" Class="mb-3">
+                Os algoritmos de BFS e DFS usam o grafo direcionado não ponderado.
+                Dijkstra, A* e Busca Gulosa usam o mesmo conjunto de vértices com pesos.
+            </MudText>
+
+            <div class="mermaid-container">
+                <div class="mermaid-diagram">
+flowchart LR
+    A["1"] --> B["2"]
+    A --> C["3"]
+    B --> D["4"]
+    B --> E["5"]
+    C --> F["6"]
+    C --> G["7"]
+    E --> H["8"]
+    F --> H
+    B2["2"] -->|3| E2["5"]
+    C2["3"] -->|1| E2
+    E2 -->|2| G2["7"]
+    G2 -->|1| H2["8"]
+</div>
+            </div>
+        </MudPaper>
+    </MudStack>
+</MudContainer>
+
+@code {
+    private string _algorithm = "HashSearch";
+    private AdvancedLabResult? _result;
+
+    private void ChangeAlgorithm(string value)
+    {
+        _algorithm = value;
+        _result = null;
+    }
+
+    private void Run()
+        => _result = Lab.Run(_algorithm);
+}
