@@ -65,9 +65,12 @@
                             A árvore representa a estrutura de navegação usada na demonstração.
                             O nó destacado é o <strong>current item</strong> que está sendo processado.
                         </MudText>
-                        <AlgorithmTreeViewer T="int"
-                                             Root="_result.Tree"
-                                             CurrentItem="_currentItem" />
+                        @if (_currentItem is not null)
+                        {
+                            <AlgorithmTreeViewer T="int"
+                                                 Root="_result.Tree"
+                                                 CurrentItem="_currentItem.Value" />
+                        }
                         @if (_currentItem is not null)
                         {
                             <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
