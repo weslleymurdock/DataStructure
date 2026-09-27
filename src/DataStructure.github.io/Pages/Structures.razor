@@ -1,39 +1,40 @@
-﻿@page "/structures"
-<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.ExtraLarge">
-    <MudGrid>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudGrid>
-                <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-                </MudItem>
-                <MudItem xs="12">
-                    <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-                </MudItem>
-            </MudGrid>
-        </MudItem>
-        <MudItem xs="12" sm="6">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 100%"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="6" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-        <MudItem xs="12" sm="12" md="4">
-            <MudPaper Elevation="2" Class="pa-4" Style="height: 200px;"></MudPaper>
-        </MudItem>
-    </MudGrid>
-</MudContainer>
-@code{
+@page "/structures"
 
-}
+@using DataStructure.github.io.Services
+
+<PageTitle>Estruturas de dados</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
+    <MudStack Spacing="3">
+        <MudText Typo="Typo.h3">Estruturas de dados</MudText>
+        <MudText>
+            Escolha uma estrutura para abrir sua implementação, métodos, complexidade e demonstração.
+        </MudText>
+
+        <MudGrid>
+            @foreach (var structure in StructureCatalog.All)
+            {
+                <MudItem xs="12" sm="6" md="4" @key="structure.Key">
+                    <MudPaper Elevation="2" Class="pa-4 structure-card">
+                        <MudText Typo="Typo.h5">@structure.Name</MudText>
+                        <MudText Typo="Typo.body2" Class="my-2">@structure.Description</MudText>
+                        <MudText Typo="Typo.caption">Melhor uso: @structure.UseCase</MudText>
+
+                        <MudStack Row="true" Class="mt-3">
+                            <MudButton Href="@($"/structures/{structure.Key}")"
+                                       Variant="Variant.Filled"
+                                       Color="Color.Primary">
+                                Estudar
+                            </MudButton>
+                            <MudButton Href="@($"/run/{structure.Key}")"
+                                       Variant="Variant.Outlined"
+                                       Color="Color.Primary">
+                                Run
+                            </MudButton>
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+            }
+        </MudGrid>
+    </MudStack>
+</MudContainer>
