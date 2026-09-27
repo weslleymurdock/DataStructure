@@ -445,7 +445,7 @@ public sealed class AlgorithmRaceService
 
     private static int[] GetInitialValues(string structure)
     {
-        var values = [.. InitialValues];
+        int[] values = [.. InitialValues];
 
         if (structure == "stack")
             Array.Reverse(values);
