@@ -290,7 +290,7 @@ public static class AlgorithmDemo
             "data structures and algorithms",
             ["data structures", "graph algorithms", "chocolate cake"]);
 
-        Print("SimilaritySearch", "Text", similarity[0]);
+        System.Console.WriteLine($"{"SimilaritySearch",-22}{"Text",-20}{similarity[0].Score,10:P2}");
     }
 
     private static void Interpolation(int[] values)
