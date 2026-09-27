@@ -3,9 +3,9 @@ using DataStructure.Algorithms;
 
 namespace DataStructure.github.io.Services;
 
-public sealed record AlgorithmTreeNode<T>(
+public sealed record AlgorithmTreeDataNode<T>(
     T Value,
-    IReadOnlyList<AlgorithmTreeNode<T>> Children);
+    IReadOnlyList<AlgorithmTreeDataNode<T>> Children);
 
 public sealed record AdvancedLabResult(
     string Algorithm,
@@ -13,7 +13,7 @@ public sealed record AdvancedLabResult(
     IReadOnlyList<string> Steps,
     string Result,
     TimeSpan Elapsed,
-    AlgorithmTreeNode<int>? Tree = null,
+    AlgorithmTreeDataNode<int>? Tree = null,
     IReadOnlyList<int>? CurrentItems = null);
 
 public sealed class AdvancedAlgorithmLabService
@@ -158,7 +158,7 @@ public sealed class AdvancedAlgorithmLabService
             TimeSpan.Zero);
     }
 
-    private static AlgorithmTreeNode<int> CreateTraversalTree()
+    private static AlgorithmTreeDataNode<int> CreateTraversalTree()
         => new(1,
         [
             new(2,
@@ -173,7 +173,7 @@ public sealed class AdvancedAlgorithmLabService
             ])
         ]);
 
-    private static AlgorithmTreeNode<int> CreateWeightedTree()
+    private static AlgorithmTreeDataNode<int> CreateWeightedTree()
         => new(1,
         [
             new(2,
