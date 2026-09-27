@@ -10,7 +10,13 @@
         <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Wrap="Wrap.Wrap">
             <div>
                 <MudText Typo="Typo.h3">@Guide.Name</MudText>
-                <MudText Typo="Typo.body1" Class="mt-1">@Guide.Description</MudText>
+                <MudStack Row="true" Spacing="1" Class="mt-1">
+                    <MudChip T="string" Size="Size.Small" Color="Color.Primary">
+                        @(Guide.Category == "linear" ? "Linear" : "Não linear")
+                    </MudChip>
+                    <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined">@Guide.TypeName&lt;T&gt;</MudChip>
+                </MudStack>
+                <MudText Typo="Typo.body1" Class="mt-2">@Guide.Description</MudText>
             </div>
 
             <MudSelect T="string"
