@@ -1,27 +1,40 @@
 namespace DataStructure.Abstractions;
 
 /// <summary>
-/// Dynamic list that provides O(1) indexed reads and amortized O(1) appends.
+/// Dynamic list derived from <see cref="DSCollection{T}"/>.
+/// It exposes insertion and removal by index while retaining O(1) indexed reads.
 /// </summary>
 public sealed class DSList<T> : DSCollection<T>, IReadOnlyList<T>
 {
-    public DSList(int capacity = 4) : base(capacity)
+    /// <summary>Creates a list with the specified initial capacity.</summary>
+    public DSList(int capacity = 4)
+        : base(capacity)
     {
     }
 
-    public void Insert(int index, T item) => InsertAt(index, item);
+    /// <summary>Inserts a value at an index. The suffix shift costs O(n).</summary>
+    public void Insert(int index, T item)
+        => InsertAt(index, item);
 
-    public T RemoveAt(int index) => base.RemoveAt(index);
+    /// <summary>Removes and returns the value at an index. The suffix shift costs O(n).</summary>
+    public T RemoveAt(int index)
+        => base.RemoveAt(index);
 
+    /// <summary>Finds the first matching value using a linear O(n) scan.</summary>
     public int IndexOf(T item)
     {
         var comparer = EqualityComparer<T>.Default;
-        for (var i = 0; i < Count; i++)
-            if (comparer.Equals(this[i], item))
-                return i;
+
+        for (var index = 0; index < Count; index++)
+        {
+            if (comparer.Equals(this[index], item))
+                return index;
+        }
 
         return -1;
     }
 
-    public bool Contains(T item) => IndexOf(item) >= 0;
+    /// <summary>Checks whether a value exists using IndexOf.</summary>
+    public bool Contains(T item)
+        => IndexOf(item) >= 0;
 }
