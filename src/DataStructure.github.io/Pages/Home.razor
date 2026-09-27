@@ -1,89 +1,65 @@
 @page "/"
 
-<PageTitle>Estruturas de dados</PageTitle>
+@using DataStructure.github.io.Services
 
-<MudText Typo="Typo.h3" GutterBottom="true">Olá, dev</MudText>
-<MudText Class="mb-8">Bem vindo ao seu guia de estruturas de dados e algoritmos em .NET 10!</MudText>
+<PageTitle>Estruturas de dados e algoritmos</PageTitle>
 
-<MudGrid>
-    @foreach (var ds in  DataStructures)
-    {
-        if (DataStructures.Count % 2 != 0 && DataStructures.Last().Equals(ds))
-        {
-            <MudItem xs="12" sm="12">
-                <MudCard>
-                    <MudCardHeader>
-                        <MudText Typo="Typo.h3" >@ds.Name</MudText>
-                    </MudCardHeader>
-                    <MudCardActions> 
-                        <MudChipSet T="MudChip<string>">
-                        @foreach (var algorythm in ds.Algorythms)
-                        {
-                            <MudChip T="string" Icon="@Icons.Material.Filled.PlaylistPlay" IconColor="@Color.Success" Value="@algorythm.Name"/>
-                        } 
-                        </MudChipSet>
-                    </MudCardActions>
-                </MudCard>
-            </MudItem>    
-        }
-        else
-        {
-            <MudItem xs="12" sm="6">
-                <MudCard>
-                    <MudCardHeader>
-                        <MudText Typo="Typo.h3">@ds.Name</MudText>
-                    </MudCardHeader>
-                    <MudCardActions>
-                        <MudChipSet T="MudChip<string>">
-                            @foreach (var algorythm in ds.Algorythms)
-                            {
-                                <MudChip T="string" Icon="@Icons.Material.Filled.PlaylistPlay" IconColor="@Color.Success"
-                                         Value="@algorythm.Name" />
-                            }
-                        </MudChipSet>
-                    </MudCardActions>
-                </MudCard>
-            </MudItem>
-        }
-    }
-</MudGrid> 
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
+    <MudStack Spacing="4">
+        <MudPaper Elevation="0" Class="pa-6 hero-panel">
+            <MudText Typo="Typo.h2">Estruturas de dados e algoritmos</MudText>
+            <MudText Typo="Typo.h6" Class="mt-2">
+                Um guia visual para entender implementação, complexidade e execução dos algoritmos em .NET 10.
+            </MudText>
+            <MudStack Row="true" Class="mt-4" Wrap="Wrap.Wrap">
+                <MudButton Href="/structures" Variant="Variant.Filled" Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.MenuBook">
+                    Guia das estruturas
+                </MudButton>
+                <MudButton Href="/run" Variant="Variant.Outlined" Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.PlayArrow">
+                    Laboratório de execução
+                </MudButton>
+            </MudStack>
+        </MudPaper>
 
-@code
-{
-    public ICollection<DataStructure> DataStructures = [
-        new("Array", "/structures/array", Algorythms),
-        new("Collection", "/structures/collection", Algorythms),
-        new("Deck", "/structures/deck", Algorythms),
-        new("List", "/structures/list", Algorythms),
-        new("LinkedList", "/structures/linkedlist", Algorythms),
-        new("NodeList", "/structures/nodelist", Algorythms),
-        new("PriorityQueue", "/structures/priorityqueue", Algorythms),
-        new("Queue", "/structures/queue", Algorythms),
-        new("Stack", "/structures/stack", Algorythms),];
-    public static readonly ICollection<Algorythm> Algorythms = [
-        new("BubbleSort"), 
-        new("BinarySearch"),
-        new("HeapSort"),
-        new("InsertionSort"),
-        new("InterpolationSearch"),
-        new("JumpSearch"),
-        new("LinearSearch"),
-        new("MergeSort"),
-        new("QuickSort"),
-        new("SelectionSort")
-    ];
+        <MudText Typo="Typo.h4">Mapa do projeto</MudText>
+        <MudText>
+            Selecione uma estrutura para estudar seu código e os métodos, ou abra a execução para assistir
+            aos algoritmos avançando em paralelo.
+        </MudText>
 
-    public sealed class Algorythm
-    {
-        public Algorythm(string name) => (Name) = (name);
-        public string Name { get; set; } 
-    }
-    public sealed class DataStructure
-    {
-        public DataStructure(string name, string page, ICollection<Algorythm> algorythms) => (Name, Page, Algorythms) = (name, page, algorythms);
-        public string Name { get; set;}
-        public string Page {get;set;} 
-        public ICollection<Algorythm> Algorythms { get; set; }
-        public bool ShowDetails { get; set; } = false;
-    }
-}
+        <MudGrid>
+            @foreach (var structure in StructureCatalog.All)
+            {
+                <MudItem xs="12" sm="6" lg="4" @key="structure.Key">
+                    <MudCard Class="structure-card">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h5">@structure.Name</MudText>
+                                <MudText Typo="Typo.body2">@structure.Description</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+
+                        <MudCardContent>
+                            <MudChip Color="Color.Info" Size="Size.Small">@structure.Key</MudChip>
+                        </MudCardContent>
+
+                        <MudCardActions>
+                            <MudButton Href="@($"/structures/{structure.Key}")"
+                                       Variant="Variant.Text"
+                                       Color="Color.Primary">
+                                Implementação
+                            </MudButton>
+                            <MudButton Href="@($"/run/{structure.Key}")"
+                                       Variant="Variant.Text"
+                                       Color="Color.Secondary">
+                                Run
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    </MudStack>
+</MudContainer>
