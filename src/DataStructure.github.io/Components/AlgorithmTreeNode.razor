@@ -1,0 +1,29 @@
+@typeparam T
+
+<div class="algorithm-tree-node">
+    <div class="algorithm-tree-value @(IsCurrent ? "algorithm-tree-current" : string.Empty)"
+         title="@(IsCurrent ? "Current item do algoritmo" : null)">
+        @Node.Value
+    </div>
+
+    @if (Node.Children.Count > 0)
+    {
+        <div class="algorithm-tree-children">
+            @foreach (var child in Node.Children)
+            {
+                <AlgorithmTreeNode T="T" Node="child" CurrentItem="CurrentItem" />
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public AlgorithmTreeNode<T> Node { get; set; } = default!;
+
+    [Parameter]
+    public T? CurrentItem { get; set; }
+
+    private bool IsCurrent =>
+        EqualityComparer<T>.Default.Equals(Node.Value, CurrentItem);
+}
