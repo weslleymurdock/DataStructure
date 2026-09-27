@@ -175,7 +175,7 @@ public sealed class AlgorithmRaceService
                     await InterpolationSearch(values, target, Step, cancellationToken);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(algorithm));
+                    throw new ArgumentOutOfRangeException(nameof(panel.Algorithm));
             }
 
             panel.Complete(Interlocked.Increment(ref completion));
