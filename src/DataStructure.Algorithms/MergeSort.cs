@@ -112,9 +112,10 @@ public sealed class MergeSort
     private AlgorithmResult<int> SortQueue(DSQueue<int> data)
     {
         var values = Materialize(data);
-        var result = SortCopy([.. values]);
+        var sorted = values.ToArray();
+        var result = SortCopy(sorted);
 
-        foreach (var value in values)
+        foreach (var value in sorted)
             data.Enqueue(value);
 
         return result;
@@ -127,10 +128,11 @@ public sealed class MergeSort
         while (data.Count > 0)
             values.Add(data.Pop());
 
-        var result = SortCopy([.. values]);
+        var sorted = values.ToArray();
+        var result = SortCopy(sorted);
 
-        for (var index = values.Count - 1; index >= 0; index--)
-            data.Push(values[index]);
+        for (var index = sorted.Length - 1; index >= 0; index--)
+            data.Push(sorted[index]);
 
         return result;
     }
@@ -142,9 +144,10 @@ public sealed class MergeSort
         while (data.Count > 0)
             values.Add(data.RemoveFirst());
 
-        var result = SortCopy([.. values]);
+        var sorted = values.ToArray();
+        var result = SortCopy(sorted);
 
-        foreach (var value in values)
+        foreach (var value in sorted)
             data.AddLast(value);
 
         return result;
