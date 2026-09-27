@@ -1352,6 +1352,94 @@ public sealed class DSHeap<T> where T : IComparable<T>
                 new("Remove","public bool Remove(T item)","Localiza o primeiro valor correspondente e o remove.","O(n)"),
                 new("AsArray","public IReadOnlyList<T> AsArray()","Expõe a representação em vetor usada pelo heap.","O(1)"),
             ]),
+        new("maxheap","nonlinear","DSMaxHeap","Max Heap","Heap binário máximo que mantém o maior elemento na raiz.","Quando é necessário obter repetidamente o maior valor com acesso à raiz em O(1), como em filas de prioridade máximas e seleção dos maiores elementos.",@"namespace DataStructure.Abstractions;
+
+public sealed class DSMaxHeap<T> where T : IComparable<T>
+{
+    private readonly List<T> _items = [];
+
+    public int Count => _items.Count;
+
+    public void Add(T value)
+    {
+        _items.Add(value);
+        SiftUp(_items.Count - 1);
+    }
+
+    public T Peek()
+        => _items.Count == 0
+            ? throw new InvalidOperationException("The heap is empty.")
+            : _items[0];
+
+    public T Remove()
+    {
+        if (_items.Count == 0)
+            throw new InvalidOperationException("The heap is empty.");
+
+        var result = _items[0];
+        var last = _items[^1];
+        _items.RemoveAt(_items.Count - 1);
+
+        if (_items.Count > 0)
+        {
+            _items[0] = last;
+            SiftDown(0);
+        }
+
+        return result;
+    }
+
+    public IReadOnlyList<T> AsArray()
+        => _items;
+
+    private void SiftUp(int index)
+    {
+        while (index > 0)
+        {
+            var parent = (index - 1) / 2;
+
+            if (_items[parent].CompareTo(_items[index]) >= 0)
+                return;
+
+            (_items[parent], _items[index]) =
+                (_items[index], _items[parent]);
+
+            index = parent;
+        }
+    }
+
+    private void SiftDown(int index)
+    {
+        while (true)
+        {
+            var left = index * 2 + 1;
+            var right = left + 1;
+            var largest = index;
+
+            if (left < _items.Count &&
+                _items[left].CompareTo(_items[largest]) > 0)
+                largest = left;
+
+            if (right < _items.Count &&
+                _items[right].CompareTo(_items[largest]) > 0)
+                largest = right;
+
+            if (largest == index)
+                return;
+
+            (_items[index], _items[largest]) =
+                (_items[largest], _items[index]);
+
+            index = largest;
+        }
+    }
+}",
+            [
+                new("Add","public void Add(T value)","Insere o valor no final da representação e sobe enquanto ele for maior que o pai.","O(log n)"),
+                new("Peek","public T Peek()","Consulta o maior valor, armazenado na raiz.","O(1)"),
+                new("Remove","public T Remove()","Remove a raiz, promove o último elemento e restaura a propriedade de max-heap.","O(log n)"),
+                new("AsArray","public IReadOnlyList<T> AsArray()","Expõe a representação em níveis usada para visualizar o heap.","O(1)"),
+            ]),
         new("graph","nonlinear","DSGraph","Grafo direcionado","Vértices conectados por arestas orientadas, representados por listas de adjacência.","Modelar relações, dependências, redes e caminhos.",@"namespace DataStructure.Abstractions;
 
 public sealed class DSGraph<T> where T : notnull
