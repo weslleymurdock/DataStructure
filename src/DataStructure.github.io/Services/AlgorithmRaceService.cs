@@ -1,3 +1,5 @@
+using DataStructure.Abstractions;
+
 namespace DataStructure.github.io.Services;
 
 public sealed class RacePanel
@@ -44,7 +46,8 @@ public sealed class AlgorithmRaceService
 
     public static readonly string[] Structures =
         ["array", "collection", "list", "linkedlist", "nodelist",
-         "queue", "stack", "deque", "deck", "priorityqueue"];
+         "circularlinkedlist", "queue", "stack", "deque", "deck",
+         "priorityqueue", "binarytree", "binarysearchtree", "heap", "graph"];
 
     private static readonly int[] InitialValues =
         [8, 3, 12, 5, 1, 10, 7, 14, 4, 11, 2, 13, 6, 9];
@@ -442,13 +445,83 @@ public sealed class AlgorithmRaceService
 
     private static int[] GetInitialValues(string structure)
     {
-        int[] values = [.. InitialValues];
+        var values = [.. InitialValues];
 
         if (structure == "stack")
             Array.Reverse(values);
 
         if (structure == "priorityqueue")
-            Array.Sort(values);
+        {
+            var queue = new DSPriorityQueue<int>();
+
+            foreach (var value in values)
+                queue.Enqueue(value);
+
+            var result = new int[queue.Count];
+
+            for (var index = 0; index < result.Length; index++)
+                result[index] = queue.Dequeue();
+
+            return result;
+        }
+
+        if (structure == "circularlinkedlist")
+        {
+            var list = new DSCircularLinkedList<int>();
+
+            foreach (var value in values)
+                list.AddLast(value);
+
+            return [.. list.Enumerate()];
+        }
+
+        if (structure == "binarytree")
+        {
+            var tree = new DSBinaryTree<int>(values[0]);
+            tree.Root.Left = new DSBinaryTreeNode<int>(values[1]);
+            tree.Root.Right = new DSBinaryTreeNode<int>(values[2]);
+            tree.Root.Left.Left = new DSBinaryTreeNode<int>(values[3]);
+            tree.Root.Left.Right = new DSBinaryTreeNode<int>(values[4]);
+            tree.Root.Right.Left = new DSBinaryTreeNode<int>(values[5]);
+            tree.Root.Right.Right = new DSBinaryTreeNode<int>(values[6]);
+
+            return [.. tree.PreOrder()];
+        }
+
+        if (structure == "binarysearchtree")
+        {
+            var tree = new DSBinarySearchTree<int>();
+
+            foreach (var value in values)
+                tree.Insert(value);
+
+            return [.. tree.PreOrder()];
+        }
+
+        if (structure == "heap")
+        {
+            var heap = new DSHeap<int>();
+
+            foreach (var value in values)
+                heap.Add(value);
+
+            return [.. heap.AsArray()];
+        }
+
+        if (structure == "graph")
+        {
+            var graph = new DSGraph<int>();
+
+            foreach (var value in values)
+                graph.AddVertex(value);
+
+            for (var index = 0; index < values.Length - 1; index++)
+                graph.AddEdge(values[index], values[index + 1]);
+
+            graph.AddEdge(values[^1], values[0]);
+
+            return [.. graph.BreadthFirst(values[0])];
+        }
 
         return values;
     }
