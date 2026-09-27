@@ -6,47 +6,176 @@
 @inject NavigationManager Navigation
 @inject AlgorithmRaceService RaceService
 
-<PageTitle>Run - @SelectedGuide.Name</PageTitle>
+<PageTitle>Laboratório visual</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
     <MudStack Spacing="3">
-        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Wrap="Wrap.Wrap">
-            <div>
-                <MudText Typo="Typo.h3">Execução ao vivo</MudText>
-                <MudText>Todos os tipos de estrutura executam o mesmo algoritmo simultaneamente.</MudText>
-            </div>
+        <div>
+            <MudText Typo="Typo.h3">Laboratório visual</MudText>
+            <MudText>
+                Compare algoritmos e estruturas usando a mesma dimensão de comparação.
+                Uma execução representa sempre um par algoritmo × estrutura.
+            </MudText>
+        </div>
 
-            <MudSelect T="string"
-                       Label="Estrutura"
-                       Variant="Variant.Outlined"
-                       Value="@SelectedKey"
-                       ValueChanged="ChangeStructure"
-                       Class="structure-select">
-                @foreach (var item in StructureCatalog.All)
+        <MudPaper Elevation="2" Class="pa-4">
+            <MudStack Spacing="3">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Wrap="Wrap.Wrap">
+                    <MudButtonGroup Variant="Variant.Outlined">
+                        <MudButton Color="@(_view == "all" ? Color.Primary : Color.Default)"
+                                   Variant="@(_view == "all" ? Variant.Filled : Variant.Outlined)"
+                                   OnClick="@(() => ChangeView("all"))">
+                            Comparar tudo
+                        </MudButton>
+                        <MudButton Color="@(_view == "custom" ? Color.Primary : Color.Default)"
+                                   Variant="@(_view == "custom" ? Variant.Filled : Variant.Outlined)"
+                                   OnClick="@(() => ChangeView("custom"))">
+                            Comparação personalizada
+                        </MudButton>
+                    </MudButtonGroup>
+
+                    @if (_view == "all")
+                    {
+                        <MudSelect T="string"
+                                   Label="Comparar por"
+                                   Variant="Variant.Outlined"
+                                   Value="@_compareBy"
+                                   ValueChanged="ChangeCompareBy"
+                                   Class="structure-select">
+                            <MudSelectItem T="string" Value="@("algorithm")">Algoritmo</MudSelectItem>
+                            <MudSelectItem T="string" Value="@("structure")">Estrutura</MudSelectItem>
+                        </MudSelect>
+                    }
+                </MudStack>
+
+                @if (_view == "all")
                 {
-                    <MudSelectItem T="string" Value="@item.Key">@item.Name</MudSelectItem>
+                    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+                        @if (_compareBy == "algorithm")
+                        {
+                            <span>
+                                O gráfico compara <strong>todas as estruturas</strong> executando
+                                o mesmo algoritmo.
+                            </span>
+                        }
+                        else
+                        {
+                            <span>
+                                O gráfico compara <strong>todos os algoritmos</strong> executando
+                                sobre a mesma estrutura.
+                            </span>
+                        }
+                    </MudAlert>
+
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Wrap="Wrap.Wrap">
+                        <MudSelect T="string"
+                                   Label="Algoritmo"
+                                   Variant="Variant.Outlined"
+                                   Value="@_selectedAlgorithm"
+                                   ValueChanged="ChangeSelectedAlgorithm"
+                                   Disabled="@(_compareBy != "algorithm")">
+                            @foreach (var algorithm in Algorithms)
+                            {
+                                <MudSelectItem T="string" Value="@algorithm">@algorithm</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        <MudSelect T="string"
+                                   Label="Estrutura"
+                                   Variant="Variant.Outlined"
+                                   Value="@_selectedStructure"
+                                   ValueChanged="ChangeSelectedStructure"
+                                   Disabled="@(_compareBy != "structure")">
+                            @foreach (var item in StructureCatalog.All)
+                            {
+                                <MudSelectItem T="string" Value="@item.Key">@item.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudStack>
                 }
-            </MudSelect>
-        </MudStack>
+                else
+                {
+                    <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+                        Cada novo gráfico deve compartilhar <strong>o algoritmo</strong> ou
+                        <strong>a estrutura</strong> com os gráficos já adicionados.
+                        Não é permitido misturar as duas dimensões, pois isso não representa
+                        uma comparação controlada.
+                    </MudAlert>
+
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Wrap="Wrap.Wrap">
+                        <MudSelect T="string"
+                                   Label="Algoritmo"
+                                   Variant="Variant.Outlined"
+                                   Value="@_customAlgorithm"
+                                   ValueChanged="value => _customAlgorithm = value">
+                            @foreach (var algorithm in Algorithms)
+                            {
+                                <MudSelectItem T="string" Value="@algorithm">@algorithm</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        <MudSelect T="string"
+                                   Label="Estrutura"
+                                   Variant="Variant.Outlined"
+                                   Value="@_customStructure"
+                                   ValueChanged="value => _customStructure = value">
+                            @foreach (var item in StructureCatalog.All)
+                            {
+                                <MudSelectItem T="string" Value="@item.Key">@item.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.AddChart"
+                                   Disabled="@(!_canAddCustom)"
+                                   OnClick="AddCustomChart">
+                            Adicionar gráfico
+                        </MudButton>
+
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="Color.Error"
+                                   Disabled="@(!_customComparisons.Any())"
+                                   StartIcon="@Icons.Material.Filled.DeleteSweep"
+                                   OnClick="ClearCustomCharts">
+                            Esvaziar gráficos
+                        </MudButton>
+                    </MudStack>
+
+                    @if (_customComparisons.Any())
+                    {
+                        <MudText Typo="Typo.caption">
+                            Gráficos adicionados: @_customComparisons.Count
+                        </MudText>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.caption">
+                            Nenhum gráfico foi adicionado. Escolha um algoritmo e uma estrutura.
+                        </MudText>
+                    }
+                }
+            </MudStack>
+        </MudPaper>
 
         <MudPaper Elevation="2" Class="pa-4">
             <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Wrap="Wrap.Wrap">
-                <MudSelect T="string" Label="Tipo" @bind-Value="_mode" Variant="Variant.Outlined">
-                    <MudSelectItem Value="@("sort")">Ordenação</MudSelectItem>
-                    <MudSelectItem Value="@("search")">Busca</MudSelectItem>
-                </MudSelect>
-
-                <MudSelect T="string" Label="Algoritmo" @bind-Value="_algorithm" Variant="Variant.Outlined">
-                    @foreach (var algorithm in Algorithms)
-                    {
-                        <MudSelectItem Value="@algorithm">@algorithm</MudSelectItem>
-                    }
+                <MudSelect T="string"
+                           Label="Tipo"
+                           Variant="Variant.Outlined"
+                           Value="@_mode"
+                           ValueChanged="ChangeMode">
+                    <MudSelectItem T="string" Value="@("sort")">Ordenação</MudSelectItem>
+                    <MudSelectItem T="string" Value="@("search")">Busca</MudSelectItem>
                 </MudSelect>
 
                 @if (_mode == "search")
                 {
-                    <MudNumericField T="int" Label="Alvo" @bind-Value="_target"
-                                     Variant="Variant.Outlined" Min="0" />
+                    <MudNumericField T="int"
+                                     Label="Alvo"
+                                     Variant="Variant.Outlined"
+                                     Min="0"
+                                     @bind-Value="_target" />
                 }
 
                 <MudStack Class="run-slider">
@@ -61,7 +190,7 @@
 
                 <MudButton Variant="Variant.Filled"
                            Color="Color.Primary"
-                           Disabled="@_running"
+                           Disabled="@(_running || !_panels.Any())"
                            StartIcon="@Icons.Material.Filled.PlayArrow"
                            OnClick="RunAsync">
                     Executar
@@ -78,66 +207,107 @@
 
         <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
             A ordem de término mede a corrida da visualização, não é um benchmark.
-            Para busca binária, jump e interpolation, os dados são ordenados antes da busca porque esses algoritmos exigem entrada ordenada.
+            Para busca binária, jump e interpolation, os dados são ordenados antes da busca
+            porque esses algoritmos exigem entrada ordenada.
         </MudAlert>
 
-        <MudGrid>
-            @foreach (var panel in _panels)
-            {
-                <MudItem xs="12" sm="6" lg="4" @key="panel.Structure">
-                    <MudPaper Elevation="2" Class="pa-3 race-panel">
-                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-                            <MudText Typo="Typo.h6">@panel.Structure</MudText>
+        @if (!_panels.Any())
+        {
+            <MudPaper Elevation="1" Class="pa-6">
+                <MudText Align="Align.Center">
+                    Adicione pelo menos um gráfico para iniciar a demonstração.
+                </MudText>
+            </MudPaper>
+        }
+        else
+        {
+            <MudGrid>
+                @foreach (var panel in _panels)
+                {
+                    <MudItem xs="12" sm="6" lg="4" @key="panel">
+                        <MudPaper Elevation="2" Class="pa-3 race-panel">
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                <MudStack Spacing="0">
+                                    <MudText Typo="Typo.h6">@panel.Algorithm</MudText>
+                                    <MudText Typo="Typo.caption">@panel.Structure</MudText>
+                                </MudStack>
 
-                            @if (panel.Completed)
-                            {
-                                <MudChip T="string" Color="Color.Success" Size="Size.Small">#@panel.CompletionOrder</MudChip>
-                            }
-                            else if (_running)
-                            {
-                                <MudChip T="string" Color="Color.Warning" Size="Size.Small">running</MudChip>
-                            }
-                            else
-                            {
-                                <MudChip T="string" Color="Color.Default" Size="Size.Small">ready</MudChip>
-                            }
-                        </MudStack>
+                                @if (panel.Completed)
+                                {
+                                    <MudChip T="string" Color="Color.Success" Size="Size.Small">
+                                        #@panel.CompletionOrder
+                                    </MudChip>
+                                }
+                                else if (_running)
+                                {
+                                    <MudChip T="string" Color="Color.Warning" Size="Size.Small">
+                                        running
+                                    </MudChip>
+                                }
+                                else
+                                {
+                                    <MudChip T="string" Color="Color.Default" Size="Size.Small">
+                                        ready
+                                    </MudChip>
+                                }
+                            </MudStack>
 
-                        <MudPaper Class="race-bars">
-                            @foreach (var item in panel.Values.Select((value, index) => (value, index)))
-                            {
-                                var height = Math.Max(8, item.value * 7);
-                                var active = panel.CurrentIndex == item.index;
+                            <MudPaper Class="race-bars">
+                                @foreach (var item in panel.Values.Select((value, index) => (value, index)))
+                                {
+                                    var height = Math.Max(8, item.value * 7);
+                                    var active = panel.CurrentIndex == item.index;
 
-                                <div class="race-bar @(active ? "race-bar-active" : "")"
-                                     style="height:@($"{height}px")"
-                                     title="@($"index {item.index}: {item.value}")">
-                                    <span>@item.value</span>
-                                </div>
-                            }
+                                    <div class="race-bar @(active ? "race-bar-active" : "")"
+                                         style="height:@($"{height}px")"
+                                         title="@($"index {item.index}: {item.value}")">
+                                        <span>@item.value</span>
+                                    </div>
+                                }
+                            </MudPaper>
+
+                            <MudProgressLinear Class="mt-2"
+                                               Color="@(panel.Completed ? Color.Success : Color.Primary)"
+                                               Value="@Math.Min(panel.Iterations, 100)"
+                                               Max="100" />
+
+                            <MudStack Row="true" Justify="Justify.SpaceBetween" Class="mt-2">
+                                <MudText Typo="Typo.caption">Passos: @panel.Iterations</MudText>
+                                <MudText Typo="Typo.caption">Comparações: @panel.Comparisons</MudText>
+                            </MudStack>
                         </MudPaper>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
 
-                        <MudProgressLinear Class="mt-2"
-                                           Color="@(panel.Completed ? Color.Success : Color.Primary)"
-                                           Value="@Math.Min(panel.Iterations, 100)"
-                                           Max="100" />
-
-                        <MudStack Row="true" Justify="Justify.SpaceBetween" Class="mt-2">
-                            <MudText Typo="Typo.caption">Passos: @panel.Iterations</MudText>
-                            <MudText Typo="Typo.caption">Comparações: @panel.Comparisons</MudText>
-                        </MudStack>
-                    </MudPaper>
-                </MudItem>
-            }
-        </MudGrid>
-
-        <MudPaper Elevation="2" Class="pa-4">
-            <MudText Typo="Typo.h6">Estrutura selecionada</MudText>
-            <MudText>
-                @SelectedGuide.Name — @SelectedGuide.Description
-                <MudLink Href="@($"/structures/{SelectedGuide.Key}")" Class="ml-2">ver implementação</MudLink>
-            </MudText>
-        </MudPaper>
+        @if (_view == "all" && _compareBy == "structure")
+        {
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h6">Estrutura selecionada</MudText>
+                @{
+                    var selectedGuide = StructureCatalog.Get(_selectedStructure);
+                }
+                <MudText>
+                    @selectedGuide.Name — @selectedGuide.Description
+                    <MudLink Href="@($"/structures/{selectedGuide.Key}")" Class="ml-2">
+                        ver implementação
+                    </MudLink>
+                </MudText>
+            </MudPaper>
+        }
+        else if (_view == "all")
+        {
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h6">Algoritmo selecionado</MudText>
+                <MudText>
+                    @_selectedAlgorithm
+                    <MudLink Href="@($"/algorythms")" Class="ml-2">
+                        ver documentação
+                    </MudLink>
+                </MudText>
+            </MudPaper>
+        }
     </MudStack>
 </MudContainer>
 
@@ -145,11 +315,20 @@
     [Parameter]
     public string? StructureName { get; set; }
 
-    private string SelectedKey = StructureCatalog.All[0].Key;
-    private StructureGuide SelectedGuide = StructureCatalog.All[0];
-    private IReadOnlyList<RacePanel> _panels = [];
+    private const string AllView = "all";
+    private const string CustomView = "custom";
+    private const string CompareByAlgorithm = "algorithm";
+    private const string CompareByStructure = "structure";
+
+    private string _view = AllView;
+    private string _compareBy = CompareByAlgorithm;
     private string _mode = "sort";
-    private string _algorithm = "BubbleSort";
+    private string _selectedAlgorithm = "BubbleSort";
+    private string _selectedStructure = StructureCatalog.All[0].Key;
+    private string _customAlgorithm = "BubbleSort";
+    private string _customStructure = StructureCatalog.All[0].Key;
+    private readonly List<(string Algorithm, string Structure)> _customComparisons = [];
+    private IReadOnlyList<RacePanel> _panels = [];
     private int _target = 7;
     private int _delay = 70;
     private bool _running;
@@ -160,28 +339,121 @@
             ? AlgorithmRaceService.SortAlgorithms
             : AlgorithmRaceService.SearchAlgorithms;
 
+    private bool _canAddCustom =>
+        !_customComparisons.Any() ||
+        _customComparisons.All(comparison =>
+            comparison.Algorithm.Equals(_customAlgorithm, StringComparison.Ordinal) ||
+            comparison.Structure.Equals(_customStructure, StringComparison.Ordinal));
+
     protected override void OnParametersSet()
     {
-        SelectedKey = StructureCatalog.Normalize(StructureName);
-        SelectedGuide = StructureCatalog.Get(SelectedKey);
-        _panels = RaceService.CreatePanels();
+        var normalized = StructureCatalog.Normalize(StructureName);
 
-        if (!Algorithms.Contains(_algorithm))
-            _algorithm = Algorithms[0];
+        if (StructureName is not null)
+            _selectedStructure = normalized;
+
+        if (!Algorithms.Contains(_selectedAlgorithm))
+        {
+            _selectedAlgorithm = Algorithms[0];
+            _customAlgorithm = Algorithms[0];
+        }
+
+        RefreshPanels();
     }
 
-    private Task ChangeStructure(string key)
+    private void ChangeView(string view)
     {
-        Navigation.NavigateTo($"/run/{key}");
+        Cancel();
+        _view = view;
+        RefreshPanels();
+    }
+
+    private Task ChangeCompareBy(string value)
+    {
+        Cancel();
+        _compareBy = value;
+        RefreshPanels();
         return Task.CompletedTask;
+    }
+
+    private Task ChangeSelectedAlgorithm(string value)
+    {
+        Cancel();
+        _selectedAlgorithm = value;
+        RefreshPanels();
+        return Task.CompletedTask;
+    }
+
+    private Task ChangeSelectedStructure(string value)
+    {
+        Cancel();
+        _selectedStructure = value;
+        RefreshPanels();
+        return Task.CompletedTask;
+    }
+
+    private Task ChangeMode(string value)
+    {
+        Cancel();
+        _mode = value;
+
+        if (!Algorithms.Contains(_selectedAlgorithm))
+            _selectedAlgorithm = Algorithms[0];
+
+        if (!Algorithms.Contains(_customAlgorithm))
+            _customAlgorithm = Algorithms[0];
+
+        RefreshPanels();
+        return Task.CompletedTask;
+    }
+
+    private void AddCustomChart()
+    {
+        if (!_canAddCustom)
+            return;
+
+        if (!_customComparisons.Any(comparison =>
+                comparison.Algorithm.Equals(_customAlgorithm, StringComparison.Ordinal) &&
+                comparison.Structure.Equals(_customStructure, StringComparison.Ordinal)))
+        {
+            _customComparisons.Add((_customAlgorithm, _customStructure));
+        }
+
+        RefreshPanels();
+    }
+
+    private void ClearCustomCharts()
+    {
+        Cancel();
+        _customComparisons.Clear();
+        _panels = [];
+    }
+
+    private void RefreshPanels()
+    {
+        _panels = _view == AllView
+            ? _compareBy == CompareByAlgorithm
+                ? RaceService.CreatePanels(_selectedAlgorithm, StructureCatalog.All.Select(item => item.Key))
+                : RaceService.CreatePanels(Algorithms, _selectedStructure)
+            : RaceService.CreatePanels(_customComparisons);
     }
 
     private async Task RunAsync()
     {
         Cancel();
 
+        if (!_panels.Any())
+            return;
+
         _running = true;
-        _panels = RaceService.CreatePanels();
+        _panels = RaceService.CreatePanels(
+            _panels.Select(panel =>
+                (
+                    panel.Algorithm,
+                    StructureCatalog.All.First(item =>
+                        item.Name.Equals(panel.Structure, StringComparison.Ordinal)).Key
+                )));
+
         _cancellation = new CancellationTokenSource();
 
         try
@@ -189,7 +461,6 @@
             if (_mode == "sort")
             {
                 await RaceService.RunSortAsync(
-                    _algorithm,
                     _panels,
                     _delay,
                     _ => InvokeAsync(StateHasChanged),
@@ -198,7 +469,6 @@
             else
             {
                 await RaceService.RunSearchAsync(
-                    _algorithm,
                     _panels,
                     _target,
                     _delay,
