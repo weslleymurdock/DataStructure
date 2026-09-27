@@ -1368,13 +1368,13 @@ public sealed class DSMaxHeap<T> where T : IComparable<T>
 
     public T Peek()
         => _items.Count == 0
-            ? throw new InvalidOperationException("The heap is empty.")
+            ? throw new InvalidOperationException(""The heap is empty."")
             : _items[0];
 
     public T Remove()
     {
         if (_items.Count == 0)
-            throw new InvalidOperationException("The heap is empty.");
+            throw new InvalidOperationException(""The heap is empty."");
 
         var result = _items[0];
         var last = _items[^1];
