@@ -133,3 +133,27 @@ html, body {
 code {
     color: #c02d76;
 }
+
+
+.algorithm-dialog {
+    width: 80vw !important;
+    max-width: 80vw !important;
+}
+
+.mermaid-container {
+    width: 100%;
+    min-height: 720px;
+    overflow: auto;
+    border-radius: 12px;
+    background: #f8f9fb;
+}
+
+mermaid-embed {
+    display: block;
+    width: 100%;
+    min-height: 720px;
+}
+
+topic-card {
+    height: 100%;
+}
