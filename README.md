@@ -53,6 +53,50 @@ Cada algoritmo fica em uma classe com nome correspondente à técnica. Os métod
 | `JumpSearch` | dados ordenados e acesso indexado | O(1) | O(sqrt(n)) | O(sqrt(n)) | busca ordenada por blocos |
 | `InterpolationSearch` | dados ordenados, numéricos e aproximadamente uniformes | O(1) | O(log log n) | O(n) | grandes conjuntos numéricos uniformes |
 
+### Buscas avançadas
+
+| Algoritmo | Ideia principal | Complexidade típica | Estrutura/entrada |
+|---|---|---|---|
+| HashSearch | calcula o hash e consulta o bucket da chave | O(1) médio, O(n) pior caso | DSHashTable<TKey,TValue> |
+| BreadthFirstSearch | visita por níveis usando fila | O(V + E) | DSGraph<T> |
+| DepthFirstSearch | aprofunda um ramo antes de retroceder | O(V + E) | DSGraph<T> |
+| Dijkstra | relaxa arestas para obter menores distâncias | O((V + E) log V) | DSWeightedGraph<T> |
+| AStar | combina custo acumulado e heurística | depende do grafo e da heurística | DSWeightedGraph<T> |
+| GreedyBestFirstSearch | prioriza somente a heurística | depende do grafo | DSWeightedGraph<T> |
+| SimilaritySearch | ranqueia candidatos por similaridade | O(n · d) para vetores | texto ou vetores |
+
+#### HashSearch
+
+A busca por hash não percorre uma sequência inteira. A chave produz um código hash, que é convertido em um índice de bucket. A implementação de DSHashTable usa encadeamento para tratar colisões; por isso o custo médio é aproximadamente constante quando a distribuição é boa, mas pode chegar a O(n) no pior caso.
+
+#### BreadthFirstSearch e DepthFirstSearch
+
+BFS usa uma fila e visita primeiro os vértices descobertos mais próximos da origem. Em um grafo não ponderado, isso permite encontrar caminhos com menor número de arestas.
+
+DFS aprofunda um ramo antes de voltar. É útil para exploração, conectividade e problemas que naturalmente usam backtracking.
+
+#### Dijkstra
+
+Dijkstra mantém a menor distância conhecida para cada vértice e relaxa as arestas a partir do vértice com menor distância atual. A implementação exige pesos não negativos.
+
+#### A*
+
+A* acrescenta uma estimativa h(n) ao custo acumulado g(n), usando f(n) = g(n) + h(n). Uma heurística admissível não superestima o custo restante quando se deseja preservar a garantia de caminho ótimo. Com heurística zero, o comportamento se aproxima de Dijkstra.
+
+#### Busca Gulosa
+
+A busca gulosa usa somente h(n) para escolher o próximo vértice. Ela pode encontrar rapidamente um caminho em alguns cenários, mas não garante o menor custo porque ignora o custo já acumulado.
+
+#### Busca por Similaridade
+
+SimilaritySearch fornece duas demonstrações independentes: texto, usando similaridade de Jaccard sobre tokens normalizados, e vetores, usando similaridade de cosseno. A mesma ideia pode ser aplicada a embeddings ou características extraídas de imagens e áudios, desde que os dados sejam representados em um espaço numérico comparável.
+
+### Laboratório de buscas avançadas
+
+A rota /run/advanced apresenta uma demonstração específica para esses algoritmos. BFS e DFS usam um grafo direcionado; Dijkstra, A* e Busca Gulosa usam um grafo ponderado; HashSearch consulta uma DSHashTable; e SimilaritySearch ranqueia textos de exemplo.
+
+O laboratório é didático: os resultados e etapas permitem observar a estratégia de cada algoritmo. Os tempos exibidos não devem ser tratados como benchmark científico.
+
 ### Ordenação
 
 | Algoritmo | Melhor | Médio | Pior | Espaço | Melhor use case |
