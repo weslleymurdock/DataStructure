@@ -1,70 +1,78 @@
 @page "/algorythms"
 
 @using DataStructure.github.io.Services
+@inject IDialogService DialogService
 
 <PageTitle>Algoritmos</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
-    <MudStack Spacing="3">
-        <MudText Typo="Typo.h3">Algoritmos de busca e ordenação</MudText>
-        <MudText>
-            O laboratório usa as mesmas ideias dos algoritmos do projeto de console, mas a animação é assíncrona
-            para que o navegador possa redesenhar cada etapa sem bloquear a interface.
-        </MudText>
+    <MudStack Spacing="4">
+        <MudText Typo="Typo.h3">Algoritmos</MudText>
+        <MudText>Clique em um algoritmo para ver a lógica passo a passo e o fluxo visual.</MudText>
 
-        <MudTabs Elevation="2" Rounded="true" Border="true" ApplyEffectsToContainer="true" TabPanelsClass="pa-6">
-            <MudTabPanel Text="Ordenação" Icon="@Icons.Material.Filled.Sort">
-                <MudTable Items="@AlgorithmRaceService.SortAlgorithms" Hover="true">
+        @foreach (var group in Groups)
+        {
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h4">@group.Title</MudText>
+                <MudText Typo="Typo.body2">@group.Description</MudText>
+                <MudTable Items="@group.Items" Hover="true" Striped="true" Class="mt-2">
                     <HeaderContent>
                         <MudTh>Algoritmo</MudTh>
-                        <MudTh>Descrição</MudTh>
+                        <MudTh>Complexidade</MudTh>
+                        <MudTh>Pré-condições</MudTh>
+                        <MudTh>Aplicação</MudTh>
                     </HeaderContent>
                     <RowTemplate>
-                        <MudTd>@context</MudTd>
-                        <MudTd>@SortDescription(context)</MudTd>
+                        <MudTr @onclick="@(() => Open(context))" Style="cursor:pointer">
+                            <MudTd DataLabel="Algoritmo">@context.Name</MudTd>
+                            <MudTd DataLabel="Complexidade">@context.Complexity</MudTd>
+                            <MudTd DataLabel="Pré-condições">@context.Preconditions</MudTd>
+                            <MudTd DataLabel="Aplicação">@context.StructureScope</MudTd>
+                        </MudTr>
                     </RowTemplate>
                 </MudTable>
-            </MudTabPanel>
+            </MudPaper>
+        }
 
-            <MudTabPanel Text="Busca" Icon="@Icons.Material.Filled.Search">
-                <MudTable Items="@AlgorithmRaceService.SearchAlgorithms" Hover="true">
-                    <HeaderContent>
-                        <MudTh>Algoritmo</MudTh>
-                        <MudTh>Descrição</MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd>@context</MudTd>
-                        <MudTd>@SearchDescription(context)</MudTd>
-                    </RowTemplate>
-                </MudTable>
-            </MudTabPanel>
-        </MudTabs>
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+            Em estruturas não lineares, o laboratório informa quando a execução usa uma travessia
+            ou uma representação linearizada. Isso mantém a explicação do algoritmo separada da
+            semântica própria da estrutura.
+        </MudAlert>
 
-        <MudButton Href="/run" Variant="Variant.Filled" Color="Color.Primary"
-                   StartIcon="@Icons.Material.Filled.PlayArrow">
+        <MudButton Href="/run" Variant="Variant.Filled" Color="Color.Primary">
             Abrir laboratório
         </MudButton>
     </MudStack>
 </MudContainer>
 
 @code {
-    private static string SortDescription(string algorithm) => algorithm switch
-    {
-        "BubbleSort" => "Troca vizinhos invertidos até que a sequência fique ordenada.",
-        "SelectionSort" => "Seleciona o menor valor restante e o coloca na posição atual.",
-        "InsertionSort" => "Insere cada valor na parte esquerda já ordenada.",
-        "MergeSort" => "Divide a sequência e intercala as partes ordenadas.",
-        "QuickSort" => "Particiona em torno de um pivô e ordena os subintervalos.",
-        "HeapSort" => "Constrói um heap e extrai o maior valor para o final.",
-        _ => string.Empty
-    };
+    private IReadOnlyList<AlgorithmGroup> Groups =>
+    [
+        new("Ordenação", "Reorganizam valores em uma sequência definida.", AlgorithmCatalog.Sorts),
+        new("Busca", "Localizam um alvo percorrendo ou reduzindo um espaço de pesquisa.", AlgorithmCatalog.Searches)
+    ];
 
-    private static string SearchDescription(string algorithm) => algorithm switch
+    private async Task Open(AlgorithmGuide algorithm)
     {
-        "LinearSearch" => "Visita os elementos sequencialmente até encontrar o alvo.",
-        "BinarySearch" => "Descarta metade do intervalo a cada comparação em dados ordenados.",
-        "JumpSearch" => "Salta blocos e depois faz uma busca linear no bloco candidato.",
-        "InterpolationSearch" => "Estima a posição do alvo usando a distribuição numérica dos extremos.",
-        _ => string.Empty
-    };
+        var parameters = new DialogParameters<AlgorithmDialog>
+        {
+            { x => x.Guide, algorithm }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            FullWidth = true,
+            MaxWidth = MaxWidth.Large,
+            BackdropClick = true
+        };
+
+        await DialogService.ShowAsync<AlgorithmDialog>(algorithm.Name, parameters, options);
+    }
+
+    private sealed record AlgorithmGroup(
+        string Title,
+        string Description,
+        IReadOnlyList<AlgorithmGuide> Items);
 }
