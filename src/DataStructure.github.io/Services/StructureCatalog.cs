@@ -17,6 +17,8 @@ public sealed record StructureGuide(
         {
             "maxheap" =>
                 "Mantém o maior elemento na raiz, permitindo consultas imediatas ao máximo e remoções em tempo logarítmico.",
+            "hashtable" =>
+                "Mapeia cada chave para um bucket usando seu hash code, resolvendo colisões por encadeamento.",
             _ => UseCase
         };
 
@@ -119,6 +121,14 @@ public sealed record StructureGuide(
     Q --> C[""heap[5]""]
     Q --> D[""heap[6]""]
     I[""parent >= children""] -.-> R",
+            "hashtable" => @"flowchart LR
+    K[""key""] --> H[""GetHashCode()""] --> M[""bucket index = hash % capacity""]
+    M --> B[""bucket""]
+    B --> E1[""Entry: key/value""]
+    B --> E2[""Entry: key/value""]
+    E1 -. ""collision chain"" .-> E2
+    R[""load factor > 0.75""] --> X[""resize buckets""]
+    X --> Y[""rehash all entries""]",
             "graph" => @"flowchart LR
     A[""A""] --> B[""B""]
     A --> C[""C""]
@@ -2093,6 +2103,159 @@ public sealed class DSMaxHeap<T> where T : IComparable<T>
                 new("Peek","public T Peek()","Consulta o maior valor, armazenado na raiz.","O(1)"),
                 new("Remove","public T Remove()","Remove a raiz, promove o último elemento e restaura a propriedade de max-heap.","O(log n)"),
                 new("AsArray","public IReadOnlyList<T> AsArray()","Expõe a representação em níveis usada para visualizar o heap.","O(1)"),
+            ]),
+        new("hashtable","nonlinear","DSHashTable","Hash Table","Tabela de dispersão que associa chaves a valores por meio de buckets e tratamento de colisões por encadeamento.","Acesso médio constante a valores por chave, caches, índices, tabelas de símbolos e estruturas de associação chave/valor.",@"namespace DataStructure.Abstractions;
+
+public sealed class DSHashTable<TKey, TValue> where TKey : notnull
+{
+    private const double MaxLoadFactor = 0.75;
+    private List<Entry>[] _buckets;
+    private int _count;
+
+    public DSHashTable(int capacity = 8)
+    {
+        ArgumentOutOfRangeException.ThrowIfLessThan(capacity, 1);
+        _buckets = CreateBuckets(capacity);
+    }
+
+    public int Count => _count;
+
+    public TValue this[TKey key]
+    {
+        get
+        {
+            if (TryGetValue(key, out var value))
+                return value;
+
+            throw new KeyNotFoundException($"The key '{key}' was not found.");
+        }
+        set => Set(key, value);
+    }
+
+    public void Add(TKey key, TValue value)
+    {
+        var bucket = GetBucket(key);
+
+        foreach (var entry in bucket)
+        {
+            if (EqualityComparer<TKey>.Default.Equals(entry.Key, key))
+                throw new ArgumentException("A value with the same key already exists.", nameof(key));
+        }
+
+        EnsureCapacity(_count + 1);
+        GetBucket(key).Add(new Entry(key, value));
+        _count++;
+    }
+
+    public void Set(TKey key, TValue value)
+    {
+        var bucket = GetBucket(key);
+
+        for (var index = 0; index < bucket.Count; index++)
+        {
+            if (!EqualityComparer<TKey>.Default.Equals(bucket[index].Key, key))
+                continue;
+
+            bucket[index] = new Entry(key, value);
+            return;
+        }
+
+        EnsureCapacity(_count + 1);
+        GetBucket(key).Add(new Entry(key, value));
+        _count++;
+    }
+
+    public bool TryGetValue(TKey key, out TValue value)
+    {
+        var bucket = GetBucket(key);
+
+        foreach (var entry in bucket)
+        {
+            if (EqualityComparer<TKey>.Default.Equals(entry.Key, key))
+            {
+                value = entry.Value;
+                return true;
+            }
+        }
+
+        value = default!;
+        return false;
+    }
+
+    public bool ContainsKey(TKey key)
+        => TryGetValue(key, out _);
+
+    public bool Remove(TKey key)
+    {
+        var bucket = GetBucket(key);
+
+        for (var index = 0; index < bucket.Count; index++)
+        {
+            if (!EqualityComparer<TKey>.Default.Equals(bucket[index].Key, key))
+                continue;
+
+            bucket.RemoveAt(index);
+            _count--;
+            return true;
+        }
+
+        return false;
+    }
+
+    public void Clear()
+    {
+        _buckets = CreateBuckets(_buckets.Length);
+        _count = 0;
+    }
+
+    public IEnumerable<KeyValuePair<TKey, TValue>> Enumerate()
+    {
+        foreach (var bucket in _buckets)
+        {
+            foreach (var entry in bucket)
+                yield return new KeyValuePair<TKey, TValue>(entry.Key, entry.Value);
+        }
+    }
+
+    private List<Entry> GetBucket(TKey key)
+        => _buckets[GetBucketIndex(key, _buckets.Length)];
+
+    private static int GetBucketIndex(TKey key, int bucketCount)
+        => (key.GetHashCode() & 0x7fffffff) % bucketCount;
+
+    private void EnsureCapacity(int required)
+    {
+        if (required <= _buckets.Length * MaxLoadFactor)
+            return;
+
+        var entries = Enumerate().ToArray();
+        _buckets = CreateBuckets(_buckets.Length * 2);
+
+        foreach (var entry in entries)
+            GetBucket(entry.Key).Add(new Entry(entry.Key, entry.Value));
+    }
+
+    private static List<Entry>[] CreateBuckets(int count)
+    {
+        var buckets = new List<Entry>[count];
+
+        for (var index = 0; index < count; index++)
+            buckets[index] = [];
+
+        return buckets;
+    }
+
+    private readonly record struct Entry(TKey Key, TValue Value);
+}",
+            [
+                new("Construtor","public DSHashTable(int capacity = 8)","Cria os buckets vazios usados para distribuir as chaves.","O(m)"),
+                new("Add","public void Add(TKey key, TValue value)","Calcula o bucket, procura chaves duplicadas e adiciona uma entrada; colisões permanecem encadeadas no mesmo bucket.","O(1) médio / O(n) pior caso"),
+                new("Set","public void Set(TKey key, TValue value)","Procura a chave e atualiza seu valor; se não existir, adiciona uma nova entrada.","O(1) médio / O(n) pior caso"),
+                new("TryGetValue","public bool TryGetValue(TKey key, out TValue value)","Calcula o bucket e percorre somente a cadeia daquele bucket até encontrar a chave.","O(1) médio / O(n) pior caso"),
+                new("ContainsKey","public bool ContainsKey(TKey key)","Reutiliza TryGetValue para testar a existência da chave.","O(1) médio / O(n) pior caso"),
+                new("Remove","public bool Remove(TKey key)","Calcula o bucket, percorre a cadeia e remove a entrada correspondente.","O(1) médio / O(n) pior caso"),
+                new("Clear","public void Clear()","Descarta os buckets atuais e cria uma nova tabela vazia com a mesma capacidade.","O(m)"),
+                new("Enumerate","public IEnumerable<KeyValuePair<TKey,TValue>> Enumerate()","Percorre bucket por bucket e depois cada entrada encadeada.","O(n)"),
             ]),
         new("graph","nonlinear","DSGraph","Grafo direcionado","Vértices conectados por arestas orientadas, representados por listas de adjacência.","Modelar relações, dependências, redes e caminhos.",@"namespace DataStructure.Abstractions;
 
