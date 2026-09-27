@@ -21,7 +21,7 @@ function parseGraph(source) {
         nodes.set(id, {
             data: {
                 id,
-                label: existing?.data.label ?? decodeLabel(label) || id,
+                label: (existing?.data.label ?? decodeLabel(label)) || id,
                 shape: existing?.data.shape ?? shape
             }
         });
