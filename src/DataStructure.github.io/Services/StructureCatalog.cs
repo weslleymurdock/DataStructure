@@ -410,7 +410,7 @@ public sealed record StructureGuide(
     B --> C[""top = top.Next""]
     C --> D[""Count-- / return""],
                 "Peek" => @"flowchart TD
-    A[""top""] --> B[""return top.Value""]"
+    A[""top""] --> B[""return top.Value""]",
                 _ => Mermaid
             },
             "deque" => method.Name switch
@@ -450,7 +450,7 @@ public sealed record StructureGuide(
                 "PeekFirst" => @"flowchart TD
     A[""head""] --> B[""return head.Value""]",
                 "PeekLast" => @"flowchart TD
-    A[""tail""] --> B[""return tail.Value""]"
+    A[""tail""] --> B[""return tail.Value""]",
                 _ => Mermaid
             },
             "deck" => method.Name switch
