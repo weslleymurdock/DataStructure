@@ -168,6 +168,12 @@ public sealed class LinearSearch
         where T : notnull
         => Run(data.Vertices, target);
 
+    public AlgorithmResult<int> ExecuteDSMaxHeap<T>(
+        DSMaxHeap<T> data,
+        T target)
+        where T : IComparable<T>
+        => Run(data.AsArray(), target);
+
     private static AlgorithmResult<int> Run<T>(
         IEnumerable<T> data,
         T target)
