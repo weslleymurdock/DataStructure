@@ -1,74 +1,90 @@
 namespace DataStructure.Abstractions;
+
+/// <summary>
+/// Simple singly linked list kept as a teaching example.
+/// Indexed access is O(n); append is O(1) because a tail reference is retained.
+/// </summary>
 public sealed class DSNodeList<T> where T : notnull
 {
-    private DSNode<T>? head; // O primeiro item da lista
-    private DSNode<T>? tail; // O último item (otimização para o Add)
+    private DSNode<T>? _head;
+    private DSNode<T>? _tail;
 
+    /// <summary>Gets the number of nodes.</summary>
     public int Count { get; private set; }
 
-    // Adiciona ao final sem recriar nenhum array
+    /// <summary>Adds a node to the tail in O(1).</summary>
     public void Add(T item)
     {
-        var newNode = new DSNode<T>(item);
+        var node = new DSNode<T>(item);
 
-        if (head == null)
+        if (_head is null)
         {
-            head = newNode;
-            tail = newNode;
+            // The first node represents both ends.
+            _head = _tail = node;
         }
         else
         {
-            tail!.Next = newNode;
-            tail = newNode;
+            // Link the old tail to the new node and advance the tail.
+            _tail!.Next = node;
+            _tail = node;
         }
+
         Count++;
     }
 
-    // Acesso por índice exige percorrer a lista (Não é O(1) como no array)
+    /// <summary>Reads a value by walking from the head in O(n).</summary>
     public T this[int index]
     {
         get
         {
-            if (index < 0 || index >= Count)
+            if ((uint)index >= (uint)Count)
                 throw new IndexOutOfRangeException();
 
-            var current = head;
-            for (int i = 0; i < index; i++)
-            {
+            var current = _head;
+
+            for (var position = 0; position < index; position++)
                 current = current!.Next;
-            }
+
             return current!.Value;
         }
     }
 
-    // Remove apenas religando os ponteiros
+    /// <summary>Removes the first matching node by reconnecting the chain.</summary>
     public bool Remove(T item)
     {
-        if (head == null) return false;
+        if (_head is null)
+            return false;
 
-        if (head.Value.Equals(item))
+        if (_head.Value.Equals(item))
         {
-            head = head.Next;
-            if (head == null) tail = null; // A lista esvaziou
+            // Removing the head only requires moving the head pointer.
+            _head = _head.Next;
+
+            if (_head is null)
+                _tail = null;
+
             Count--;
             return true;
         }
 
-        var current = head;
-        while (current.Next != null)
+        var current = _head;
+
+        while (current.Next is not null)
         {
-            if (current.Next.Value.Equals(item))
+            if (!current.Next.Value.Equals(item))
             {
-                // Pula o item removido, ligando o atual direto ao "próximo do próximo"
-                current.Next = current.Next.Next;
-                
-                // Se removemos o último, precisamos atualizar o tail
-                if (current.Next == null) tail = current;
-                
-                Count--;
-                return true;
+                current = current.Next;
+                continue;
             }
-            current = current.Next;
+
+            // Bypass the matching node.
+            current.Next = current.Next.Next;
+
+            if (current.Next is null)
+                _tail = current;
+
+            Count--;
+            return true;
         }
 
         return false;
