@@ -145,6 +145,95 @@ function decorateFlow(cy) {
     });
 }
 
+function renderStepTable(canvas, cy) {
+    const viewer = canvas.parentElement;
+    const tableContainer = viewer.querySelector(".flow-viewer-steps");
+
+    if (!tableContainer)
+        return;
+
+    tableContainer.replaceChildren();
+
+    const title = document.createElement("h4");
+    title.className = "flow-viewer-steps-title";
+    title.textContent = "Passo a passo do diagrama";
+    tableContainer.appendChild(title);
+
+    const table = document.createElement("table");
+    table.className = "flow-viewer-steps-table";
+
+    const head = document.createElement("thead");
+    head.innerHTML = "<tr><th>Step</th><th>Etapa</th><th>Direcionamento</th><th>Explicação</th></tr>";
+    table.appendChild(head);
+
+    const body = document.createElement("tbody");
+    const nodes = cy.nodes().sort((a, b) => (a.data("step") ?? 0) - (b.data("step") ?? 0));
+
+    nodes.forEach(node => {
+        const step = node.data("step");
+        const outgoing = node.outgoers("node").map(target => {
+            const targetStep = target.data("step");
+            const relation = targetStep < step
+                ? "step anterior"
+                : targetStep > step
+                    ? "step futuro"
+                    : "mesmo step";
+
+            const edge = node.edgesTo(target).first();
+            const edgeLabel = edge?.data("label");
+
+            return edgeLabel
+                ? `Step ${targetStep} (${relation}): ${edgeLabel}`
+                : `Step ${targetStep} (${relation})`;
+        });
+
+        const incoming = node.incomers("node").map(source => {
+            const sourceStep = source.data("step");
+            return sourceStep < step
+                ? `vem do step ${sourceStep} (anterior)`
+                : sourceStep > step
+                    ? `vem do step ${sourceStep} (futuro)`
+                    : `vem do mesmo step`;
+        });
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td><span class="flow-viewer-step-number">${step}</span></td>
+            <td>${escapeHtml(node.data("label"))}</td>
+            <td>${escapeHtml([...outgoing, ...incoming].join(" • ") || "Início/fim do fluxo")}</td>
+            <td>${escapeHtml(describeNode(node))}</td>`;
+        body.appendChild(tr);
+    });
+
+    table.appendChild(body);
+    tableContainer.appendChild(table);
+}
+
+function escapeHtml(value) {
+    const div = document.createElement("div");
+    div.textContent = value ?? "";
+    return div.innerHTML;
+}
+
+function describeNode(node) {
+    const incoming = node.incomers("node").length;
+    const outgoing = node.outgoers("node").length;
+
+    if (incoming === 0 && outgoing === 0)
+        return "Ponto isolado do diagrama.";
+
+    if (incoming === 0)
+        return "Início do fluxo: recebe a execução inicial e direciona para as próximas etapas.";
+
+    if (outgoing === 0)
+        return "Fim do fluxo: recebe a execução da etapa anterior e encerra este caminho.";
+
+    if (outgoing > 1)
+        return "Etapa de decisão ou ramificação: pode direcionar a execução para mais de um caminho.";
+
+    return "Etapa intermediária: recebe a execução de uma etapa e a encaminha para a próxima.";
+}
+
 function createLayout(cy, animate = true) {
     return cy.layout({
         name: "cola",
@@ -257,6 +346,7 @@ function initializeCanvas(canvas) {
             return;
 
         decorateFlow(cy);
+        renderStepTable(canvas, cy);
         createLayout(cy).run();
     });
 
