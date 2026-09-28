@@ -277,7 +277,17 @@ public static class FlowStepCatalog
                 new(1, "Sentinela", "Comece em head e guarde o primeiro nó como referência de parada.", "start = head; current = head", "Avança para o step 2."),
                 new(2, "Visita", "Processe current e avance por Next.", "visit(current); current = current.Next", "Retorna ao step 2 enquanto current != start."),
                 new(3, "Parada", "Uma volta completa termina quando o cursor retorna ao head.", "while (current != start)", "Conclui.")]
-            : GenericMethod(name, explanation);
+            : name is "AddFirst" or "AddLast"
+                ? [
+                    new(1, "Novo nó", "Crie o nó e faça sua referência Next apontar para head, porque o ciclo precisa continuar fechado.", "node.Next = head", "Avança para o step 2."),
+                    new(2, "Tail", "Conecte tail.Next ao novo nó quando a inserção ocorrer no fim ou ao novo head quando ocorrer no início.", "tail.Next = newBoundary", "Avança para o step 3."),
+                    new(3, "Extremo", "Atualize head ou tail e incremente Count sem romper a ligação tail -> head.", "head = node; count++ // or tail = node", "Conclui.")]
+                : name is "RemoveFirst" or "RemoveLast"
+                    ? [
+                        new(1, "Valor", "Guarde o valor da extremidade que será removida.", "value = boundary.Value", "Avança para o step 2."),
+                        new(2, "Religação", "Avance a extremidade; o último nó deve continuar apontando para o novo head.", "head = head.Next; tail.Next = head", "Avança para o step 3."),
+                        new(3, "Caso unitário", "Quando Count era 1, o ciclo deixa de existir e head e tail devem ser nulos.", "if (count == 1) head = tail = null; count--", "Conclui e retorna value.")]
+                    : GenericMethod(name, explanation);
 
     private static IReadOnlyList<FlowStepGuide> HashMethod(string name, string explanation) =>
         name is "TryGetValue" or "ContainsKey"
