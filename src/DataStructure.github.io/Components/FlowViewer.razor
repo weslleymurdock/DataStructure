@@ -7,7 +7,7 @@
 
 <div class="flow-viewer">
     <div class="flow-viewer-toolbar">
-        <MudText Typo="Typo.caption">Grafo interativo</MudText>
+        <MudText Typo="Typo.caption">@Title</MudText>
         <div class="flow-viewer-actions">
             <MudButton Variant="Variant.Outlined"
                        Size="Size.Small"
@@ -69,6 +69,9 @@
 @code {
     [Parameter, EditorRequired]
     public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = "Grafo interativo";
 
     [Parameter]
     public IReadOnlyList<FlowStepGuide> Steps { get; set; } = [];
