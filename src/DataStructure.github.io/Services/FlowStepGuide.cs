@@ -347,13 +347,58 @@ public static class FlowStepCatalog
                     new(4, "Resultado", "O heap continua completo e o valor removido pode ser retornado.", "return result", "Conclui.")]
                 : GenericMethod(name, explanation);
 
-    private static IReadOnlyList<FlowStepGuide> GenericMethod(string name, string explanation) =>
-    [
-        new(1, "Entrada", $"Receba os argumentos necessários para {name}. {explanation}", $"input = {name}(arguments)", "Avança para o step 2."),
-        new(2, "Pré-condições", "Valide índices, referências e estado antes de modificar a estrutura.", "validate(input); locate(state, input)", "Avança para o step 3."),
-        new(3, "Operação", "Execute a alteração ou consulta preservando as invariantes da estrutura.", "state = operate(state, input)", "Avança para o step 4."),
-        new(4, "Resultado", "Retorne o valor produzido ou confirme a conclusão.", "return result", "Conclui.")
-    ];
+    private static IReadOnlyList<FlowStepGuide> GenericMethod(string name, string explanation) => name switch
+    {
+        "Peek" or "PeekFirst" or "PeekLast" or "Count" or "AsArray" or "Vertices" => [
+            new(1, "Consulta", $"A operação {name} lê o estado atual sem alterar a estrutura. {explanation}", $"result = readState({name})", "Avança para o step 2."),
+            new(2, "Validação", "Verifique a condição necessária para a consulta, como existência de elementos ou da chave solicitada.", "validateReadableState()", "Avança para o step 3."),
+            new(3, "Leitura", "Acesse somente as referências necessárias e não altere os ponteiros, o vetor ou Count.", "result = state.value", "Avança para o step 4."),
+            new(4, "Resultado", "Retorne o valor ou a visão solicitada preservando exatamente o estado anterior.", "return result", "Conclui.")
+        ],
+        "Clear" => [
+            new(1, "Estado atual", $"Identifique todo o armazenamento lógico que pertence à estrutura. {explanation}", "oldState = state", "Avança para o step 2."),
+            new(2, "Limpeza", "Remova as referências ou valores que representam os elementos armazenados.", "clearStorage(state)", "Avança para o step 3."),
+            new(3, "Contagem", "Zere Count e restaure as referências de extremidade para o estado vazio quando aplicável.", "count = 0; head = null; tail = null", "Conclui.")
+        ],
+        "EnsureCapacity" => [
+            new(1, "Necessidade", "Compare a capacidade exigida com a capacidade física atual.", "if required <= capacity: return", "Se já houver espaço, conclui; caso contrário, avança para o step 2."),
+            new(2, "Crescimento", "Aumente a capacidade progressivamente até comportar required, normalmente usando crescimento geométrico.", "while capacity < required: capacity *= 2", "Avança para o step 3."),
+            new(3, "Cópia", "Aloque o novo armazenamento e copie somente os elementos lógicos existentes.", "items = resizeAndCopy(items, capacity)", "Conclui.")
+        ],
+        "CopyTo" => [
+            new(1, "Destino", $"Valide o array de destino, o índice inicial e o espaço disponível. {explanation}", "validate(destination, arrayIndex)", "Avança para o step 2."),
+            new(2, "Cópia", "Copie os elementos lógicos na mesma ordem, começando na posição de destino indicada.", "copy(items, 0, destination, arrayIndex, count)", "Avança para o step 3."),
+            new(3, "Estado", "Não altere a coleção de origem; CopyTo produz apenas uma cópia externa.", "sourceState = unchanged", "Conclui.")
+        ],
+        "Remove" => [
+            new(1, "Busca", $"Percorra a estrutura até localizar a primeira ocorrência do valor. {explanation}", "indexOrNode = find(item)", "Avança para o step 2 se encontrado; caso contrário, conclui com false."),
+            new(2, "Remoção", "Desconecte o elemento e restaure as referências ou desloque o armazenamento conforme a estrutura.", "removeAt(indexOrNode)", "Avança para o step 3."),
+            new(3, "Estado", "Atualize Count e retorne sucesso para indicar que a estrutura foi modificada.", "count--; return true", "Conclui.")
+        ],
+        "Enumerator" or "Enumerate" => [
+            new(1, "Início", $"Defina o primeiro elemento da travessia. {explanation}", "current = first", "Avança para o step 2."),
+            new(2, "Yield", "Produza o valor atual sem perder a referência necessária para continuar a travessia.", "yield current.Value", "Avança para o step 3."),
+            new(3, "Avanço", "Siga a próxima referência ou índice e repita enquanto houver elementos.", "current = current.Next; repeat", "Retorna ao step 2 até atingir o fim ou o sentinela."),
+            new(4, "Fim", "Encerre a enumeração sem modificar a estrutura.", "return", "Conclui.")
+        ],
+        "indexer" => [
+            new(1, "Índice", $"Receba o índice solicitado. {explanation}", "index = requestedIndex", "Avança para o step 2."),
+            new(2, "Validação", "Garanta que o índice pertença ao intervalo lógico atual.", "validate(index)", "Avança para o step 3."),
+            new(3, "Acesso", "Leia ou substitua diretamente o elemento correspondente à posição.", "value = items[index]", "Conclui.")
+        ],
+        "IndexOf" or "Contains" => [
+            new(1, "Cursor", $"Comece na primeira posição lógica e prepare a regra de igualdade. {explanation}", "current = first", "Avança para o step 2."),
+            new(2, "Comparação", "Compare o valor atual com o alvo.", "if equals(current.Value, target): found", "Se não encontrar, avança para o step 3; se encontrar, conclui."),
+            new(3, "Avanço", "Siga para o próximo elemento e repita até o fim.", "current = current.Next", "Retorna ao step 2."),
+            new(4, "Ausência", "Se toda a estrutura foi percorrida sem igualdade, retorne o valor que representa ausência.", "return -1 // or false", "Conclui.")
+        ],
+        _ => [
+            new(1, "Entrada", $"Receba os argumentos de {name} e identifique a parte da estrutura afetada. {explanation}", $"input = {name}(arguments)", "Avança para o step 2."),
+            new(2, "Pré-condições", "Valide índices, referências e estado antes de executar a operação.", "validate(input); locate(state, input)", "Avança para o step 3."),
+            new(3, "Operação", $"Execute {name} preservando as invariantes específicas da estrutura.", "state = operate(state, input)", "Avança para o step 4."),
+            new(4, "Resultado", "Retorne o valor produzido ou confirme a conclusão sem deixar o estado inconsistente.", "return result", "Conclui.")
+        ]
+    };
 
     private static IReadOnlyList<FlowStepGuide> Heap(bool max) =>
     [
