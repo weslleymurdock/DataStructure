@@ -1,3 +1,4 @@
+@using DataStructure.github.io.Services
 @using Microsoft.AspNetCore.Components
 @using Microsoft.JSInterop
 @implements IAsyncDisposable
@@ -25,7 +26,40 @@
 
     <div class="flow-viewer-canvas" @ref="_canvas"></div>
 
-        <div class="flow-viewer-steps" aria-label="Explicação dos passos do diagrama"></div>
+    <section class="flow-viewer-explanation" aria-label="Explicação dos passos do diagrama">
+        <MudStack Spacing="1">
+            <MudText Typo="Typo.h6">Explicação reproduzível</MudText>
+            <MudText Typo="Typo.body2" Class="mb-2">
+                Cada linha descreve a operação representada pelo fluxo, o estado que deve ser mantido,
+                um pseudocódigo independente de linguagem e o próximo ponto do fluxo.
+            </MudText>
+
+            <div class="flow-viewer-table-scroll">
+                <MudTable Items="@Steps" Hover="true" Striped="true" Dense="false" Elevation="0" Class="flow-viewer-step-table">
+                    <HeaderContent>
+                        <MudTh>Step</MudTh>
+                        <MudTh>Elemento</MudTh>
+                        <MudTh>Explicação</MudTh>
+                        <MudTh>Pseudocódigo</MudTh>
+                        <MudTh>Direcionamento</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Step">
+                            <span class="flow-viewer-step-number">@context.Number</span>
+                        </MudTd>
+                        <MudTd DataLabel="Elemento">
+                            <MudText Typo="Typo.subtitle2">@context.Element</MudText>
+                        </MudTd>
+                        <MudTd DataLabel="Explicação">@context.Explanation</MudTd>
+                        <MudTd DataLabel="Pseudocódigo">
+                            <code class="flow-viewer-pseudocode">@context.Pseudocode</code>
+                        </MudTd>
+                        <MudTd DataLabel="Direcionamento">@context.Direction</MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </div>
+        </MudStack>
+    </section>
 
     <div class="flow-viewer-source" aria-hidden="true">
         @ChildContent
@@ -35,6 +69,9 @@
 @code {
     [Parameter, EditorRequired]
     public RenderFragment? ChildContent { get; set; }
+
+    [Parameter]
+    public IReadOnlyList<FlowStepGuide> Steps { get; set; } = [];
 
     private ElementReference _canvas;
     private IJSObjectReference? _module;
