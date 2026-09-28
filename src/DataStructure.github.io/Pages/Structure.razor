@@ -72,7 +72,7 @@
                 índices ou relações entre nós participam da estrutura.
             </MudText>
 
-            <FlowViewer>
+            <FlowViewer Steps="@FlowStepCatalog.ForStructure(Guide.Key)">
                 @Guide.Mermaid
             </FlowViewer>
         </MudPaper>
@@ -112,7 +112,7 @@
                         <MudText Typo="Typo.h6">@method.Name</MudText>
                         <MudText Typo="Typo.body2" Class="mb-2">@method.Explanation</MudText>
 
-                        <FlowViewer>
+                        <FlowViewer Steps="@FlowStepCatalog.ForMethod(Guide.Key, method)">
                             @Guide.GetMethodMermaid(method)
                         </FlowViewer>
                     </MudPaper>
