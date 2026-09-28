@@ -241,8 +241,8 @@ function createLayout(cy, animate = true) {
         maxSimulationTime: 1800,
         fit: true,
         padding: 55,
-        nodeSpacing: 70,
-        edgeLength: 150,
+        nodeSpacing: 90,
+        edgeLength: 190,
         randomize: true,
         ungrabifyWhileSimulating: false,
         nodeDimensionsIncludeLabels: true
@@ -276,15 +276,15 @@ function initializeCanvas(canvas) {
                     "border-width": 2,
                     color: "#ffffff",
                     "font-family": "Roboto, sans-serif",
-                    "font-size": 13,
+                    "font-size": 15,
                     "font-weight": 500,
                     "text-valign": "center",
                     "text-halign": "center",
                     width: "label",
                     height: "label",
-                    padding: 14,
+                    padding: 18,
                     "text-wrap": "wrap",
-                    "text-max-width": 180
+                    "text-max-width": 280
                 }
             },
             {
@@ -331,7 +331,7 @@ function initializeCanvas(canvas) {
                     "control-point-step-size": 40,
                     label: "data(label)",
                     color: "#7777a0",
-                    "font-size": 11,
+                    "font-size": 12,
                     "text-background-color": "#17172a",
                     "text-background-opacity": 0.9,
                     "text-background-padding": 3,
