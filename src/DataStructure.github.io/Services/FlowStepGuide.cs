@@ -363,6 +363,14 @@ public static class FlowStepCatalog
         new(4, "Ajuste", "Inserções sobem e remoções descem até restaurar a propriedade.", "siftUp(); siftDown()", "Retorna aos steps 2 e 3 enquanto houver violação.")
     ];
 
+    public static IReadOnlyList<FlowStepGuide> ForAdvancedGraph() =>
+    [
+        new(1, "Grafo não ponderado", "Os vértices são identificados pelas chaves da adjacência e cada chave aponta para os destinos diretamente alcançáveis.", "adjacency[vertex] = neighbors", "Avança para o step 2."),
+        new(2, "Grafo ponderado", "Na representação ponderada, cada relação acrescenta também um peso que será usado como custo pelos algoritmos de caminhos.", "adjacency[from].Add((to, weight))", "Avança para o step 3."),
+        new(3, "Expansão", "BFS e DFS seguem as listas de vizinhos; Dijkstra, A* e Busca Gulosa também usam os vizinhos, mas avaliam custos ou heurísticas antes de escolher a próxima expansão.", "neighbors = adjacency[current]", "Retorna ao step 3 durante a busca até a condição de parada."),
+        new(4, "Convergência", "O vértice 8 pode ser alcançado por caminhos diferentes. Um algoritmo precisa controlar visitados, custos ou predecessores para evitar processamento incorreto e reconstruir o resultado.", "visited.Add(v); predecessor[v] = current", "Conclui a representação.")
+    ];
+
     private static string AlgorithmElement(string key, int number) => key switch
     {
         "linear-search" => number switch { 1 => "Cursor", 2 => "Comparação", 3 => "Resultado", _ => "Percurso" },
