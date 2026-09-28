@@ -65,17 +65,13 @@
             </MudItem>
         </MudGrid>
 
-        <MudPaper Elevation="2" Class="pa-4">
-            <MudText Typo="Typo.h5" GutterBottom="true">Representação da estrutura</MudText>
-            <MudText Typo="Typo.body2" Class="mb-3">
-                O diagrama mostra como os elementos são organizados e como as referências,
-                índices ou relações entre nós participam da estrutura.
-            </MudText>
-
-            <FlowViewer Steps="@FlowStepCatalog.ForStructure(Guide.Key)">
-                @Guide.Mermaid
-            </FlowViewer>
-        </MudPaper>
+        <div class="flow-viewer-scroll" aria-label="Diagramas da estrutura">
+            <section class="flow-viewer-panel">
+                <FlowViewer Title="@($"Representação: {Guide.Name}")"
+                            Steps="@FlowStepCatalog.ForStructure(Guide.Key)">
+                    @Guide.Mermaid
+                </FlowViewer>
+            </section>
 
         <MudPaper Elevation="2" Class="pa-4">
             <MudText Typo="Typo.h5" GutterBottom="true">Como cada método funciona</MudText>
@@ -100,25 +96,16 @@
             </MudTable>
         </MudPaper>
 
-        <MudPaper Elevation="2" Class="pa-4">
-            <MudText Typo="Typo.h5" GutterBottom="true">
-                Fluxos das operações
-            </MudText>
-
-            <MudStack Spacing="4">
-                @foreach (var method in Guide.Methods)
-                {
-                    <MudPaper Outlined="true" Class="pa-3">
-                        <MudText Typo="Typo.h6">@method.Name</MudText>
-                        <MudText Typo="Typo.body2" Class="mb-2">@method.Explanation</MudText>
-
-                        <FlowViewer Steps="@FlowStepCatalog.ForMethod(Guide.Key, method)">
-                            @Guide.GetMethodMermaid(method)
-                        </FlowViewer>
-                    </MudPaper>
-                }
-            </MudStack>
-        </MudPaper>
+            @foreach (var method in Guide.Methods)
+            {
+                <section class="flow-viewer-panel">
+                    <FlowViewer Title="@($"Operação: {method.Name}")"
+                                Steps="@FlowStepCatalog.ForMethod(Guide.Key, method)">
+                        @Guide.GetMethodMermaid(method)
+                    </FlowViewer>
+                </section>
+            }
+        </div>
     </MudStack>
 </MudContainer>
 
