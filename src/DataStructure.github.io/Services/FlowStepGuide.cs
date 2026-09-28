@@ -11,7 +11,7 @@ public static class FlowStepCatalog
 {
     public static IReadOnlyList<FlowStepGuide> ForAlgorithm(AlgorithmGuide guide)
     {
-        var steps = guide.Steps ?? [];
+        IReadOnlyList<string> steps = guide.Steps ?? [];
         return steps.Select((step, index) =>
         {
             var number = index + 1;
@@ -311,6 +311,26 @@ public static class FlowStepCatalog
                     new(3, "Vizinhos", "Descubra e enfileire vizinhos ainda não visitados.", "if (visited.Add(next)) queue.Enqueue(next)", "Retorna ao step 2 enquanto a fila não estiver vazia."),
                     new(4, "Término", "Quando a fila esvaziar, todos os vértices alcançáveis foram processados.", "while (queue.Count > 0) ...", "Conclui.")]
                 : GenericMethod(name, explanation);
+
+    private static IReadOnlyList<FlowStepGuide> WeightedGraphMethod(string name, string explanation) =>
+        name == "AddEdge"
+            ? [
+                new(1, "Vértices", $"Garanta que origem e destino existam antes de criar a relação. {explanation}", "AddVertex(from); AddVertex(to)", "Avança para o step 2."),
+                new(2, "Peso", "Valide e associe o custo da aresta à relação entre origem e destino.", "edge = (to, weight)", "Avança para o step 3."),
+                new(3, "Adjacência", "Armazene a aresta na lista de vizinhos da origem. Em um grafo direcionado, a relação inversa precisa ser adicionada explicitamente.", "adjacency[from].Add(edge)", "Conclui.")
+            ]
+            : name == "Neighbors"
+                ? [
+                    new(1, "Origem", "Localize a lista de adjacência do vértice consultado.", "edges = adjacency[vertex]", "Avança para o step 2."),
+                    new(2, "Destino e peso", "Percorra cada relação recuperando o destino e o custo associado.", "foreach (edge in edges) yield (edge.To, edge.Weight)", "Retorna ao step 2 até consumir todas as arestas."),
+                    new(3, "Resultado", "Retorne a sequência de relações sem alterar o grafo.", "return edges", "Conclui.")
+                ]
+                : name == "Vertices"
+                    ? [
+                        new(1, "Tabela", "Consulte as chaves da estrutura de adjacência.", "vertices = adjacency.Keys", "Avança para o step 2."),
+                        new(2, "Materialização", "Materialize ou enumere as chaves sem modificar as relações armazenadas.", "return vertices", "Conclui.")
+                    ]
+                    : GenericMethod(name, explanation);
 
     private static IReadOnlyList<FlowStepGuide> BstMethod(string name, string explanation) =>
         name is "Insert" or "Contains"
