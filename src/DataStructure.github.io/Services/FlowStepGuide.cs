@@ -371,6 +371,138 @@ public static class FlowStepCatalog
         new(4, "Convergência", "O vértice 8 pode ser alcançado por caminhos diferentes. Um algoritmo precisa controlar visitados, custos ou predecessores para evitar processamento incorreto e reconstruir o resultado.", "visited.Add(v); predecessor[v] = current", "Conclui a representação.")
     ];
 
+    private static string AlgorithmPseudocode(string key, int number) => key switch
+    {
+        "bubble-sort" => number switch
+        {
+            1 => "end = n - 1; changed = false",
+            2 => "for i from 0 to end - 1: compare data[i] and data[i + 1]",
+            3 => "if data[i] > data[i + 1]: swap(data[i], data[i + 1])",
+            _ => "repeat while changed; end-- after each pass"
+        },
+        "selection-sort" => number switch
+        {
+            1 => "for position from 0 to n - 2",
+            2 => "minimum = position; scan the remaining indexes",
+            3 => "if data[index] < data[minimum]: minimum = index",
+            _ => "swap(data[position], data[minimum]); position++"
+        },
+        "insertion-sort" => number switch
+        {
+            1 => "sorted region = data[0]",
+            2 => "value = data[index]; position = index - 1",
+            3 => "while position >= 0 and data[position] > value: data[position + 1] = data[position]",
+            _ => "data[position + 1] = value; index++"
+        },
+        "merge-sort" => number switch
+        {
+            1 => "if low >= high: return; middle = (low + high) / 2",
+            2 => "MergeSort(left); MergeSort(right)",
+            3 => "compare leftValue and rightValue",
+            _ => "copy smaller; consume remaining side; copy temporary range back"
+        },
+        "quick-sort" => number switch
+        {
+            1 => "pivot = values[high]",
+            2 => "scan from low to high - 1",
+            3 => "if values[index] <= pivot: swap(values[smaller], values[index]); smaller++",
+            _ => "swap pivot into smaller; QuickSort(left); QuickSort(right)"
+        },
+        "heap-sort" => number switch
+        {
+            1 => "buildMaxHeap(values)",
+            2 => "swap(values[0], values[end])",
+            3 => "heapLength = end; siftDown(0, heapLength)",
+            _ => "repeat until end == 0"
+        },
+        "linear-search" => number switch
+        {
+            1 => "cursor = first element of traversal",
+            2 => "if current == target: return current position",
+            3 => "advance cursor to next element",
+            _ => "return -1 when traversal is exhausted"
+        },
+        "binary-search" => number switch
+        {
+            1 => "low = 0; high = n - 1",
+            2 => "middle = low + (high - low) / 2",
+            3 => "if data[middle] == target: return middle",
+            4 => "if data[middle] < target: low = middle + 1; else high = middle - 1",
+            _ => "return -1"
+        },
+        "jump-search" => number switch
+        {
+            1 => "step = floor(sqrt(n)); previous = 0",
+            2 => "while data[min(next, n) - 1] < target: previous = next; next += step",
+            3 => "scan from previous to min(next, n) - 1",
+            _ => "return index when found; otherwise return -1"
+        },
+        "interpolation-search" => number switch
+        {
+            1 => "low = 0; high = n - 1; validate target is within endpoint values",
+            2 => "position = low + ((target - data[low]) * (high - low)) / (data[high] - data[low])",
+            3 => "compare data[position] with target",
+            4 => "if smaller: low = position + 1; otherwise high = position - 1",
+            _ => "return position when equal; otherwise -1"
+        },
+        "hash-search" => number switch
+        {
+            1 => "hash = key.GetHashCode()",
+            2 => "bucket = normalize(hash) % capacity",
+            3 => "for entry in bucket: compare entry.Key with key",
+            _ => "return entry.Value when equal; otherwise not found"
+        },
+        "breadth-first-search" => number switch
+        {
+            1 => "visited = { start }; queue.Enqueue(start)",
+            2 => "current = queue.Dequeue(); process(current)",
+            3 => "for neighbor in adjacency[current]: if visited.Add(neighbor) ...",
+            4 => "queue.Enqueue(neighbor); repeat while queue is not empty",
+            _ => "finish when the queue is empty"
+        },
+        "depth-first-search" => number switch
+        {
+            1 => "if !visited.Add(current): return",
+            2 => "process(current)",
+            3 => "for neighbor in adjacency[current]: DepthFirstSearch(neighbor)",
+            4 => "return to caller after all neighbors are processed",
+            _ => "finish when the root call returns"
+        },
+        "dijkstra" => number switch
+        {
+            1 => "distance[start] = 0; all other distances = infinity",
+            2 => "current = priorityQueue.extractMin()",
+            3 => "candidate = distance[current] + edge.weight",
+            4 => "if candidate < distance[next]: update distance and enqueue",
+            _ => "repeat until the priority queue has no reachable candidates"
+        },
+        "a-star" => number switch
+        {
+            1 => "openSet.Add(start); g[start] = 0",
+            2 => "f[node] = g[node] + heuristic(node, goal)",
+            3 => "current = openSet.extractMinBy(f)",
+            4 => "candidateG = g[current] + edge.weight; update when candidateG is smaller",
+            _ => "reconstruct predecessors when current == goal"
+        },
+        "greedy-best-first-search" => number switch
+        {
+            1 => "openSet.Enqueue(start, heuristic(start, goal))",
+            2 => "priority = heuristic(node, goal)",
+            3 => "current = openSet.extractMinBy(priority)",
+            4 => "visited.Add(current); enqueue each unvisited neighbor by heuristic",
+            _ => "return predecessor path when goal is extracted"
+        },
+        "similarity-search" => number switch
+        {
+            1 => "queryVector = represent(query); candidateVector = represent(candidate)",
+            2 => "score = similarity(queryVector, candidateVector)",
+            3 => "results.Add(candidate, score)",
+            4 => "sort results by score descending",
+            _ => "return ranked candidates"
+        },
+        _ => $"execute step {number} according to the algorithm definition"
+    };
+
     private static string AlgorithmElement(string key, int number) => key switch
     {
         "linear-search" => number switch { 1 => "Cursor", 2 => "Comparação", 3 => "Resultado", _ => "Percurso" },
