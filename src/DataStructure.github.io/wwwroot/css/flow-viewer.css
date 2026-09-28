@@ -1,9 +1,14 @@
 .flow-viewer {
     position: relative;
+    display: grid;
+    grid-template-rows: minmax(0, 56%) minmax(0, 44%);
     width: 90%;
-    min-height: 620px;
+    height: calc(100vh - 24px);
+    min-height: 720px;
     margin: 0 auto;
     overflow: hidden;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
     border: 1px solid var(--mud-palette-lines-default);
     border-radius: 12px;
     background: var(--mud-palette-background-grey);
@@ -43,10 +48,57 @@
 }
 
 .flow-viewer-canvas {
-    position: absolute;
-    inset: 0;
+    position: relative;
     width: 100%;
-    height: 520px;
+    height: 100%;
+    min-height: 0;
+}
+
+.flow-viewer-explanation {
+    min-height: 0;
+    overflow: hidden;
+    padding: 14px 18px 18px;
+    border-top: 1px solid var(--mud-palette-lines-default);
+    background: var(--mud-palette-surface);
+}
+
+.flow-viewer-table-scroll {
+    min-height: 0;
+    max-height: calc(100% - 62px);
+    overflow: auto;
+    border: 1px solid var(--mud-palette-lines-default);
+    border-radius: 8px;
+}
+
+.flow-viewer-step-table {
+    min-width: 980px;
+}
+
+.flow-viewer-step-table .mud-table-head {
+    position: sticky;
+    z-index: 2;
+    top: 0;
+}
+
+.flow-viewer-step-number {
+    display: inline-flex;
+    min-width: 30px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--mud-palette-primary);
+    color: var(--mud-palette-primary-text);
+    font-weight: 700;
+}
+
+.flow-viewer-pseudocode {
+    display: block;
+    max-width: 360px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-family: var(--mud-typography-font-family);
+    font-size: 0.85rem;
 }
 
 .flow-viewer-source {
@@ -60,7 +112,10 @@
 @media (max-width: 768px) {
     .flow-viewer {
         width: 100%;
-        min-height: 480px;
+        height: calc(100vh - 12px);
+        min-height: 640px;
+        grid-template-rows: minmax(0, 52%) minmax(0, 48%);
+        border-radius: 8px;
     }
 
     .flow-viewer-toolbar {
@@ -69,5 +124,13 @@
 
     .flow-viewer-toolbar > .mud-typography {
         display: none;
+    }
+
+    .flow-viewer-explanation {
+        padding: 10px;
+    }
+
+    .flow-viewer-table-scroll {
+        max-height: calc(100% - 58px);
     }
 }
