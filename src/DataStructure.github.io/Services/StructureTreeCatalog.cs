@@ -73,13 +73,13 @@ public static class StructureTreeCatalog
         [
             new(left,
             [
-                new(max ? "40" : "40", []),
-                new(max ? "60" : "20", [])
+                new(max ? "60" : "40", []),
+                new(max ? "50" : "45", [])
             ]),
             new(right,
             [
-                new(max ? "30" : "60", []),
-                new(max ? "50" : "70", [])
+                new(max ? "40" : "60", []),
+                new(max ? "30" : "70", [])
             ])
         ]);
     }
