@@ -6,6 +6,33 @@
         destacar o crescimento dominante.
     </MudText>
 
+    <MudText Typo="Typo.h6" Class="mt-4">Como calcular a complexidade</MudText>
+    <MudStack Spacing="1" Class="mt-2">
+        <MudText Typo="Typo.body2">
+            <b>1. Conte a entrada:</b> use n para a quantidade de elementos. Em grafos, use V para vértices e E para arestas.
+        </MudText>
+        <MudText Typo="Typo.body2">
+            <b>2. Conte o trabalho:</b> uma operação simples custa O(1); um percurso de n elementos normalmente custa n × O(1) = O(n).
+        </MudText>
+        <MudText Typo="Typo.body2">
+            <b>3. Loops aninhados:</b> quando um loop completo de n está dentro de outro loop completo de n,
+            o trabalho é n × n = O(n²).
+        </MudText>
+        <MudText Typo="Typo.body2">
+            <b>4. Etapas sequenciais:</b> some os custos e mantenha o termo que cresce mais.
+            Por exemplo, O(n) + O(n²) = O(n²).
+        </MudText>
+        <MudText Typo="Typo.body2">
+            <b>5. Divisão:</b> se cada etapa reduz o problema pela metade, a quantidade de etapas é
+            aproximadamente log₂(n), resultando em O(log n). Se cada nível ainda processa todos os n elementos,
+            o custo pode chegar a O(n log n).
+        </MudText>
+        <MudText Typo="Typo.body2">
+            <b>6. Big-O:</b> fatores constantes e termos de menor crescimento são descartados para destacar
+            a tendência assintótica. Assim, 3n + 10 é descrito como O(n), e 2n² + 5n + 7 como O(n²).
+        </MudText>
+    </MudStack>
+
     <MudTable Items="@Entries" Hover="true" Striped="true" Dense="true" Class="mt-3">
         <HeaderContent>
             <MudTh>Complexidade</MudTh>
