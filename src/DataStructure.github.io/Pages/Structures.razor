@@ -14,10 +14,10 @@
 
         @foreach (var group in Groups)
         {
-            <MudPaper Elevation="2" Class="pa-4">
+            <MudPaper Class="mt-2 pa-4 hero-panel" Elevation="2">
                 <MudText Typo="Typo.h4">@group.Name</MudText>
                 <MudText Typo="Typo.body2">@group.Description</MudText>
-                <MudGrid Class="mt-2 pa-6 hero-panel">
+                <MudGrid Class="mt-2 pa-6">
                     @foreach (var structure in group.Items)
                     {
                         <MudItem xs="12" sm="6" lg="4" @key="structure.Key">

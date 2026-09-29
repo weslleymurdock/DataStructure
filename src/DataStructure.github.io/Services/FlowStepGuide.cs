@@ -12,7 +12,7 @@ public static class FlowStepCatalog
     public static IReadOnlyList<FlowStepGuide> ForAlgorithm(AlgorithmGuide guide)
     {
         IReadOnlyList<string> steps = guide.Steps ?? [];
-        return steps.Select((step, index) =>
+        return steps.Select<string, FlowStepGuide>((step, index) =>
         {
             var number = index + 1;
             var direction = number < steps.Count

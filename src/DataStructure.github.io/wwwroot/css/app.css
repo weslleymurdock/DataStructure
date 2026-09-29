@@ -27,6 +27,10 @@ html, body {
     background: linear-gradient(135deg, rgba(126, 111, 255, 0.14), rgba(255, 102, 128, 0.08));
 }
 
+.hero-section {
+    border: 1px solid rgba(0, 63, 127, 1);
+    background: linear-gradient(135deg, rgba(0, 163, 227, 0.64), rgba(111, 182, 255, 1));
+}
 .structure-card {
     height: 100%;
     transition: transform 120ms ease, box-shadow 120ms ease;

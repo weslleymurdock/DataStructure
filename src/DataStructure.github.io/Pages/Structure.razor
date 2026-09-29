@@ -73,28 +73,28 @@
                 </FlowViewer>
             </section>
 
-        <MudPaper Elevation="2" Class="pa-4">
-            <MudText Typo="Typo.h5" GutterBottom="true">Como cada método funciona</MudText>
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h5" GutterBottom="true">Como cada método funciona</MudText>
 
-            <MudTable Items="@Guide.Methods" Hover="true" Striped="true" Dense="true">
-                <HeaderContent>
-                    <MudTh>Método</MudTh>
-                    <MudTh>Assinatura</MudTh>
-                    <MudTh>Funcionamento</MudTh>
-                    <MudTh>Custo</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="Método">
-                        <MudText Typo="Typo.subtitle2">@context.Name</MudText>
-                    </MudTd>
-                    <MudTd DataLabel="Assinatura"><code>@context.Signature</code></MudTd>
-                    <MudTd DataLabel="Funcionamento">@context.Explanation</MudTd>
-                    <MudTd DataLabel="Custo">
-                        <MudChip T="string" Size="Size.Small" Color="Color.Info">@context.Complexity</MudChip>
-                    </MudTd>
-                </RowTemplate>
-            </MudTable>
-        </MudPaper>
+                <MudTable Items="@Guide.Methods" Hover="true" Striped="true" Dense="true">
+                    <HeaderContent>
+                        <MudTh>Método</MudTh>
+                        <MudTh>Assinatura</MudTh>
+                        <MudTh>Funcionamento</MudTh>
+                        <MudTh>Custo</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Método">
+                            <MudText Typo="Typo.subtitle2">@context.Name</MudText>
+                        </MudTd>
+                        <MudTd DataLabel="Assinatura"><code>@context.Signature</code></MudTd>
+                        <MudTd DataLabel="Funcionamento">@context.Explanation</MudTd>
+                        <MudTd DataLabel="Custo">
+                            <MudChip T="string" Size="Size.Small" Color="Color.Info">@context.Complexity</MudChip>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudPaper>
 
             @foreach (var method in Guide.Methods)
             {
