@@ -1,5 +1,6 @@
 @page "/algorythms"
 
+@using DataStructure.github.io.Components
 @using DataStructure.github.io.Services
 @inject IDialogService DialogService
 
@@ -25,7 +26,7 @@
                     <RowTemplate>
                         <MudTd DataLabel="Algoritmo" @onclick="@(() => Open(context))" Style="cursor:pointer">@context.Name</MudTd>
                         <MudTd DataLabel="Complexidade" @onclick="@(() => Open(context))" Style="cursor:pointer">
-                            <MudChip Color="@ComplexityCatalog.For(context.Complexity).Color" Size="Size.Small">@context.Complexity</MudChip>
+                            <MudChip T="string" Color="@ComplexityCatalog.For(context.Complexity).Color" Size="Size.Small">@context.Complexity</MudChip>
                         </MudTd>
                         <MudTd DataLabel="Pré-condições" @onclick="@(() => Open(context))" Style="cursor:pointer">@context.Preconditions</MudTd>
                         <MudTd DataLabel="Aplicação" @onclick="@(() => Open(context))" Style="cursor:pointer">@context.StructureScope</MudTd>

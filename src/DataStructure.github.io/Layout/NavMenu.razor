@@ -10,8 +10,12 @@
     <MudNavLink Href="/algorythms" Icon="@Icons.Material.Filled.Sync">
         Algoritmos
     </MudNavLink>
-
-    <MudNavLink Href="/run" Icon="@Icons.Material.Filled.PlayCircle">
-        Run
-    </MudNavLink>
+    <MudNavGroup Title="Run" Expanded="true" Icon="@Icons.Material.Filled.PlayCircle">
+        <MudNavLink Href="/run" Icon="@Icons.Material.Filled.PlayLesson">
+            Run
+        </MudNavLink>
+        <MudNavLink Href="/run/advanced" Icon="@Icons.Material.Filled.PlayForWork">
+            Advanced Run
+        </MudNavLink>
+    </MudNavGroup>
 </MudNavMenu>

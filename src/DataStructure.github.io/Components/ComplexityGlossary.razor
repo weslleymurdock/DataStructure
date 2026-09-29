@@ -1,3 +1,4 @@
+@using DataStructure.github.io.Services
 <MudPaper Elevation="1" Class="pa-4 complexity-glossary">
     <MudText Typo="Typo.h5">Glossário de complexidade</MudText>
     <MudText Typo="Typo.body2" Class="mt-2">
@@ -42,7 +43,7 @@
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Complexidade">
-                <MudChip Color="@context.Color" Size="Size.Small">@context.Notation</MudChip>
+                <MudChip T="string" Color="@context.Color" Size="Size.Small">@context.Notation</MudChip>
             </MudTd>
             <MudTd DataLabel="Como se calcula">@context.Calculation</MudTd>
             <MudTd DataLabel="Como se lê">@context.Reading</MudTd>

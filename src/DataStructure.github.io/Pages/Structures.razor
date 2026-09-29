@@ -1,5 +1,6 @@
 @page "/structures"
 
+@using DataStructure.github.io.Components
 @using DataStructure.github.io.Services
 
 <PageTitle>Estruturas de dados</PageTitle>
@@ -20,7 +21,9 @@
                                     <MudText Typo="Typo.h6">@structure.Name</MudText>
                                     <MudText Typo="Typo.body2" Class="mt-1">@structure.Description</MudText>
                                     @{ var complexity = ComplexityCatalog.ForStructure(structure.Key); }
-                                    <MudChip Color="@complexity.Color" Size="Size.Small" Class="mt-2" Title="@complexity.Meaning">@complexity.Notation</MudChip>
+                                    <MudTooltip Inline Text="@complexity.Meaning" ShowOnFocus>
+                                        <MudChip T="string" Color="@complexity.Color" Size="Size.Small" Class="mt-2">@complexity.Notation</MudChip>
+                                    </MudTooltip>
                                     <MudText Typo="Typo.caption" Class="mt-2">Uso: @structure.UseCase</MudText>
                                 </MudCardContent>
                                 <MudCardActions>
