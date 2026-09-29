@@ -67,9 +67,7 @@
 
         @if (StructureTreeCatalog.HasVisualization(Guide.Key))
         {
-            <StructureTreeViewer Root="@StructureTreeCatalog.For(Guide.Key)"
-                                 Title="Representação estrutural"
-                                 Description="Esta visualização usa a mesma árvore recursiva do laboratório de algoritmos. Árvores e heaps preservam seus relacionamentos pai/filho; estruturas baseadas em DSNode mostram cada nó como uma folha e registram explicitamente suas referências Next/Previous." />
+            <StructureTreeViewer Root="@StructureTreeCatalog.For(Guide.Key)" />
         }
 
         <div class="flow-viewer-scroll" aria-label="Diagramas da estrutura">

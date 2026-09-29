@@ -6,12 +6,6 @@
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-6">
     <MudStack Spacing="4">
-        <MudText Typo="Typo.h3">Estruturas de dados</MudText>
-        <MudText>
-            As estruturas estão divididas entre organizações lineares e não lineares.
-            Cada cartão abre a implementação e a explicação dos métodos.
-        </MudText>
-
         @foreach (var group in Groups)
         {
             <MudPaper Class="mt-2 pa-4 hero-panel" Elevation="2">
@@ -20,9 +14,9 @@
                 <MudGrid Class="mt-2 pa-6">
                     @foreach (var structure in group.Items)
                     {
-                        <MudItem xs="12" sm="6" lg="4" @key="structure.Key">
+                        <MudItem xs="12" sm="12" lg="6" @key="structure.Key">
                             <MudCard Class="structure-card">
-                                <MudCardContent>
+                                    <MudCardContent>
                                     <MudText Typo="Typo.h6">@structure.Name</MudText>
                                     <MudText Typo="Typo.body2" Class="mt-1">@structure.Description</MudText>
                                     <MudText Typo="Typo.caption" Class="mt-2">Uso: @structure.UseCase</MudText>
