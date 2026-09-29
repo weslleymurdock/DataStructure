@@ -19,6 +19,8 @@
                                     <MudCardContent>
                                     <MudText Typo="Typo.h6">@structure.Name</MudText>
                                     <MudText Typo="Typo.body2" Class="mt-1">@structure.Description</MudText>
+                                    @{ var complexity = ComplexityCatalog.ForStructure(structure.Key); }
+                                    <MudChip Color="@complexity.Color" Size="Size.Small" Class="mt-2" Title="@complexity.Meaning">@complexity.Notation</MudChip>
                                     <MudText Typo="Typo.caption" Class="mt-2">Uso: @structure.UseCase</MudText>
                                 </MudCardContent>
                                 <MudCardActions>
@@ -31,6 +33,7 @@
                 </MudGrid>
             </MudPaper>
         }
+        <ComplexityGlossary />
     </MudStack>
 </MudContainer>
 
