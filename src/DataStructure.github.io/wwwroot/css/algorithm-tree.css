@@ -84,3 +84,20 @@
         gap: 0.5rem;
     }
 }
+
+
+.structure-tree-viewer {
+    margin-bottom: 1rem;
+}
+
+.structure-tree-viewer .algorithm-tree-viewer {
+    min-height: 260px;
+}
+
+.structure-tree-viewer .algorithm-tree-value {
+    min-width: 170px;
+    max-width: 280px;
+    white-space: pre-line;
+    text-align: center;
+    line-height: 1.35;
+}
