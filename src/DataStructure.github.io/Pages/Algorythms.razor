@@ -24,13 +24,17 @@
                     </HeaderContent>
                     <RowTemplate>
                         <MudTd DataLabel="Algoritmo" @onclick="@(() => Open(context))" Style="cursor:pointer">@context.Name</MudTd>
-                        <MudTd DataLabel="Complexidade" @onclick="@(() => Open(context))" Style="cursor:pointer">@context.Complexity</MudTd>
+                        <MudTd DataLabel="Complexidade" @onclick="@(() => Open(context))" Style="cursor:pointer">
+                            <MudChip Color="@ComplexityCatalog.For(context.Complexity).Color" Size="Size.Small">@context.Complexity</MudChip>
+                        </MudTd>
                         <MudTd DataLabel="Pré-condições" @onclick="@(() => Open(context))" Style="cursor:pointer">@context.Preconditions</MudTd>
                         <MudTd DataLabel="Aplicação" @onclick="@(() => Open(context))" Style="cursor:pointer">@context.StructureScope</MudTd>
                     </RowTemplate>
                 </MudTable>
             </MudPaper>
         }
+
+        <ComplexityGlossary />
 
         <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
             Em estruturas não lineares, o laboratório informa quando a execução usa uma travessia
