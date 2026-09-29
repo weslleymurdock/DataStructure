@@ -1,0 +1,46 @@
+<MudPaper Elevation="1" Class="pa-4 complexity-glossary">
+    <MudText Typo="Typo.h5">Glossário de complexidade</MudText>
+    <MudText Typo="Typo.body2" Class="mt-2">
+        A notação Big-O descreve como o custo de uma operação cresce quando o tamanho da entrada aumenta.
+        Ela não representa segundos exatos: fatores constantes e detalhes do hardware são abstraídos para
+        destacar o crescimento dominante.
+    </MudText>
+
+    <MudTable Items="@Entries" Hover="true" Striped="true" Dense="true" Class="mt-3">
+        <HeaderContent>
+            <MudTh>Complexidade</MudTh>
+            <MudTh>Como se calcula</MudTh>
+            <MudTh>Como se lê</MudTh>
+            <MudTh>Interpretação</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Complexidade">
+                <MudChip Color="@context.Color" Size="Size.Small">@context.Notation</MudChip>
+            </MudTd>
+            <MudTd DataLabel="Como se calcula">@context.Calculation</MudTd>
+            <MudTd DataLabel="Como se lê">@context.Reading</MudTd>
+            <MudTd DataLabel="Interpretação">@context.Meaning</MudTd>
+        </RowTemplate>
+    </MudTable>
+
+    <MudText Typo="Typo.caption" Class="d-block mt-3">
+        As cores são uma indicação didática de crescimento: verde representa crescimento geralmente
+        baixo, amarelo indica custo que merece atenção conforme a entrada cresce e vermelho representa
+        crescimento que tende a ficar caro rapidamente. A operação concreta, o tamanho dos dados e o
+        cenário (melhor, médio ou pior caso) continuam sendo determinantes.
+    </MudText>
+</MudPaper>
+
+@code {
+    private static IReadOnlyList<ComplexityGuide> Entries =>
+    [
+        ComplexityCatalog.For("O(1)"),
+        ComplexityCatalog.For("O(log n)"),
+        ComplexityCatalog.For("O(√n)"),
+        ComplexityCatalog.For("O(n)"),
+        ComplexityCatalog.For("O(n log n)"),
+        ComplexityCatalog.For("O(n²)"),
+        ComplexityCatalog.For("O(V + E)"),
+        ComplexityCatalog.For("O(log log n)")
+    ];
+}
